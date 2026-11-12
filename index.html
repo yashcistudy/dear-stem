@@ -95,6 +95,47 @@ ul.credits{margin:0;padding-left:18px;font-size:13px;line-height:1.55}ul.credits
 #here .lab{background:rgba(251,248,243,.88);padding:6px 10px}
 #dragtip{position:fixed;z-index:3;left:50%;bottom:26px;transform:translateX(-50%);background:var(--paper);border:1px solid var(--line);padding:8px 14px;font-size:14px}
 @media (max-width:720px){#here{top:84px;left:12px}}
+
+#panel{width:440px}
+#panel .in{gap:16px}
+.link{background:none;border:0;padding:0;font-size:14px;text-decoration:underline;text-underline-offset:3px;align-self:flex-start;cursor:pointer;color:var(--plum)}
+.dots{display:flex;gap:6px}.dots i{width:22px;height:4px;background:var(--line)}.dots i.on{background:var(--plum)}
+.g{display:flex;gap:10px;align-items:flex-start}
+.g .face{width:44px;height:44px;border-radius:50%;border:1px solid var(--plum);background:var(--paper) url(vendor/monogram_plum.svg) center/60% no-repeat;flex:none}
+.g p{font-size:15px;background:#fff;border:1px solid var(--line);padding:8px 12px}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chipo{background:#fff;border:1px solid var(--line);min-height:54px;padding:8px 12px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.chipo b{font-weight:500;font-size:15px}.chipo span{font-size:12px;color:var(--ink2)}
+.chipo[aria-checked=true]{background:var(--petal);border-color:var(--plum)}
+input[type=range]{width:100%;accent-color:var(--plum)}
+.picks{display:flex;flex-direction:column;gap:10px}
+.pickc{display:grid;grid-template-columns:96px 1fr;gap:12px;background:#fff;border:1px solid var(--line);padding:8px;text-align:left}
+.pickc img{width:96px;height:120px;object-fit:cover;display:block}
+.pickc span{display:flex;flex-direction:column;gap:4px;justify-content:center}.pickc b{font-weight:500;font-size:17px}.pickc em{font-style:normal;font-size:13px;color:var(--ink2)}.pickc strong{font-weight:500}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:#fff;border:1px solid var(--line);padding:8px;text-align:left;display:flex;flex-direction:column;gap:3px}
+.card img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;margin-bottom:4px}
+.card b{font-weight:500;font-size:15px}.card span{font-size:13px;color:var(--ink2)}
+.btn.sm{min-height:38px;font-size:14px;margin-top:6px}
+.hero{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;border:1px solid var(--line)}
+.opt span{line-height:1.4}
+.ruler{display:flex;align-items:flex-end;gap:14px;height:90px;margin-top:12px;padding:0 6px;border-bottom:1px solid var(--plum)}
+.ruler .hand{width:16px;background:url(build/sprites/scale_hand_front.webp) bottom/contain no-repeat}
+.ruler .bar{width:26px;background:var(--line);position:relative}.ruler .bar.on{background:var(--petal);outline:1px solid var(--plum)}
+.ruler .bar em{position:absolute;top:-18px;left:0;right:0;text-align:center;font-style:normal;font-size:11px;color:var(--ink2)}
+.vrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.vpick{background:#fff;border:1px solid var(--line);padding:6px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.vpick img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.vpick b{font-weight:500;font-size:13px}.vpick span{font-size:12px;color:var(--ink2)}
+.vpick[aria-pressed=true]{border-color:var(--plum);box-shadow:inset 0 0 0 1px var(--plum)}
+textarea{width:100%;min-height:80px;font-family:'Homemade Apple',cursive;font-size:15px;line-height:1.7;color:var(--plum);background:#fff;border:1px solid var(--line);padding:10px}
+.starts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.starts button{background:var(--paper);border:1px solid var(--line);padding:5px 9px;font-size:12px}
+ul.bag{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+ul.bag li{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);padding:6px}
+ul.bag img{width:56px;height:56px;object-fit:cover}ul.bag span{display:flex;flex-direction:column}ul.bag b{font-weight:500}ul.bag em{font-style:normal;font-size:12px;color:var(--ink2)}
+ul.bag .link{grid-column:2;font-size:12px}
+.tot{display:flex;justify-content:space-between;font-size:14px;color:var(--ink2)}.tot.big{font-size:20px;color:var(--plum);font-weight:500}
+.form{display:flex;flex-direction:column;gap:12px}
+@media (max-width:720px){#panel{width:auto}.hd .right{gap:6px}.chip{padding:8px 10px}}
 </style>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
 </head>
@@ -104,6 +145,7 @@ ul.credits{margin:0;padding-left:18px;font-size:13px;line-height:1.55}ul.credits
  <div class="hd">
   <img src="vendor/logo-one-line_plum.svg" alt="dear stem">
   <div class="right">
+   <button class="chip" id="bagBtn" type="button"><span id="bagN">Bag</span></button>
    <button class="chip" id="chip" type="button"><span aria-hidden="true">⌖</span><span id="chipText">where to?</span></button>
    <button class="toggle" id="viewToggle" role="switch" aria-checked="false" type="button"><span class="sw" aria-hidden="true"></span><span>Simple view</span></button>
   </div>
@@ -121,6 +163,7 @@ ul.credits{margin:0;padding-left:18px;font-size:13px;line-height:1.55}ul.credits
 
 <script type="module">
 import * as THREE from 'three';
+import { journey } from './app.js';
 if(matchMedia('(hover:none)').matches) document.body.classList.add('touch');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -213,38 +256,10 @@ renderer.setAnimationLoop(now=>{ const dt=Math.min(0.1,(now-last)/1000); last=no
 // ---------- panels and flows ----------
 const panel=document.getElementById('panel'), panelIn=document.getElementById('panelIn'), hint=document.getElementById('hint'), simple=document.getElementById('simple');
 const S={mode:'delivery',zip:'97214',day:'Today'};
-function whenWhere(first){return `
-  <button class="close" aria-label="Close" data-close>×</button>
-  ${first?'<p class="lab">Before you step in</p>':''}<p class="q" style="font-size:24px">Where&#39;s it going, and when?</p>
-  <p class="muted" style="margin:0;font-size:14px">We only show flowers we can get there in time.</p>
-  <div class="seg" role="radiogroup" aria-label="Delivery or pickup"><button role="radio" aria-checked="${S.mode==='delivery'}" data-mode="delivery">Delivery</button><button role="radio" aria-checked="${S.mode==='pickup'}" data-mode="pickup">I&#39;ll pick it up</button></div>
-  <label class="f">ZIP code<input id="zip" value="${S.zip}" inputmode="numeric" autocomplete="postal-code"></label>
-  <div class="opts" role="radiogroup" aria-label="Day">${[['Today','order by 1 pm'],['Tomorrow','Fri, Nov 13'],['Pick a day','up to 30 days']].map(([a,b])=>`<button class="opt" role="radio" aria-checked="${S.day===a}" data-day="${a}"><b>${a}</b><span>${b}</span></button>`).join('')}</div>
-  <button class="btn" data-go>Step inside</button>
-  <p class="muted" style="margin:0;font-size:13px">Delivery around Portland is $9. Pickup at the shop is free.</p>`}
-const Z={
- counter:()=>`<button class="close" aria-label="Close" data-close>×</button><p class="lab">The counter</p><h2 class="ct" style="font-size:44px">Ask the counter</h2>
-  <p style="margin:0">Four questions, the same ones our staff ask: who it&#39;s for, the occasion, the feeling and your budget. Then we show you three bouquets.</p>
-  <div class="thumbs"><img src="img/b10-petite-sweet_studio.jpg" alt="Petite sweet"><img src="img/b02-blush-garden_studio.jpg" alt="Blush garden"><img src="img/b09-bright-birthday_studio.jpg" alt="Bright birthday"></div>
-  <button class="btn">Start: who&#39;s it for?</button>`,
- cooler:()=>`<button class="close" aria-label="Close" data-close>×</button><p class="lab">The cooler</p><h2 class="ct" style="font-size:44px">Ready bouquets</h2>
-  <p style="margin:0">Every bucket is a bouquet you can send today to ${S.zip}. Each one is marked with its real height.</p>
-  <div class="thumbs"><img src="img/b02-blush-garden_studio.jpg" alt="Blush garden"><img src="img/b01-red-classic_studio.jpg" alt="Red classic"><img src="img/b04-peach-ranunculus_studio.jpg" alt="Peach ranunculus"></div>
-  <button class="btn">See all bouquets</button>`,
- wrap:()=>`<button class="close" aria-label="Close" data-close>×</button><p class="lab">The wrap station</p><h2 class="ct" style="font-size:44px">Build your own</h2>
-  <p style="margin:0">Choose each stem from the cooler rail, then the paper and a ribbon from our wall. The preview stands next to a real hand, so the size is never a guess.</p>
-  <img src="img/shop_wrap-station.jpg" alt="The ribbon wall at the wrap station" style="width:100%;aspect-ratio:3/2;object-fit:cover;border:1px solid var(--line)">
-  <a class="btn" href="build/" style="text-decoration:none">Start building</a>`,
- shelf:()=>`<button class="close" aria-label="Close" data-close>×</button><p class="lab">The shelf</p><h2 class="ct" style="font-size:44px">Vases and extras</h2>
-  <p style="margin:0">Add a vase and see your bouquet standing in it at its real size. The shortest is 20 cm and the tallest is 53 cm.</p>
-  <button class="btn ghost">Browse vases</button>`,
- door:()=>whenWhere(false),
- cafe:()=>`<button class="close" aria-label="Close" data-close>×</button><p class="lab">The café</p><h2 class="ct" style="font-size:44px">Visit</h2>
-  <p style="margin:0">Coffee and pastries from the counter, in the shop only. Collect your order here or choose your flowers in person. Open every day, 8 to 6.</p>
-  <img src="img/shop_exterior.jpg" alt="The pink shop front" style="width:100%;aspect-ratio:3/2;object-fit:cover;border:1px solid var(--line)">
-  <button class="btn ghost">Plan a visit</button>`};
-
-function show(html){panelIn.innerHTML=html;panel.classList.add('open');hint.style.display='none'}
+try{ const w=JSON.parse(sessionStorage.getItem('ds-where')||'null'); if(w) Object.assign(S,w) }catch(e){}
+const J = journey({panelIn, show:(h)=>show(h), closePanel:()=>closePanel(), S});
+const Z = J.Z, whenWhere = J.whenWhere;
+function show(html){panelIn.innerHTML=html;panel.classList.add('open');panel.scrollTop=0;hint.style.display='none';const f=panelIn.querySelector('h2,.ct,.q');}
 function closePanel(quiet){panel.classList.remove('open');if(!quiet&&S.set&&simple.style.display!=='block')hint.style.display='flex'}
 function openZone(id){ if(Z[id]) show(Z[id]()) }
 panel.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
@@ -253,6 +268,7 @@ panel.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)retu
   if(t.dataset.day){S.day=t.dataset.day;panelIn.querySelectorAll('[data-day]').forEach(b=>b.setAttribute('aria-checked',b===t))}
   if(t.dataset.go!==undefined){S.zip=(panelIn.querySelector('#zip').value||'97214').trim();S.set=true;try{sessionStorage.setItem('ds-where',JSON.stringify(S))}catch(e){};document.getElementById('chipText').innerHTML=`${S.mode==='pickup'?'Pickup':S.zip} · ${S.day.toLowerCase()} <span class="full" style="color:#6B5463;text-decoration:underline">change</span>`;closePanel()}});
 document.getElementById('chip').addEventListener('click',()=>openZone('door'));
+document.getElementById('bagBtn').addEventListener('click',()=>openZone('bag'));
 addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('open'))closePanel()});
 
 // ---------- simple view: the same photos, flat ----------

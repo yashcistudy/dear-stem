@@ -215,7 +215,8 @@ function summary(s,added){
   else if(focal>0&&greens===0){ msg='Fills the cone well. One or two greens would give it shape.'; line='Some eucalyptus would loosen it up.' }
   else { msg='Fills the cone well.'; line='That looks just right to me.' }
   fit.textContent=msg; say.textContent=line }
-document.getElementById('add').onclick=()=>{ const n=placed.length; document.getElementById('doneS').textContent=`${n} stems in a ${cone.name.toLowerCase()} cone with a ${ribbon.name.toLowerCase()} ribbon${card.value.trim()?', and your card':''}.`; document.getElementById('done').style.display='flex' };
+document.getElementById('add').onclick=()=>{ const n=placed.length;
+  try{ const bag=JSON.parse(sessionStorage.getItem('ds-bag')||'[]'); bag.push({name:'Your own bouquet',detail:`${n} stems, ${cone.name.toLowerCase()} cone, ${ribbon.name.toLowerCase()} ribbon${card.value.trim()?' · card':''}`,price:STEMS.reduce((a,x)=>a+x.n*x.price,0)+cone.price,img:'stand/stand_04_wrap_master.jpg'}); sessionStorage.setItem('ds-bag',JSON.stringify(bag)) }catch(e){} document.getElementById('doneS').textContent=`${n} stems in a ${cone.name.toLowerCase()} cone with a ${ribbon.name.toLowerCase()} ribbon${card.value.trim()?', and your card':''}.`; document.getElementById('done').style.display='flex' };
 document.getElementById('again').onclick=()=>document.getElementById('done').style.display='none';
 
 // ---------- turning it ----------
