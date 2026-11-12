@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dear stem · the shop</title>
+<link rel="icon" href="vendor/monogram_plum.svg" type="image/svg+xml">
+<style>
+@font-face{font-family:Jost;font-weight:300;src:url(vendor/jost-latin-300-normal.woff2) format('woff2')}
+@font-face{font-family:Jost;font-weight:400;src:url(vendor/jost-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:Jost;font-weight:500;src:url(vendor/jost-latin-500-normal.woff2) format('woff2')}
+@font-face{font-family:'Homemade Apple';src:url(vendor/homemade-apple-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Caffe Latte';src:url(vendor/caffe-latte.woff2) format('woff2')}
+:root{--paper:#FBF8F3;--plum:#3A2233;--ink2:#6B5463;--petal:#F1B9C4;--butter:#F2D98B;--lilac:#C3B3E0;--blue:#7E9CCB;--mint:#BFD8C2;--line:rgba(58,34,51,.16)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--paper);color:var(--plum);font-family:Jost,sans-serif;overflow:hidden}
+button{font-family:inherit;color:inherit;cursor:pointer}
+#stage{position:fixed;inset:0}
+canvas{display:block}
+header{position:fixed;left:0;right:0;top:0;z-index:5;background:var(--paper)}
+.rail{height:10px;background:url(vendor/rail.svg) center/100% 100% no-repeat}
+.rule{height:6px;background:url(vendor/rule.svg) center/100% 100% no-repeat}
+.thr{width:8px;background:url(vendor/thread.svg) center/100% 100% no-repeat}
+.hook{width:20px;height:26px;background:url(vendor/hook.svg) center top/contain no-repeat}
+.frame{border:7px solid transparent;border-image:url(vendor/box.svg) 9 stretch}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 28px 6px}
+.hd img{height:44px;display:block}
+.hd .right{display:flex;gap:10px;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--plum);padding:8px 12px;min-height:44px;font-size:14px}
+.toggle{display:inline-flex;align-items:center;gap:10px;background:transparent;border:0;font-size:14px;min-height:44px}
+.sw{width:42px;height:24px;border-radius:12px;background:var(--line);position:relative;transition:background .2s}
+.sw::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:var(--paper);transition:left .2s}
+.toggle[aria-checked=true] .sw{background:var(--plum)}
+.toggle[aria-checked=true] .sw::after{left:21px}
+.btn{background:var(--plum);color:var(--paper);border:1.5px solid var(--plum);font-weight:500;font-size:16px;min-height:50px;padding:0 22px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.ghost{background:var(--paper);color:var(--plum)}
+.q{font-family:'Homemade Apple',cursive;line-height:1.5;margin:0}
+.ct{font-family:'Caffe Latte',serif;font-weight:400;margin:0;line-height:1.05;white-space:nowrap}
+.lab{font-size:13px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;margin:0}
+.muted{color:var(--ink2)}
+/* side panel */
+#panel{position:fixed;z-index:6;top:96px;right:24px;width:400px;height:auto;max-height:calc(100% - 130px);overflow:auto;background:transparent;padding:0;transform:translateX(440px);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+#panel.open{transform:none}
+#panel .tie{display:flex;flex-direction:column;align-items:center;position:absolute;left:50%;top:-58px;margin-left:-10px}
+#panel .in{position:relative;padding:22px 24px 24px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--line);background:var(--paper)}
+#panel .close{position:absolute;right:10px;top:8px;border:0;background:transparent;font-size:26px;width:44px;height:44px}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.opt{background:#fff;border:1px solid var(--line);min-height:62px;padding:8px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.opt[aria-checked=true]{background:var(--petal);border:7px solid transparent;border-image:url(vendor/box.svg) 9 stretch;padding:2px}
+.opt b{font-weight:500;font-size:15px}.opt span{font-size:12px;color:var(--ink2)}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--plum)}
+.seg button{border:0;min-height:46px;background:#fff;font-size:15px}
+.seg button[aria-checked=true]{background:var(--plum);color:var(--paper);font-weight:500}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500}
+label.f input{font-family:inherit;font-size:17px;color:var(--plum);background:#fff;border:1px solid var(--plum);padding:10px 12px;min-height:48px}
+.thumbs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.thumbs img{width:100%;aspect-ratio:4/5;object-fit:cover;border:1px solid var(--line);display:block}
+/* hint + tag */
+#hint{position:fixed;z-index:4;left:50%;bottom:26px;transform:translateX(-50%);background:var(--paper);border:1px solid var(--plum);padding:10px 16px;font-size:15px;display:none;align-items:center;gap:10px}
+#tag{position:fixed;z-index:4;pointer-events:none;display:none;flex-direction:column;align-items:center}
+#tag .t{background:var(--paper);border:1px solid var(--plum);padding:10px 14px;margin-top:-12px;text-align:center;min-width:150px}
+#tag .t b{display:block;font-weight:500;font-size:16px}
+#tag .t span{font-size:13px;color:var(--ink2)}
+/* simple view */
+#simple{position:fixed;inset:0;z-index:3;overflow:auto;background:var(--paper);padding:110px 28px 60px;display:none}
+#simple .grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 20px}
+#simple .cell{display:flex;flex-direction:column;align-items:center}
+#simple article{background:#fff;border:1px solid var(--line);width:100%;margin-top:-12px;text-align:left}
+#simple article img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block}
+#simple article div{padding:14px 16px 18px;display:flex;flex-direction:column;gap:6px}
+#simple h3{margin:0;font-size:18px;font-weight:500}
+#credits{position:fixed;z-index:4;left:20px;bottom:16px;font-size:12px;color:var(--ink2);background:rgba(251,248,243,.85);padding:4px 8px}
+#credits a{color:var(--plum)}
+@media (max-width:720px){
+ .hd{padding:6px 14px}.hd img{height:34px}.chip .full{display:none}
+ #panel{left:10px;right:10px;width:auto;top:auto;bottom:10px;max-height:72%;transform:translateY(110%)}
+ #panel.open{transform:none}
+ #simple{padding:96px 16px 40px}#simple .grid{grid-template-columns:1fr}
+ .opts{grid-template-columns:repeat(3,1fr)}
+}
+@media (prefers-reduced-motion:reduce){#panel{transition:none}}
+ul.credits{margin:0;padding-left:18px;font-size:13px;line-height:1.55}ul.credits a{color:var(--plum,#3A2233)}
+</style>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}</script>
+</head>
+<body>
+<header>
+ <div class="rail"></div>
+ <div class="hd">
+  <img src="vendor/logo-one-line_plum.svg" alt="dear stem">
+  <div class="right">
+   <button class="chip" id="chip" type="button"><span aria-hidden="true">⌖</span><span id="chipText">where to?</span></button>
+   <button class="toggle" id="viewToggle" role="switch" aria-checked="false" type="button"><span class="sw" aria-hidden="true"></span><span>Simple view</span></button>
+  </div>
+ </div>
+ <div class="rule"></div>
+</header>
+<div id="stage" aria-label="The dear stem shop in 3D. Choose an area from the shop or switch to the simple view."></div>
+<div id="tag" aria-hidden="true"><div class="thr" style="height:46px"></div><div class="hook"></div><div class="t"><b id="tagT"></b><span id="tagS"></span></div></div>
+<div id="hint"><span class="q" style="font-size:15px">Tap anything in the shop.</span></div>
+<aside id="panel" aria-live="polite"><div class="tie"><div class="thr" style="height:44px"></div><div class="hook"></div></div><div class="in" id="panelIn"></div></aside>
+<section id="simple" aria-label="Simple view"><div class="grid" id="simpleGrid"></div></section>
+<div id="credits"><span id="loadT">Setting up the shop</span> <a href="#" id="creditLink">Credits</a></div>
+
+<script type="module">
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+import {RGBELoader} from 'three/addons/loaders/RGBELoader.js';
+import {MeshoptDecoder} from 'three/addons/libs/meshopt_decoder.module.js';
+const C = {paper:0xFBF8F3, plum:0x3A2233, petal:0xF1B9C4, butter:0xF2D98B, lilac:0xC3B3E0, blue:0x7E9CCB, mint:0xBFD8C2, wall:0xE9AFBA, wallDark:0xE3A7B3, wood:0xC8A27C};
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const stage = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+renderer.localClippingEnabled = true; renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+stage.appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(C.paper);
+const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.05, 60);
+const HOME = {pos:new THREE.Vector3(0,1.75,5.1), look:new THREE.Vector3(0,1.45,-2.4)};
+camera.position.copy(HOME.pos);
+let camTarget = {pos:HOME.pos.clone(), look:HOME.look.clone()}, look = HOME.look.clone();
+
+// ---------- helpers ----------
+const M = (c, o={}) => new THREE.MeshStandardMaterial(Object.assign({color:c, roughness:.85, metalness:0}, o));
+function box(w,h,d,mat,x,y,z,parent=scene){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;parent.add(m);return m}
+function cyl(rt,rb,h,mat,x,y,z,parent=scene,seg=32){const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),mat);m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;parent.add(m);return m}
+function canvasTex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');draw(g,w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t}
+function tile(){return canvasTex(256,256,(g,w,h)=>{g.fillStyle='#EADFCF';g.fillRect(0,0,w,h);g.fillStyle='#DCCAB2';g.fillRect(0,0,w/2,h/2);g.fillRect(w/2,h/2,w/2,h/2);g.strokeStyle='rgba(58,34,51,.08)';g.lineWidth=2;g.strokeRect(0,0,w,h);g.strokeRect(0,0,w/2,h/2)})}
+
+// ---------- room: 8 m wide, 5.4 m deep, 3.3 m high ----------
+const W=8, D=5.4, H=3.3;
+const floorT = tile(); floorT.wrapS=floorT.wrapT=THREE.RepeatWrapping; floorT.repeat.set(10,7);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(W,D+1.4), M(0xffffff,{map:floorT,roughness:.7})); floor.rotation.x=-Math.PI/2; floor.position.set(0,0,-D/2+0.7); floor.receiveShadow=true; scene.add(floor);
+const wallM = M(C.wall,{roughness:.95}), wallM2 = M(C.wallDark,{roughness:.95});
+const back = new THREE.Mesh(new THREE.PlaneGeometry(W,H), wallM); back.position.set(0,H/2,-D); back.receiveShadow=true; scene.add(back);
+const left = new THREE.Mesh(new THREE.PlaneGeometry(D+1.4,H), wallM2); left.rotation.y=Math.PI/2; left.position.set(-W/2,H/2,-D/2+0.7); left.receiveShadow=true; scene.add(left);
+const right = left.clone(); right.rotation.y=-Math.PI/2; right.position.x=W/2; scene.add(right);
+const ceil = new THREE.Mesh(new THREE.PlaneGeometry(W,D+1.4), M(C.paper,{emissive:0xF3E6DA,emissiveIntensity:.55})); ceil.rotation.x=Math.PI/2; ceil.position.set(0,H,-D/2+0.7); scene.add(ceil);
+// paper skirting and a plum picture rail, like the brand's rail
+const skirtM = M(C.paper), railM = M(C.plum,{roughness:.6});
+box(W,0.14,0.03,skirtM,0,0.07,-D+0.015); box(0.03,0.14,D+1.4,skirtM,-W/2+0.015,0.07,-D/2+0.7); box(0.03,0.14,D+1.4,skirtM,W/2-0.015,0.07,-D/2+0.7);
+box(W,0.03,0.03,railM,0,H-0.25,-D+0.02);
+
+// ---------- lights ----------
+const hemi=new THREE.HemisphereLight(0xFFF3EA, 0xC79A86, 0.9); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xFFE6CC, 2.2); sun.position.set(5,6,3); sun.castShadow=true; sun.shadow.mapSize.set(1536,1536);
+Object.assign(sun.shadow.camera,{left:-6,right:6,top:6,bottom:-6,near:1,far:20}); sun.shadow.bias=-0.0004; sun.shadow.radius=4; scene.add(sun);
+const fill = new THREE.DirectionalLight(0xFFEFE6, 0.7); fill.position.set(-5,3.5,2); scene.add(fill);
+const warm = new THREE.PointLight(0xFFD2B0, 10, 9, 2); warm.position.set(0,2.8,-2.2); scene.add(warm);
+
+const STAND={cooler:[],pastry:[]};
+const woodM = M(C.wood,{roughness:.55});
+// ---------- the zones ----------
+const zones = []; const hit = [];
+function zone(id, title, sub, group, cam, hitSize, hitPos){
+  const hb = new THREE.Mesh(new THREE.BoxGeometry(...hitSize), new THREE.MeshBasicMaterial({visible:false}));
+  hb.position.copy(hitPos); hb.userData.zone = id; scene.add(hb); hit.push(hb);
+  const z = {id, title, sub, group, cam, hb}; zones.push(z); return z;
+}
+
+// sign on the back wall: logo + red hand-painted line, like her shop
+const logoImg = new Image(); logoImg.src = 'vendor/logo-one-line_plum.svg';
+const signM = new THREE.MeshBasicMaterial({transparent:true});
+const sign = new THREE.Mesh(new THREE.PlaneGeometry(2.4,0.6), signM); sign.position.set(0,2.62,-D+0.02); scene.add(sign);
+logoImg.onload = () => { signM.map = canvasTex(1600,400,(g,w,h)=>{g.clearRect(0,0,w,h);const r=logoImg.width/logoImg.height;const lh=300;g.drawImage(logoImg,(w-lh*r)/2,40,lh*r,lh)}); signM.needsUpdate=true; };
+
+// counter (center back)
+const counter = new THREE.Group(); scene.add(counter);
+box(2.4,0.98,0.66,M(C.paper,{roughness:.6}),0,0.49,-3.6,counter);
+box(2.5,0.05,0.74,M(C.plum,{roughness:.45}),0,1.0,-3.6,counter);
+for(let i=0;i<6;i++) box(0.012,0.84,0.005,M(C.wallDark),-1.05+i*0.42,0.5,-3.265,counter);
+const glass = new THREE.Mesh(new THREE.BoxGeometry(0.9,0.36,0.5), new THREE.MeshPhysicalMaterial({color:0xffffff,transmission:.9,roughness:.05,thickness:.02,transparent:true,opacity:.35}));
+glass.position.set(-0.55,1.21,-3.62); counter.add(glass);
+for(let i=0;i<5;i++){const p=new THREE.Mesh(new THREE.TorusGeometry(0.045,0.022,10,20),M(i%2?0xE7C27D:0xD9A35E,{roughness:.7}));p.rotation.x=Math.PI/2;p.position.set(-0.85+i*0.15,1.08,-3.6);p.castShadow=true;counter.add(p);STAND.pastry.push(p)}
+const easelT = canvasTex(512,640,(g,w,h)=>{g.fillStyle='#FBF8F3';g.fillRect(0,0,w,h);g.strokeStyle='#3A2233';g.lineWidth=6;g.strokeRect(14,14,w-28,h-28);g.fillStyle='#3A2233';g.textAlign='center';g.font="54px 'Homemade Apple'";g.fillText('Ask the',w/2,250);g.fillText('counter',w/2,350);g.font="30px Jost";g.fillText('4 questions',w/2,470)});
+const easel = new THREE.Mesh(new THREE.PlaneGeometry(0.32,0.4), new THREE.MeshStandardMaterial({map:easelT,roughness:.9})); easel.position.set(0.55,1.23,-3.55); easel.rotation.x=-0.18; counter.add(easel);
+zone('counter','Ask the counter','Four questions, three bouquets',counter,{pos:new THREE.Vector3(0.2,1.55,-1.6),look:new THREE.Vector3(0,1.15,-3.6)},[2.6,1.6,1],new THREE.Vector3(0,0.8,-3.6));
+
+// cooler buckets (front left) with stand-in bouquets in the brand colours
+const cooler = new THREE.Group(); scene.add(cooler);
+const steel = M(0xC3C9CE,{metalness:.75,roughness:.32}), water = M(0x2E3A3A,{roughness:.15});
+const palettes = [[0xF1B9C4,0xFBF8F3,0xE38FA2],[0xC0303F,0xA82332,0xD8434F],[0xF4B183,0xF7C9A4,0xFBF8F3],[0xFBF8F3,0xEDE7DF,0xC3B3E0],[0xF2D98B,0xE8B94A,0xFBF8F3],[0xF29AA8,0xF2D98B,0x7E9CCB]];
+box(1.9,0.42,0.9,M(C.plum,{roughness:.6}),-2.75,0.21,-1.15,cooler);
+palettes.forEach((pal,i)=>{const x=-3.35+(i%3)*0.6, z=-1.42+Math.floor(i/3)*0.55;
+  const bk=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.13,0.38,32,1,true),steel); bk.material.side=THREE.DoubleSide; bk.position.set(x,0.61,z); bk.castShadow=bk.receiveShadow=true; cooler.add(bk);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(0.17,0.008,8,40),steel); rim.rotation.x=Math.PI/2; rim.position.set(x,0.8,z); cooler.add(rim); cyl(0.16,0.16,0.005,water,x,0.74,z,cooler);
+  const g=new THREE.Group(); g.position.set(x,0.8,z); cooler.add(g); STAND.cooler.push(g);
+  for(let s=0;s<14;s++){const a=s/14*Math.PI*2+i, r=0.03+Math.random()*0.09; const st=cyl(0.004,0.004,0.32,M(0x5E7D4F),Math.cos(a)*r*0.5,0.12,Math.sin(a)*r*0.5,g,6); st.rotation.z=Math.cos(a)*0.25; st.rotation.x=Math.sin(a)*0.25;
+    const head=new THREE.Mesh(new THREE.SphereGeometry(0.035+Math.random()*0.02,12,10),M(pal[s%3],{roughness:.8})); head.position.set(Math.cos(a)*r,0.3+Math.random()*0.06,Math.sin(a)*r); head.castShadow=true; g.add(head)}
+});
+zone('cooler','Shop the cooler','Ready bouquets, real heights',cooler,{pos:new THREE.Vector3(-1.5,1.5,0.9),look:new THREE.Vector3(-2.8,0.8,-1.2)},[2.1,1.4,1.1],new THREE.Vector3(-2.75,0.7,-1.15));
+
+// vase shelf (back left), vases at their real Poly Haven heights
+const shelf = new THREE.Group(); scene.add(shelf);
+const blk = M(0x2B2B2B,{metalness:.6,roughness:.4});
+[[-3.6],[-2.0]].forEach(([x])=>{box(0.03,2.1,0.03,blk,x,1.05,-D+0.08,shelf);box(0.03,2.1,0.03,blk,x,1.05,-D+0.42,shelf)});
+const vases = [[0.205,0.401,0xEFE6D8],[0.22,0.309,0xC9876A],[0.112,0.414,0xF4F1EC],[0.183,0.342,0x9FB4A2],[0.255,0.44,0x7E9CCB],[0.21,0.529,0xC2A15A],[0.083,0.2,0xC2A15A]];
+[0.35,1.0,1.65].forEach((y,row)=>{box(1.65,0.03,0.4,M(0xE9E2D8,{roughness:.7}),-2.8,y,-D+0.25,shelf)});
+vases.forEach(([wd,ht,col],i)=>{const row=i<3?0:(i<5?1:2); const y=[0.365,1.015,1.665][row]; const x=-3.35+[0,0.55,1.1,0.2,0.85,0.25,0.8][i];
+  const pts=[];for(let k=0;k<=12;k++){const t=k/12; const r=wd/2*(0.55+0.45*Math.sin(Math.PI*(0.15+t*0.8)))*(t>0.9?0.75:1); pts.push(new THREE.Vector2(Math.max(r,0.02),t*ht))}
+  const v=new THREE.Mesh(new THREE.LatheGeometry(pts,32),M(col,{roughness:col===0xC2A15A?.35:.55,metalness:col===0xC2A15A?.7:0,side:THREE.DoubleSide})); v.position.set(x,y,-D+0.25); v.castShadow=true; shelf.add(v)});
+zone('shelf','Vases and extras','Real sizes, next to your bouquet',shelf,{pos:new THREE.Vector3(-1.4,1.45,-1.9),look:new THREE.Vector3(-2.8,1.05,-D+0.2)},[1.9,2.2,0.6],new THREE.Vector3(-2.8,1.05,-D+0.3));
+
+// wrap station + ribbon wall (right wall)
+const wrap = new THREE.Group(); scene.add(wrap);
+box(0.85,0.9,1.7,M(C.paper,{roughness:.6}),W/2-0.6,0.45,-2.9,wrap);
+box(0.95,0.04,1.8,woodM,W/2-0.6,0.92,-2.9,wrap);
+const ribbonCols=[C.petal,C.butter,C.lilac,C.blue,C.mint,C.plum,0xE38FA2,0xFBF8F3];
+for(let r=0;r<3;r++){box(0.12,0.02,1.6,woodM,W/2-0.07,1.45+r*0.36,-2.9,wrap);
+  for(let k=0;k<8;k++){const s=cyl(0.07,0.07,0.06,M(ribbonCols[(k+r*3)%8],{roughness:.5}),W/2-0.12,1.53+r*0.36,-3.55+k*0.185,wrap,24); s.rotation.x=Math.PI/2}}
+[[C.petal,-3.4],[C.paper,-3.15],[0xE8D9C0,-2.9]].forEach(([c,z])=>{const roll=cyl(0.05,0.05,0.8,M(c,{roughness:.8}),W/2-0.55,0.99,z,wrap,24); roll.rotation.x=Math.PI/2; roll.rotation.z=Math.PI/2});
+const cone = new THREE.Mesh(new THREE.ConeGeometry(0.16,0.38,24,1,true), M(C.petal,{side:THREE.DoubleSide,roughness:.8})); cone.rotation.z=Math.PI; cone.position.set(W/2-0.75,1.13,-2.35); cone.castShadow=true; wrap.add(cone);
+zone('wrap','Build your own','Pick every stem, paper and ribbon',wrap,{pos:new THREE.Vector3(1.5,1.6,-1.0),look:new THREE.Vector3(W/2-0.4,1.2,-2.9)},[1.1,2.4,1.9],new THREE.Vector3(W/2-0.5,1.1,-2.9));
+
+// door (back right) with daylight
+const door = new THREE.Group(); scene.add(door);
+box(1.15,2.25,0.06,M(C.plum,{roughness:.5}),2.55,1.125,-D+0.03,door);
+const pane = new THREE.Mesh(new THREE.PlaneGeometry(0.85,1.5), new THREE.MeshBasicMaterial({color:0xFFF4E2})); pane.position.set(2.55,1.35,-D+0.07); door.add(pane);
+const openT = canvasTex(256,160,(g,w,h)=>{g.fillStyle='#FBF8F3';g.fillRect(0,0,w,h);g.fillStyle='#3A2233';g.textAlign='center';g.font="44px 'Homemade Apple'";g.fillText('open',w/2,100)});
+const openSign = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.19), new THREE.MeshStandardMaterial({map:openT})); openSign.position.set(2.55,1.55,-D+0.09); door.add(openSign);
+zone('door','When and where','Delivery or pickup, and the day',door,{pos:new THREE.Vector3(2.0,1.6,-2.4),look:new THREE.Vector3(2.55,1.3,-D)},[1.3,2.4,0.4],new THREE.Vector3(2.55,1.15,-D+0.2));
+
+// café corner (front right)
+const cafe = new THREE.Group(); scene.add(cafe);
+cyl(0.38,0.38,0.035,M(C.paper,{roughness:.5}),2.3,0.75,-0.7,cafe); cyl(0.03,0.03,0.74,blk,2.3,0.37,-0.7,cafe); cyl(0.22,0.22,0.02,blk,2.3,0.01,-0.7,cafe);
+[[1.8,-0.55],[2.75,-0.95]].forEach(([x,z])=>{cyl(0.2,0.2,0.04,M(C.petal),x,0.46,z,cafe);for(let k=0;k<3;k++){const a=k/3*Math.PI*2;cyl(0.012,0.012,0.45,blk,x+Math.cos(a)*0.14,0.225,z+Math.sin(a)*0.14,cafe,8)}});
+cyl(0.045,0.038,0.09,M(C.petal,{roughness:.4}),2.22,0.81,-0.65,cafe); cyl(0.07,0.07,0.01,M(0xffffff),2.22,0.772,-0.65,cafe);
+zone('cafe','Visit and café','Open every day, 8 to 6',cafe,{pos:new THREE.Vector3(1.2,1.45,1.4),look:new THREE.Vector3(2.3,0.75,-0.7)},[1.5,1.2,1.2],new THREE.Vector3(2.3,0.6,-0.75));
+
+// ---------- the ceiling: roses hung head-down on threads ----------
+const roses = new THREE.Group(); scene.add(roses);
+const petalM=[M(0xF1B9C4,{roughness:.75}),M(0xE89AAD,{roughness:.75}),M(0xF6CED6,{roughness:.75})], leafM=M(0x5E7D4F,{roughness:.8}), threadM=new THREE.LineBasicMaterial({color:C.plum});
+function standinRose(){const g=new THREE.Group();
+  for(let k=0;k<3;k++){const s=new THREE.Mesh(new THREE.SphereGeometry(0.05-k*0.012,14,12),petalM[k]);s.scale.y=0.8;s.position.y=-k*0.012;s.castShadow=true;g.add(s)}
+  const sep=new THREE.Mesh(new THREE.ConeGeometry(0.03,0.04,6),leafM);sep.position.y=0.05;g.add(sep);
+  const st=new THREE.Mesh(new THREE.CylinderGeometry(0.004,0.004,0.28,6),leafM);st.position.y=0.2;g.add(st);
+  const lf=new THREE.Mesh(new THREE.SphereGeometry(0.03,8,6),leafM);lf.scale.set(1,0.25,0.5);lf.position.set(0.03,0.16,0);lf.rotation.z=0.6;g.add(lf);
+  return g}
+const rnd=(a)=>{let s=a;return()=>{s=(s*9301+49297)%233280;return s/233280}};const R=rnd(7);
+const hung=[];
+for(let ix=0;ix<8;ix++)for(let iz=0;iz<4;iz++){
+  const x=-3.3+ix*0.94+(R()-.5)*0.35, z=-4.5+iz*1.15+(R()-.5)*0.35; if(z>0.1) continue; if(Math.abs(x)<1.4&&z<-3.6) continue; if(R()<0.22) continue;
+  const len=0.12+R()*0.42; const pivot=new THREE.Group(); pivot.position.set(x,H,z); roses.add(pivot);
+  const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),new THREE.Vector3(0,-len,0)]),threadM); pivot.add(line);
+  const rose=standinRose(); rose.position.y=-len-0.34; rose.rotation.y=R()*6; pivot.add(rose);
+  hung.push({pivot,rose,len,ph:R()*6.28,amp:0.02+R()*0.03})}
+
+
+// ---------- surfaces: Poly Haven textures, graded to the brand colours ----------
+function gradeTex(url, fn, rep){ return new Promise(res=>{ const img=new Image(); img.onload=()=>{ const c=document.createElement('canvas'); c.width=img.width; c.height=img.height; const g=c.getContext('2d'); g.drawImage(img,0,0); const d=g.getImageData(0,0,c.width,c.height); fn(d.data); g.putImageData(d,0,0); const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(...rep); t.anisotropy=8; res(t) }; img.src=url }) }
+const TL = new THREE.TextureLoader();
+function linTex(url, rep){ const t=TL.load(url); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(...rep); t.anisotropy=8; return t }
+const lum=(d,i)=>0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+// floor: the stone checker, recoloured to cream and sand, 40 cm tiles
+const FR=[5,(D+1.4)/1.6], dark=[217,196,168], light=[243,234,220];
+gradeTex('tex/floor_tiles_06_diff_1k.jpg', d=>{ for(let i=0;i<d.length;i+=4){ const t=Math.min(1,Math.max(0,(lum(d,i)-70)/110)); for(let k=0;k<3;k++) d[i+k]=dark[k]+(light[k]-dark[k])*t } }, FR).then(t=>{ floor.material.map=t; floor.material.normalMap=linTex('tex/floor_tiles_06_nor_gl_1k.jpg',FR); floor.material.normalScale.set(.6,.6); floor.material.roughnessMap=linTex('tex/floor_tiles_06_rough_1k.jpg',FR); floor.material.roughness=1; floor.material.needsUpdate=true });
+// walls: painted plaster, flattened to near white so the pink stays exact
+const WR=[3,1.3];
+gradeTex('tex/painted_plaster_wall_diff_1k.jpg', d=>{ let lo=255,hi=0; for(let i=0;i<d.length;i+=40){const l=lum(d,i); if(l<lo)lo=l; if(l>hi)hi=l} for(let i=0;i<d.length;i+=4){ const v=255*(0.86+0.14*Math.min(1,Math.max(0,(lum(d,i)-lo)/(hi-lo||1)))); d[i]=d[i+1]=d[i+2]=v } }, WR).then(t=>{ const n=linTex('tex/painted_plaster_wall_nor_gl_1k.jpg',WR), r=linTex('tex/painted_plaster_wall_rough_1k.jpg',WR);
+  [wallM,wallM2].forEach(m=>{ m.map=t; m.normalMap=n; m.normalScale.set(.8,.8); m.roughnessMap=r; m.roughness=1; m.needsUpdate=true }) });
+// wood: oak veneer for the wrap table and the ribbon shelves
+woodM.map=linTex('tex/oak_veneer_01_diff_1k.jpg',[1,1]); woodM.map.colorSpace=THREE.SRGBColorSpace; woodM.normalMap=linTex('tex/oak_veneer_01_nor_gl_1k.jpg',[1,1]); woodM.color.set(0xffffff); woodM.needsUpdate=true;
+// soft room light for reflections (the background stays paper)
+{ const pm=new THREE.PMREMGenerator(renderer); scene.environment=pm.fromScene(new RoomEnvironment(),0.04).texture; scene.environmentIntensity=0.32; hemi.intensity=0.6;
+  // swap in the Poly Haven studio HDRI once it arrives
+  new RGBELoader().load('tex/lighting_studio_garden_1k.hdr', t=>{ scene.environment=pm.fromEquirectangular(t).texture; scene.environmentIntensity=0.5; t.dispose(); pm.dispose() }, undefined, ()=>pm.dispose()) }
+
+// ---------- real models (Poly Haven CC0 + Sketchfab, see Credits) ----------
+const GL = new GLTFLoader(); GL.setMeshoptDecoder(MeshoptDecoder);
+const cache = {}, used = new Set(); let nDone = 0;
+const loadT = document.getElementById('loadT');
+function get(f){ used.add(f); if(!cache[f]){ cache[f] = GL.loadAsync('models/'+f+'.glb').then(g=>{ g.scene.traverse(m=>{ if(m.isMesh){ m.castShadow=true; m.receiveShadow=true; if(m.material&&m.material.isMeshStandardMaterial&&!m.material.emissive) m.material.emissive=new THREE.Color(0) } }); return g.scene }).finally(()=>{ nDone++; loadT.textContent = nDone<used.size ? `Setting up the shop · ${nDone} of ${used.size}` : 'Made with Poly Haven and Sketchfab models.' }) }
+  return cache[f] }
+// fit a model to a real height (h), width (w) or keep its own scale (s), sitting on the floor of its group
+function fit(src, {h, w, s, rx=0, rz=0, ry=0, top=false}){
+  const inner = src.clone(true); inner.rotation.set(rx,0,rz);
+  const spin = new THREE.Group(); spin.add(inner); spin.updateMatrixWorld(true);
+  const b = new THREE.Box3().setFromObject(spin), sz = b.getSize(new THREE.Vector3());
+  const k = s ? s : h ? h/sz.y : w/Math.max(sz.x,sz.z);
+  inner.scale.multiplyScalar(k);
+  inner.position.set(-(b.min.x+b.max.x)/2*k, top ? -b.max.y*k : -b.min.y*k, -(b.min.z+b.max.z)/2*k);
+  spin.rotation.y = ry; const out = new THREE.Group(); out.add(spin); return out }
+function place(f, parent, x, y, z, o){ return get(f).then(src=>{ const m=fit(src,o); m.position.set(x,y,z); parent.add(m); if(location.hash.startsWith('#shot')){ m.updateMatrixWorld(true); const b=new THREE.Box3().setFromObject(m); console.log('PLACE',f,b.min.toArray().map(v=>v.toFixed(2)).join(','),b.max.toArray().map(v=>v.toFixed(2)).join(',')) } return m }) }
+function clipTo(obj,x0,x1,z0,z1){ const pl=[new THREE.Plane(new THREE.Vector3(1,0,0),-x0),new THREE.Plane(new THREE.Vector3(-1,0,0),x1),new THREE.Plane(new THREE.Vector3(0,0,1),-z0),new THREE.Plane(new THREE.Vector3(0,0,-1),z1)];
+  obj.traverse(m=>{ if(m.isMesh){ m.material=m.material.clone(); m.material.clippingPlanes=pl; m.material.clipShadows=true } }) }
+function topAt(obj, x, z, below=9){ obj.updateMatrixWorld(true); const r=new THREE.Raycaster(new THREE.Vector3(x,below,z), new THREE.Vector3(0,-1,0)); const h=r.intersectObject(obj,true)[0]; return h?h.point.y:0 }
+
+// ceiling: one real rose, hung head-down, about 42 cm long
+get('ceiling_rose_heliona').then(src=>{ const proto=fit(src,{h:0.42, rx:Math.PI, top:true});
+  hung.forEach(hh=>{ hh.pivot.remove(hh.rose); const r=proto.clone(true); r.traverse(m=>{if(m.isMesh)m.castShadow=false}); r.position.y=-hh.len; r.rotation.y=hh.pivot.position.x*3.1; hh.pivot.add(r) }) });
+
+// cooler: six buckets of real bouquets
+const COOL=[['bouquet_rose-red_gardenbee',{h:.56},0.5],['bouquet_dried-roses_antalek',{h:.62,rx:-Math.PI/2},0.56],['linen_flowers_skjellestad',{h:.72},0.56],
+  ['bouquet_dried-roses_antalek',{h:.56,rx:-Math.PI/2,ry:1.6},0.56],['bouquet_rose-red_gardenbee',{h:.52,ry:2.2},0.5],['linen_flowers_skjellestad',{h:.66,ry:1.2},0.56]];
+COOL.forEach(([f,o,y],i)=>{ const x=-3.35+(i%3)*0.6, z=-1.42+Math.floor(i/3)*0.55; place(f,cooler,x,y,z,o).then(()=>{ cooler.remove(STAND.cooler[i]) }) });
+
+// counter: a potted bouquet and the morning bakes under glass
+place('bouquet_scan_ranjbari',counter,1.0,1.025,-3.62,{h:.36,ry:-0.4});
+place('cafe_baked-goods_rigsters',counter,-0.55,1.03,-3.62,{w:.8}).then(()=>STAND.pastry.forEach(p=>counter.remove(p)));
+
+// vase shelf: real steel shelves, vases and extras set on each board
+get('ph_steel_frame_shelves_03').then(src=>{ shelf.clear(); const s=fit(src,{s:1}); s.position.set(-2.72,0,-D+0.38); shelf.add(s); s.updateMatrixWorld(true);
+  const zc=-D+0.38, put=(f,x,y,o)=>place(f,shelf,x,y,zc,o||{s:1});
+  // lower board 66 cm, left side has 66 cm of room, right side 42 cm
+  put('ph_brass_vase_02',-3.62,0.66); put('ph_antique_ceramic_vase_01',-3.12,0.66);
+  put('ph_ceramic_vase_02',-2.6,0.66); put('ph_brass_vase_03',-2.22,0.66); put('ph_ceramic_vase_04',-1.86,0.66);
+  // right board at 108 cm, left board at 132 cm
+  put('ph_ceramic_vase_01',-2.5,1.08); put('ph_ceramic_vase_03',-1.95,1.08); put('ph_wicker_basket_01',-3.5,1.32);
+  get('ph_periwinkle_plant').then(p=>{ const m=fit(p,{s:0.8}); m.position.set(-3.3,1.32,-D+0.4); shelf.add(m); clipTo(m,-3.86,-2.86,-D+0.06,-D+0.7) }) });
+
+// wrap station: a red bow on the front and ribbon offcuts on the table
+place('ribbon_bow_red_prestonboy',wrap,W/2-1.04,0.46,-2.9,{h:.3,ry:-Math.PI/2});
+
+// café: a real bistro set, a coffee and a vase of tulips on the table
+get('ph_outdoor_table_chair_set_01').then(src=>{ cafe.clear(); const t=fit(src,{s:1,ry:Math.PI/2}); t.position.set(2.3,0,-0.75); cafe.add(t);
+  t.updateMatrixWorld(true); const rc=new THREE.Raycaster(), dn=new THREE.Vector3(0,-1,0); let sx=0,sz=0,sy=0,n=0;
+  for(let x=1.2;x<=3.4;x+=0.04) for(let z=-1.8;z<=0.3;z+=0.04){ rc.set(new THREE.Vector3(x,1.2,z),dn); const h=rc.intersectObject(t,true)[0]; if(h&&h.point.y>0.62&&h.point.y<0.82){ sx+=x; sz+=z; sy+=h.point.y; n++ } }
+  const tx=n?sx/n:2.3, tz=n?sz/n:-0.75, ty=n?sy/n:0.74;
+  place('cafe_pink-coffee_moecode',cafe,tx-0.1,ty,tz+0.08,{w:.13}); place('bouquet_tulips_alban',cafe,tx+0.08,ty,tz-0.06,{h:.34}) });
+
+// by the door: a planter box with two calatheas
+get('ph_planter_box_03').then(src=>{ const p=fit(src,{s:1}); p.position.set(3.52,0,-D+0.36); door.add(p);
+  get('ph_calathea_orbifolia_01').then(c=>{ const m=fit(c,{s:1.6}); m.position.set(3.52,0.7,-D+0.36); door.add(m); clipTo(m,3.1,3.94,-D+0.06,-D+0.66) }) });
+
+// ---------- interaction ----------
+const ray=new THREE.Raycaster(), ptr=new THREE.Vector2(9,9); let hover=null, active=null, par={x:0,y:0};
+const tag=document.getElementById('tag'), tagT=document.getElementById('tagT'), tagS=document.getElementById('tagS');
+function setHover(z){ if(hover===z) return; hover=z; renderer.domElement.style.cursor=z?'pointer':'default';
+  zones.forEach(o=>o.group.traverse(m=>{if(m.isMesh&&m.material&&m.material.emissive){m.material.emissive.setHex(o===z?0x3A2233:0);m.material.emissiveIntensity=o===z?0.12:0}}));
+  if(z&&!active){tagT.textContent=z.title;tagS.textContent=z.sub;tag.style.display='flex'} else tag.style.display='none'; }
+addEventListener('pointermove',e=>{ptr.x=e.clientX/innerWidth*2-1;ptr.y=-(e.clientY/innerHeight)*2+1;par.x=ptr.x;par.y=ptr.y;
+  ray.setFromCamera(ptr,camera);const h=ray.intersectObjects(hit)[0];setHover(h?zones.find(z=>z.id===h.object.userData.zone):null);
+  if(hover){tag.style.left=(e.clientX-80)+'px';tag.style.top=(e.clientY-150)+'px'}});
+renderer.domElement.addEventListener('click',()=>{if(hover) openZone(hover.id)});
+
+const panel=document.getElementById('panel'), panelIn=document.getElementById('panelIn'), hint=document.getElementById('hint');
+const S={mode:'delivery',zip:'97214',day:'Today'};
+function whenWhere(first){return `
+  <button class="close" aria-label="Close" data-close>×</button>
+  ${first?'<p class="lab">Before you step in</p>':''}<p class="q" style="font-size:24px">Where&#39;s it going, and when?</p>
+  <p class="muted" style="margin:0;font-size:14px">We only show flowers we can get there in time.</p>
+  <div class="seg" role="radiogroup" aria-label="Delivery or pickup"><button role="radio" aria-checked="${S.mode==='delivery'}" data-mode="delivery">Delivery</button><button role="radio" aria-checked="${S.mode==='pickup'}" data-mode="pickup">I&#39;ll pick it up</button></div>
+  <label class="f">ZIP code<input id="zip" value="${S.zip}" inputmode="numeric" autocomplete="postal-code"></label>
+  <div class="opts" role="radiogroup" aria-label="Day">${[['Today','order by 1 pm'],['Tomorrow','Fri, Nov 13'],['Pick a day','up to 30 days']].map(([a,b])=>`<button class="opt" role="radio" aria-checked="${S.day===a}" data-day="${a}"><b>${a}</b><span>${b}</span></button>`).join('')}</div>
+  <button class="btn" data-go>Step inside</button>
+  <p class="muted" style="margin:0;font-size:13px">Delivery around Portland is $9. Pickup at the shop is free.</p>`}
+const Z={
+ counter:()=>`<button class="close" aria-label="Close" data-close>×</button><p class="lab">The counter</p><h2 class="ct" style="font-size:44px">Ask the counter</h2>
+  <p style="margin:0">Four questions, the same ones our staff ask: who it&#39;s for, the occasion, the feeling and your budget. Then we show you three bouquets.</p>
+  <div class="thumbs"><img src="img/b10-petite-sweet_studio.jpg" alt="Petite sweet"><img src="img/b02-blush-garden_studio.jpg" alt="Blush garden"><img src="img/b09-bright-birthday_studio.jpg" alt="Bright birthday"></div>
+  <button class="btn">Start: who&#39;s it for?</button>`,
+ cooler:()=>`<button class="close" aria-label="Close" data-close>×</button><p class="lab">The cooler</p><h2 class="ct" style="font-size:44px">Ready bouquets</h2>
+  <p style="margin:0">Every bucket is a bouquet you can send today to ${S.zip}. Each one is marked with its real height.</p>
+  <div class="thumbs"><img src="img/b02-blush-garden_studio.jpg" alt="Blush garden"><img src="img/b01-red-classic_studio.jpg" alt="Red classic"><img src="img/b04-peach-ranunculus_studio.jpg" alt="Peach ranunculus"></div>
+  <button class="btn">See all bouquets</button>`,
+ wrap:()=>`<button class="close" aria-label="Close" data-close>×</button><p class="lab">The wrap station</p><h2 class="ct" style="font-size:44px">Build your own</h2>
+  <p style="margin:0">Choose each stem from the cooler rail, then the paper and a ribbon from our wall. The preview stands next to a real hand, so the size is never a guess.</p>
+  <img src="img/shop_wrap-station.jpg" alt="The ribbon wall at the wrap station" style="width:100%;aspect-ratio:3/2;object-fit:cover;border:1px solid var(--line)">
+  <button class="btn">Start building</button>`,
+ shelf:()=>`<button class="close" aria-label="Close" data-close>×</button><p class="lab">The shelf</p><h2 class="ct" style="font-size:44px">Vases and extras</h2>
+  <p style="margin:0">Add a vase and see your bouquet standing in it at its real size. The shortest is 20 cm and the tallest is 53 cm.</p>
+  <button class="btn ghost">Browse vases</button>`,
+ door:()=>whenWhere(false),
+ cafe:()=>`<button class="close" aria-label="Close" data-close>×</button><p class="lab">The café</p><h2 class="ct" style="font-size:44px">Visit</h2>
+  <p style="margin:0">Coffee and pastries from the counter, in the shop only. Collect your order here or choose your flowers in person. Open every day, 8 to 6.</p>
+  <img src="img/shop_exterior.jpg" alt="The pink shop front" style="width:100%;aspect-ratio:3/2;object-fit:cover;border:1px solid var(--line)">
+  <button class="btn ghost">Plan a visit</button>`};
+function show(html){panelIn.innerHTML=html;panel.classList.add('open');tag.style.display='none';hint.style.display='none';const f=panelIn.querySelector('button.btn,input');}
+function closePanel(){panel.classList.remove('open');active=null;camTarget={pos:HOME.pos.clone(),look:HOME.look.clone()};if(S.set)hint.style.display='flex'}
+function openZone(id){const z=zones.find(o=>o.id===id);active=z;camTarget={pos:z.cam.pos.clone(),look:z.cam.look.clone()};show(Z[id]())}
+panel.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.close!==undefined) return closePanel();
+  if(t.dataset.mode){S.mode=t.dataset.mode;panelIn.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-checked',b===t))}
+  if(t.dataset.day){S.day=t.dataset.day;panelIn.querySelectorAll('[data-day]').forEach(b=>b.setAttribute('aria-checked',b===t))}
+  if(t.dataset.go!==undefined){S.zip=(panelIn.querySelector('#zip').value||'97214').trim();S.set=true;document.getElementById('chipText').innerHTML=`${S.mode==='pickup'?'Pickup':S.zip} · ${S.day.toLowerCase()} <span class="full" style="color:#6B5463;text-decoration:underline">change</span>`;closePanel()}});
+document.getElementById('chip').addEventListener('click',()=>openZone('door'));
+addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('open'))closePanel()});
+
+// ---------- simple view ----------
+const simpleGrid=document.getElementById('simpleGrid');
+const SV=[['counter','Ask the counter','Four questions, three bouquets','shop_cafe-counter'],['cooler','Shop the cooler','Ready bouquets, real heights','b02-blush-garden_studio'],['wrap','Build your own','Pick every stem, paper and ribbon','shop_wrap-station'],['door','When and where','Delivery or pickup, and the day','occasion_love'],['shelf','Vases and extras','Real sizes, next to your bouquet','b04-peach-ranunculus_studio'],['cafe','Visit and café','Open every day, 8 to 6','shop_exterior']];
+simpleGrid.innerHTML=`<div style="grid-column:1/-1;margin-bottom:18px"><p class="q" style="font-size:26px">The same shop, flat.</p></div><div style="grid-column:1/-1" class="rail"></div>`+SV.map(([id,t,s,img],i)=>`<div class="cell"><div class="thr" style="height:${[26,52,36,44,30,58][i]}px"></div><div class="hook"></div><article><img src="img/${img}.jpg" alt=""><div><h3>${t}</h3><span class="muted" style="font-size:14px">${s}</span><button class="btn ghost" data-open="${id}" style="margin-top:6px">Open</button></div></article></div>`).join('');
+simpleGrid.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b){show(Z[b.dataset.open]())}});
+const tog=document.getElementById('viewToggle'), simple=document.getElementById('simple');
+function setSimple(on){tog.setAttribute('aria-checked',on);simple.style.display=on?'block':'none';hint.style.display=(!on&&S.set&&!panel.classList.contains('open'))?'flex':'none';}
+tog.addEventListener('click',()=>setSimple(tog.getAttribute('aria-checked')!=='true'));
+const CREDITS=[["ceiling_rose_heliona", "Rose", "Heliona", "https://sketchfab.com/3d-models/rose-6281bf3703584323bb4d8326f1f1b59d", "CC BY 4.0"], ["bouquet_scan_ranjbari", "Flower Bouquet", "Amin Ranjbari", "https://sketchfab.com/3d-models/flower-bouquet-aaa2b90e7d624a8a842bde112e18d4fe", "CC BY 4.0"], ["bouquet_dried-roses_antalek", "Dried Roses Bouquet, floral scan", "David Antalek", "https://sketchfab.com/3d-models/dried-roses-bouquet-floral-scan-402db57f1c3b46f8946376f8e402db4a", "CC BY 4.0"], ["bouquet_tulips_alban", "Tulips bouquet", "alban", "https://sketchfab.com/3d-models/tulips-bouquet-2bb621c42485443fa87e19badff916e4", "CC BY 4.0"], ["bouquet_rose-red_gardenbee", "Bouquet / Rose red", "GardenBee", "https://sketchfab.com/3d-models/bouquet-rose-red-f1a984ec17b94cdd860b5e7c4fe40170", "CC BY 4.0"], ["bouquet_5_luis001", "Bouquet 5", "luis001", "https://sketchfab.com/3d-models/bouquet-5-1eed2b97155e4397ac4a03fc7dfcc899", "CC BY 4.0"], ["linen_flowers_skjellestad", "Linen with Flowers", "sskjellestad", "https://sketchfab.com/3d-models/linen-with-flowers-91c24ace2e7d412493299f43dfa0061f", "CC BY 4.0"], ["ribbon_bow_red_prestonboy", "Red Ribbon Bow", "prestonboy132", "https://sketchfab.com/3d-models/red-ribbon-bow-0dec36e8af9a4e51a68cb40f2ceda94d", "CC BY 4.0"], ["ribbons_packaging_blake", "Packaging Ribbons", "Bl@ke", "https://sketchfab.com/3d-models/packaging-ribbons-d6093f6779ee44efa1f72387a7fd3172", "CC BY 4.0"], ["cafe_pink-coffee_moecode", "pink-coffee", "moe-code", "https://sketchfab.com/3d-models/pink-coffee-07749430cbc6422dbf8263eeee7731de", "Sketchfab Free Standard"], ["cafe_baked-goods_rigsters", "Baked goods", "Rigsters", "https://sketchfab.com/3d-models/baked-goods-d1ae09e3cb8343bc8790b15928452906", "CC BY 4.0"], ["extra_teddy-bears_hectopod", "Teddy bears", "hectopod", "https://sketchfab.com/3d-models/teddy-bears-e84b12b4ac20402aaf4d40f2219cd0e2", "CC BY 4.0"]];
+const PHCREDITS=[["steel_frame_shelves_03", "Steel Frame Shelves 03", "Ulan Cabanilla"], ["ceramic_vase_01", "Ceramic Vase 01", "James Ray Cock"], ["ceramic_vase_02", "Ceramic Vase 02", "James Ray Cock"], ["ceramic_vase_03", "Ceramic Vase 03", "James Ray Cock"], ["ceramic_vase_04", "Ceramic Vase 04", "James Ray Cock"], ["antique_ceramic_vase_01", "Antique Ceramic Vase 01", "James Ray Cock"], ["brass_vase_02", "Brass Vase 02", "Rico Cilliers"], ["brass_vase_03", "Brass Vase 03", "Rico Cilliers"], ["outdoor_table_chair_set_01", "Outdoor Table Chair Set 01", "James Ray Cock"], ["wicker_basket_01", "Wicker Basket 01", "Kuutti Siitonen"], ["calathea_orbifolia_01", "Calathea Orbifolia 01", "Rob Tuytel & Rico Cilliers"], ["planter_box_03", "Planter Box 03", "James Ray Cock"], ["periwinkle_plant", "Periwinkle Plant", "Amal Kumar"], ["studio_garden", "Studio Garden (HDRI)", "Sergej Majboroda"], ["painted_plaster_wall", "Painted Plaster Wall (texture)", ""], ["floor_tiles_06", "Floor Tiles 06 (texture)", ""], ["oak_veneer_01", "Oak Veneer 01 (texture)", ""]];
+document.getElementById('creditLink').addEventListener('click',e=>{e.preventDefault();
+  const li=(t,a,u,l)=>`<li><a href="${u}" target="_blank" rel="noopener">${t}</a>${a?' by '+a:''} · ${l}</li>`;
+  show(`<button class="close" aria-label="Close" data-close>×</button><p class="lab">Credits</p>
+  <p style="margin:0">dear stem is a concept shop. Its photos were made with AI image tools. The 3D models are by these artists.</p>
+  <p class="lab" style="margin:8px 0 0">Sketchfab</p><ul class="credits">${CREDITS.filter(c=>used.has(c[0])).map(([,t,a,u,l])=>li(t,a,u,l)).join('')}</ul>
+  <p class="lab" style="margin:8px 0 0">Poly Haven, CC0</p><ul class="credits">${PHCREDITS.map(([id,t,a])=>li(t,a,'https://polyhaven.com/a/'+id,'CC0')).join('')}</ul>
+  <p class="muted" style="margin:0;font-size:13px">Models were resized and compressed for the web. Colours of the floor and wall textures were changed to match the brand.</p>`)});
+
+// ---------- loop ----------
+function resize(){renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;
+  camera.fov = camera.aspect<1 ? 62 : 42; camera.updateProjectionMatrix()}
+addEventListener('resize',resize); resize();
+const clock=new THREE.Clock(); const SHIFT=new THREE.Vector3();
+function updShift(){ if(!active) return; const dir=active.cam.look.clone().sub(active.cam.pos).normalize(); const rightV=new THREE.Vector3().crossVectors(dir,new THREE.Vector3(0,1,0)).normalize(); SHIFT.copy(rightV.multiplyScalar(0.55)); }
+setInterval(updShift,100);
+let last=0; renderer.setAnimationLoop(()=>{const t=clock.getElapsedTime(); const dt=Math.min(t-last,0.1); last=t; const k=reduce?1:1-Math.exp(-dt*3.2);
+  if(!reduce) hung.forEach(h=>{h.pivot.rotation.z=Math.sin(t*0.7+h.ph)*h.amp;h.pivot.rotation.x=Math.cos(t*0.55+h.ph)*h.amp*0.7});
+  const p = active?{x:0,y:0}:par; const shift = (active&&innerWidth>720)?SHIFT.clone():new THREE.Vector3();
+  const tp=camTarget.pos.clone().add(new THREE.Vector3(p.x*0.18,p.y*0.08,0)).add(shift);
+  camera.position.lerp(tp, k); look.lerp(camTarget.look.clone().add(shift), k); camera.lookAt(look);
+  renderer.render(scene,camera)});
+
+// first visit: ask when and where before stepping in; phones start in the simple view
+if(innerWidth<720) setSimple(true);
+if(!location.hash.startsWith('#shot')) show(whenWhere(true));
+window.__ready=true;
+{let ok=0; const iv=setInterval(()=>{ ok = (used.size&&nDone===used.size) ? ok+1 : 0; if(ok>=4){ clearInterval(iv); if(location.hash.startsWith('#shot')){ renderer.setAnimationLoop(null); const v=location.hash.split('=')[1]; if(v&&zones.find(z=>z.id===v)){ const z=zones.find(z=>z.id===v); camera.position.copy(z.cam.pos); camera.lookAt(z.cam.look) } else { camera.position.copy(HOME.pos); camera.lookAt(HOME.look) } renderer.render(scene,camera) } window.DONE=true } },500)}
+</script>
+</body>
+</html>
