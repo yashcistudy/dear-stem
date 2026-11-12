@@ -2,6 +2,12 @@
 
 A 3D walk-in version of dear stem, a concept florist and café in Portland. The shop is fictional and its photos were made with AI image tools.
 
+The main page is built from standpoints: one realistic photo per spot in the shop, with a depth map that gives it real depth when you drag. Dots on the photo open the flows or walk you to the next spot. The simple view uses the same photos.
+
+- `/` the shop, built from standpoint photos
+- `/3d/` the earlier 3D room with Poly Haven and Sketchfab models
+- `/stand/` and `/360/` the tests that led here
+
 Built with [three.js](https://threejs.org) 0.170, served as a plain static site. Open `index.html` through any local server, or turn on GitHub Pages for this repository.
 
 ## Folders
@@ -10,6 +16,7 @@ Built with [three.js](https://threejs.org) 0.170, served as a plain static site.
 - `tex/` Poly Haven textures (1K) and the studio HDRI
 - `vendor/` three.js, its loaders, fonts and brand SVGs
 - `img/` bouquet and shop photos used in the panels
+- `stand/` standpoint photos (`stand_NN_name.jpg`) and their depth maps (`stand_NN_depth.png`)
 
 ## Credits
 
