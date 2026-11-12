@@ -129,11 +129,13 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const STANDS = {
   door:    {title:'Inside the door', img:'stand/stand_01_entrance.jpg', depth:'stand/stand_01_depth.png', fov:112, ready:true,
             hots:[{u:.2,v:.66,t:'The cooler',go:'cooler',zone:'cooler'},{u:.47,v:.5,t:'The counter',go:'counter',zone:'counter'},
-                  {u:.86,v:.36,t:'The wrap station',go:'wrap',zone:'wrap'},{u:.65,v:.5,t:'When and where',zone:'door'},{u:.76,v:.66,t:'The café',zone:'cafe'}]},
+                  {u:.8,v:.42,t:'The wrap station',go:'wrap',zone:'wrap'},{u:.65,v:.5,t:'When and where',zone:'door'},{u:.76,v:.66,t:'The café',zone:'cafe'}]},
   cooler:  {title:'The cooler', img:'stand/stand_02_cooler.jpg', depth:'stand/stand_02_depth.png', fov:108, ready:true,
             hots:[{u:.49,v:.62,t:'Ready bouquets',zone:'cooler'},{u:.5,v:.34,t:'Vases and extras',zone:'shelf'},{u:.82,v:.5,t:'The counter',go:'counter',zone:'counter'}]},
-  counter: {title:'The counter', img:'stand/stand_03_counter.jpg', depth:'stand/stand_03_depth.png', fov:108, ready:false, hots:[]},
-  wrap:    {title:'The wrap station', img:'stand/stand_04_wrap.jpg', depth:'stand/stand_04_depth.png', fov:108, ready:false, hots:[]}
+  counter: {title:'The counter', img:'stand/stand_03_counter.jpg', depth:'stand/stand_03_depth.png', fov:104, ready:true,
+            hots:[{u:.66,v:.56,t:'Ask the counter',zone:'counter'},{u:.31,v:.5,t:'Pastries and coffee',zone:'cafe'},{u:.82,v:.5,t:'When and where',zone:'door'},{u:.14,v:.46,t:'The cooler',go:'cooler',zone:'cooler'}]},
+  wrap:    {title:'The wrap station', img:'stand/stand_04_wrap.jpg', depth:'stand/stand_04_depth.png', fov:104, ready:true,
+            hots:[{u:.78,v:.56,t:'Build your own',zone:'wrap'},{u:.72,v:.3,t:'The ribbon wall',zone:'wrap'},{u:.28,v:.6,t:'The café',zone:'cafe'},{u:.38,v:.46,t:'When and where',zone:'door'}]}
 };
 
 const renderer = new THREE.WebGLRenderer({antialias:true});
@@ -176,7 +178,7 @@ const fade=document.getElementById('fade'), back=document.getElementById('back')
 function placeDots(st){
   dots.forEach(d=>d.el.remove());
   dots = st.hots.map(h=>{ const canGo = h.go && STANDS[h.go].ready; const b=document.createElement('button'); b.type='button'; b.className='hot'+(canGo?' go':'');
-    b.innerHTML=`<i></i><b>${canGo?'Go to ':''}${h.t.replace(/^The /,canGo?'the ':'The ')}</b>`; b.setAttribute('aria-label',(canGo?'Go to ':'Open ')+h.t);
+    b.innerHTML=`<i></i><b>${canGo?'Go to ':''}${h.t.replace(/^The /,canGo?'the ':'The ')}</b>`; b.setAttribute('aria-label',(canGo?'Go to '+h.t.replace(/^The /,'the '):'Open '+h.t));
     b.onclick=()=> canGo ? goTo(h.go) : openZone(h.zone); document.body.appendChild(b); return {el:b,p3:h.p3} });
 }
 async function goTo(id){
@@ -255,7 +257,7 @@ addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('op
 
 // ---------- simple view: the same photos, flat ----------
 const simpleGrid=document.getElementById('simpleGrid');
-const SV=[['counter','Ask the counter','Four questions, three bouquets','stand/stand_01_entrance.jpg','45% 52%',2.4],['cooler','Shop the cooler','Ready bouquets, real heights','stand/stand_02_cooler_master.jpg','50% 70%',1.5],['wrap','Build your own','Pick every stem, paper and ribbon','stand/stand_01_entrance.jpg','90% 45%',2.6],['door','When and where','Delivery or pickup, and the day','stand/stand_01_entrance.jpg','66% 50%',3],['shelf','Vases and extras','Real sizes, next to your bouquet','stand/stand_02_cooler_master.jpg','50% 18%',1.8],['cafe','Visit and café','Open every day, 8 to 6','stand/stand_01_entrance.jpg','76% 72%',2.6]];
+const SV=[['counter','Ask the counter','Four questions, three bouquets','stand/stand_03_counter_master.jpg','55% 55%',1.3],['cooler','Shop the cooler','Ready bouquets, real heights','stand/stand_02_cooler_master.jpg','50% 70%',1.5],['wrap','Build your own','Pick every stem, paper and ribbon','stand/stand_04_wrap_master.jpg','80% 50%',1.4],['door','When and where','Delivery or pickup, and the day','stand/stand_01_entrance.jpg','66% 50%',3],['shelf','Vases and extras','Real sizes, next to your bouquet','stand/stand_02_cooler_master.jpg','50% 18%',1.8],['cafe','Visit and café','Open every day, 8 to 6','stand/stand_04_wrap_master.jpg','18% 70%',2]];
 simpleGrid.innerHTML=`<div style="grid-column:1/-1;margin-bottom:18px"><p class="q" style="font-size:26px">The same shop, flat.</p></div><div style="grid-column:1/-1" class="rail"></div>`+SV.map(([id,t,s,img,pos,z],i)=>`<div class="cell"><div class="thr" style="height:${[26,52,36,44,30,58][i]}px"></div><div class="hook"></div><article><div class="ph"><img src="${img}" alt="" style="transform:scale(${z});transform-origin:${pos}" loading="lazy"></div><div><h3>${t}</h3><span class="muted" style="font-size:14px">${s}</span><button class="btn ghost" data-open="${id}" style="margin-top:6px">Open</button></div></article></div>`).join('');
 simpleGrid.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openZone(b.dataset.open)});
 const tog=document.getElementById('viewToggle');
