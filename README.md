@@ -5,6 +5,7 @@ A 3D walk-in version of dear stem, a concept florist and café in Portland. The 
 The main page is built from standpoints: one realistic photo per spot in the shop, with a depth map that gives it real depth when you drag. Dots on the photo open the flows or walk you to the next spot. The simple view uses the same photos.
 
 - `/` the shop, built from standpoint photos
+- `/build/` build your own: every stem is two photo cards crossed in an X, so the bouquet turns. Side photos (`sprites/stem_NAME_side.webp`) are picked up automatically when added; until then the front photo stands in.
 - `/3d/` the earlier 3D room with Poly Haven and Sketchfab models
 - `/stand/` and `/360/` the tests that led here
 

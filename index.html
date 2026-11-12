@@ -234,7 +234,7 @@ const Z={
  wrap:()=>`<button class="close" aria-label="Close" data-close>×</button><p class="lab">The wrap station</p><h2 class="ct" style="font-size:44px">Build your own</h2>
   <p style="margin:0">Choose each stem from the cooler rail, then the paper and a ribbon from our wall. The preview stands next to a real hand, so the size is never a guess.</p>
   <img src="img/shop_wrap-station.jpg" alt="The ribbon wall at the wrap station" style="width:100%;aspect-ratio:3/2;object-fit:cover;border:1px solid var(--line)">
-  <button class="btn">Start building</button>`,
+  <a class="btn" href="build/" style="text-decoration:none">Start building</a>`,
  shelf:()=>`<button class="close" aria-label="Close" data-close>×</button><p class="lab">The shelf</p><h2 class="ct" style="font-size:44px">Vases and extras</h2>
   <p style="margin:0">Add a vase and see your bouquet standing in it at its real size. The shortest is 20 cm and the tallest is 53 cm.</p>
   <button class="btn ghost">Browse vases</button>`,
@@ -251,7 +251,7 @@ panel.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)retu
   if(t.dataset.close!==undefined) return closePanel();
   if(t.dataset.mode){S.mode=t.dataset.mode;panelIn.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-checked',b===t))}
   if(t.dataset.day){S.day=t.dataset.day;panelIn.querySelectorAll('[data-day]').forEach(b=>b.setAttribute('aria-checked',b===t))}
-  if(t.dataset.go!==undefined){S.zip=(panelIn.querySelector('#zip').value||'97214').trim();S.set=true;document.getElementById('chipText').innerHTML=`${S.mode==='pickup'?'Pickup':S.zip} · ${S.day.toLowerCase()} <span class="full" style="color:#6B5463;text-decoration:underline">change</span>`;closePanel()}});
+  if(t.dataset.go!==undefined){S.zip=(panelIn.querySelector('#zip').value||'97214').trim();S.set=true;try{sessionStorage.setItem('ds-where',JSON.stringify(S))}catch(e){};document.getElementById('chipText').innerHTML=`${S.mode==='pickup'?'Pickup':S.zip} · ${S.day.toLowerCase()} <span class="full" style="color:#6B5463;text-decoration:underline">change</span>`;closePanel()}});
 document.getElementById('chip').addEventListener('click',()=>openZone('door'));
 addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('open'))closePanel()});
 

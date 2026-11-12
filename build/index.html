@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dear stem · build your own</title>
+<link rel="icon" href="../vendor/monogram_plum.svg" type="image/svg+xml">
+<style>
+@font-face{font-family:Jost;font-weight:300;src:url(../vendor/jost-latin-300-normal.woff2) format('woff2')}
+@font-face{font-family:Jost;font-weight:400;src:url(../vendor/jost-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:Jost;font-weight:500;src:url(../vendor/jost-latin-500-normal.woff2) format('woff2')}
+@font-face{font-family:'Homemade Apple';src:url(../vendor/homemade-apple-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Caffe Latte';src:url(../vendor/caffe-latte.woff2) format('woff2')}
+:root{--paper:#FBF8F3;--plum:#3A2233;--ink2:#6B5463;--petal:#F1B9C4;--butter:#F2D98B;--line:rgba(58,34,51,.16)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--paper);color:var(--plum);font-family:Jost,sans-serif}
+button,a{font-family:inherit;color:inherit}
+button{cursor:pointer}
+header{position:sticky;top:0;z-index:5;background:var(--paper)}
+.rail{height:10px;background:url(../vendor/rail.svg) center/100% 100% no-repeat}
+.rule{height:6px;background:url(../vendor/rule.svg) center/100% 100% no-repeat}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 28px}
+.hd img{height:40px;display:block}
+.hd a{font-size:14px}
+.wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(360px,.85fr);min-height:calc(100vh - 70px)}
+#view{position:sticky;top:70px;height:calc(100vh - 70px);background:linear-gradient(#F6EDE6,#FBF8F3 70%)}
+#view canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#view canvas:active{cursor:grabbing}
+.vtools{position:absolute;left:20px;bottom:20px;display:flex;gap:8px;align-items:center}
+.vtools button{background:var(--paper);border:1px solid var(--plum);min-height:40px;padding:0 14px;font-size:14px}
+.vtools button[aria-pressed=true]{background:var(--plum);color:var(--paper)}
+.vtools span{font-size:13px;color:var(--ink2);margin-left:6px}
+.guide{position:absolute;left:20px;top:20px;display:flex;gap:12px;align-items:flex-start;max-width:380px}
+.guide .face{width:56px;height:56px;border-radius:50%;border:1px solid var(--plum);background:var(--paper) url(../vendor/monogram_plum.svg) center/60% no-repeat;flex:none;overflow:hidden}
+.guide .face img{width:100%;height:100%;object-fit:cover;display:block}
+.guide p{margin:0;background:var(--paper);border:1px solid var(--line);padding:10px 14px;font-family:'Homemade Apple',cursive;font-size:15px;line-height:1.6}
+.side{padding:22px 28px 140px;display:flex;flex-direction:column;gap:26px}
+.ct{font-family:'Caffe Latte',serif;font-weight:400;margin:0;line-height:1.05;font-size:44px;white-space:nowrap}
+.lab{font-size:13px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;margin:0 0 10px}
+.muted{color:var(--ink2)}
+.stems{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stem{background:#fff;border:1px solid var(--line);padding:8px 8px 10px;display:flex;flex-direction:column;gap:4px;position:relative}
+.stem.on{border-color:var(--plum)}
+.stem .pic{height:120px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.stem .pic img{height:100%;width:100%;object-fit:contain}
+.stem b{font-weight:500;font-size:14px;line-height:1.25}
+.stem span{font-size:12px;color:var(--ink2)}
+.qty{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
+.qty button{width:34px;height:34px;border:1px solid var(--plum);background:var(--paper);font-size:18px;line-height:1}
+.qty output{font-weight:500;min-width:20px;text-align:center}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.pick{background:#fff;border:1px solid var(--line);min-height:52px;padding:6px 14px 6px 6px;display:flex;align-items:center;gap:10px;font-size:15px}
+.pick i{width:38px;height:38px;border:1px solid var(--line);display:block}
+.pick[aria-checked=true]{border-color:var(--plum);box-shadow:inset 0 0 0 1px var(--plum)}
+textarea{width:100%;min-height:90px;font-family:'Homemade Apple',cursive;font-size:16px;line-height:1.7;color:var(--plum);background:#fff;border:1px solid var(--line);padding:12px}
+.starts{display:flex;gap:8px;flex-wrap:wrap}
+.starts button{background:var(--paper);border:1px solid var(--line);padding:6px 10px;font-size:13px}
+.sum{position:fixed;right:0;bottom:0;width:calc(100% * .85 / 2);min-width:360px;background:var(--paper);border-top:1px solid var(--plum);padding:14px 28px 18px;display:flex;flex-direction:column;gap:10px;z-index:4}
+.meter{height:8px;background:var(--line);position:relative}
+.meter i{position:absolute;left:0;top:0;bottom:0;background:var(--plum);transition:width .3s}
+.meter em{position:absolute;top:-3px;width:2px;height:14px;background:var(--ink2)}
+.sumrow{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.sumrow b{font-weight:500;font-size:20px}
+#fit{font-size:14px;min-height:20px}
+.btn{background:var(--plum);color:var(--paper);border:1.5px solid var(--plum);font-weight:500;font-size:16px;min-height:50px;padding:0 22px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.btn[disabled]{opacity:.4;cursor:default}
+#done{position:fixed;inset:0;background:rgba(251,248,243,.94);z-index:9;display:none;align-items:center;justify-content:center;padding:20px}
+#done .box{background:var(--paper);border:1px solid var(--plum);max-width:440px;padding:26px;display:flex;flex-direction:column;gap:12px}
+#done .q{font-family:'Homemade Apple',cursive;font-size:22px;margin:0}
+@media (max-width:860px){
+ .wrap{grid-template-columns:1fr}
+ #view{position:relative;top:0;height:52vh}
+ .guide{right:12px;left:12px;top:12px}.guide .face{width:44px;height:44px}.guide p{font-size:13px}
+ .side{padding:18px 16px 170px}
+ .stems{grid-template-columns:repeat(2,1fr)}
+ .sum{width:100%;min-width:0;padding:12px 16px 14px}
+ .hd{padding:6px 14px}.hd img{height:32px}
+}
+@media (prefers-reduced-motion:reduce){.meter i{transition:none}}
+</style>
+<script type="importmap">{"imports":{"three":"../vendor/three.module.min.js"}}</script>
+</head>
+<body>
+<header><div class="rail"></div><div class="hd"><a href="../"><img src="../vendor/logo-one-line_plum.svg" alt="dear stem, back to the shop"></a><a href="../">← Back to the shop</a></div><div class="rule"></div></header>
+<main class="wrap">
+ <section id="view" aria-label="Your bouquet. Drag to turn it.">
+  <div class="guide"><div class="face" id="face"></div><p id="say">Start with one you love. I'll tell you if it's getting crowded.</p></div>
+  <div class="vtools"><button id="vFront" aria-pressed="true">Front</button><button id="vSide" aria-pressed="false">Side</button><span>Drag to turn it</span></div>
+ </section>
+ <section class="side">
+  <div><p class="lab">Build your own</p><h1 class="ct">Pick every stem</h1></div>
+  <div><p class="lab">1 · Stems</p><div class="stems" id="stems"></div><p class="muted" style="font-size:13px;margin:10px 0 0">Each stem is shown at its real size, next to a hand.</p></div>
+  <div><p class="lab">2 · The cone</p><div class="row" id="cones" role="radiogroup" aria-label="Paper cone"></div></div>
+  <div><p class="lab">3 · Ribbon</p><div class="row" id="ribbons" role="radiogroup" aria-label="Ribbon"></div></div>
+  <div><p class="lab">4 · The card</p><textarea id="card" maxlength="180" placeholder="Write it here. We copy it out by hand."></textarea>
+   <p class="muted" style="font-size:13px;margin:8px 0 6px">Need a start?</p><div class="starts" id="starts"></div></div>
+ </section>
+</main>
+<div class="sum" aria-live="polite">
+ <div class="sumrow"><span id="count">0 stems</span><span class="muted" id="where"></span></div>
+ <div class="meter" aria-hidden="true"><i id="fill" style="width:0"></i><em style="left:36%"></em><em style="left:72%"></em></div>
+ <div id="fit" class="muted">An empty cone. Add a few stems.</div>
+ <div class="sumrow"><b id="total">$0</b><button class="btn" id="add" disabled>Add to bag</button></div>
+</div>
+<div id="done" role="dialog" aria-modal="true" aria-labelledby="doneT"><div class="box"><p class="q" id="doneT">It's in your bag.</p><p style="margin:0" id="doneS"></p><p class="muted" style="margin:0;font-size:14px">Before it leaves, we send you a photo of the real bouquet to approve.</p><div class="row"><a class="btn" href="../">Back to the shop</a><button class="btn" style="background:var(--paper);color:var(--plum)" id="again">Keep building</button></div></div></div>
+
+<script type="module">
+import * as THREE from 'three';
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const S = (()=>{ try{ return JSON.parse(sessionStorage.getItem('ds-where')||'null') }catch(e){ return null } })();
+document.getElementById('where').textContent = S ? `${S.mode==='pickup'?'Pickup':'To '+S.zip} · ${S.day.toLowerCase()}` : '';
+
+// stems: real heights in cm come from the sprite scale (30 px = 1 cm)
+// role sets where it goes in the bouquet: focal in the middle, filler around, green at the edge
+const STEMS = [
+ ['rose-garden_blush','Garden rose','blush',7,'focal',44],['rose-standard_red','Rose','red',4,'focal',49],['rose-standard_blush','Rose','blush',4,'focal',49],
+ ['rose-standard_white','Rose','white',4,'focal',49],['peony_blush','Peony','blush',9,'focal',39],['hydrangea_white','Hydrangea','white',8,'focal',39],
+ ['ranunculus_peach','Ranunculus','peach',4,'focal',34],['ranunculus_white','Ranunculus','white',4,'focal',34],['rose-spray_blush','Spray rose','blush',6,'filler',49],
+ ['carnation_blush','Carnation','blush',3,'filler',49],['lisianthus_white','Lisianthus','white',5,'filler',44],['snapdragon_white','Snapdragon','white',4,'spike',44],
+ ['gypsophila_white',"Baby's breath",'white',3,'filler',59],['eucalyptus-silver-dollar_grey-green','Eucalyptus','silver dollar',3,'green',44],['ruscus-italian_green-glossy','Ruscus','glossy green',3,'green',53]
+].map(([id,name,col,price,role,cm])=>({id,name,col,price,role,cm,n:0,src:`sprites/stem_${id}_front.webp`,side:`sprites/stem_${id}_side.webp`}));
+const CONES = [{id:'paper',name:'Paper',color:0xEFE5D6,swatch:'#EFE5D6',price:6},{id:'petal',name:'Petal',color:0xF0B6C1,swatch:'#F1B9C4',price:6}];
+const RIBBONS = [{id:'petal',name:'Petal',src:'sprites/ribbon-bow_petal_front.webp',swatch:'#F1B9C4'},{id:'butter',name:'Butter',src:'sprites/ribbon-bow_butter_front.webp',swatch:'#F2D98B'},{id:'plum',name:'Plum',src:'sprites/ribbon-bow_plum_front.webp',swatch:'#3A2233'}];
+const STARTS = ['Thinking of you today.','Happy birthday. Have the loveliest day.','I am so proud of you.','Sorry, and I love you.'];
+let cone = CONES[0], ribbon = RIBBONS[0];
+
+// ---------- the picker ----------
+const stemsEl = document.getElementById('stems');
+stemsEl.innerHTML = STEMS.map((s,i)=>`<div class="stem" id="st${i}"><div class="pic"><img src="${s.src}" alt="" loading="lazy"></div><b>${s.name}</b><span>${s.col} · $${s.price} · ${s.cm} cm</span>
+ <div class="qty"><button aria-label="One less ${s.name}, ${s.col}" data-i="${i}" data-d="-1">−</button><output id="q${i}">0</output><button aria-label="One more ${s.name}, ${s.col}" data-i="${i}" data-d="1">+</button></div></div>`).join('');
+stemsEl.addEventListener('click',e=>{ const b=e.target.closest('button[data-i]'); if(!b) return; const s=STEMS[+b.dataset.i]; const n=Math.max(0,Math.min(12,s.n+ +b.dataset.d)); if(n===s.n) return; s.n=n; update(s, +b.dataset.d>0) });
+function radios(el, list, cur, set){ el.innerHTML=list.map(o=>`<button class="pick" role="radio" aria-checked="${o===cur}" data-id="${o.id}"><i style="background:${o.swatch}"></i>${o.name}</button>`).join('');
+  el.onclick=e=>{ const b=e.target.closest('[data-id]'); if(!b) return; el.querySelectorAll('[data-id]').forEach(x=>x.setAttribute('aria-checked',x===b)); set(list.find(o=>o.id===b.dataset.id)) } }
+radios(document.getElementById('cones'),CONES,cone,o=>{cone=o; coneMat.color.setHex(o.color); update()});
+radios(document.getElementById('ribbons'),RIBBONS,ribbon,o=>{ribbon=o; setBow()});
+const card=document.getElementById('card');
+document.getElementById('starts').innerHTML=STARTS.map(t=>`<button>${t}</button>`).join('');
+document.getElementById('starts').onclick=e=>{ const b=e.target.closest('button'); if(b) card.value=b.textContent };
+
+// ---------- the 3D bouquet: each stem is two photo cards crossed in an X ----------
+const view=document.getElementById('view');
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.outputColorSpace=THREE.SRGBColorSpace;
+view.prepend(renderer.domElement);
+
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(30,1,0.01,10);
+scene.add(new THREE.HemisphereLight(0xFFF4EC,0xD9B8A8,1.6)); const key=new THREE.DirectionalLight(0xFFE9D6,1.6); key.position.set(-0.6,1,0.8); scene.add(key);
+const CM=0.01, bouquet=new THREE.Group(); scene.add(bouquet);
+// the cone: 37 cm tall, 25 cm across the top, open, made of matte card
+const CONE_H=37*CM, CONE_R=12.5*CM;
+const coneMat=new THREE.MeshStandardMaterial({color:cone.color,roughness:.95,side:THREE.DoubleSide});
+const coneMesh=new THREE.Mesh(new THREE.CylinderGeometry(CONE_R,0.012,CONE_H,48,1,true),coneMat); coneMesh.position.y=CONE_H/2; bouquet.add(coneMesh);
+// a fold line at the rim so the card reads as paper
+const rim=new THREE.Mesh(new THREE.TorusGeometry(CONE_R,0.0018,6,64),new THREE.MeshStandardMaterial({color:0xffffff,roughness:1,transparent:true,opacity:.6})); rim.rotation.x=Math.PI/2; rim.position.y=CONE_H; bouquet.add(rim);
+const loader=new THREE.TextureLoader(), texCache={};
+function tex(src){ if(!texCache[src]){ texCache[src]=new Promise(res=>loader.load(src,t=>{t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;res(t)},undefined,()=>res(null))) } return texCache[src] }
+// below the rim the paper hides the stems: anything outside the cone and under the rim is not drawn
+function insideCone(mat){ mat.onBeforeCompile=sh=>{ sh.uniforms.uH={value:CONE_H}; sh.uniforms.uR={value:CONE_R};
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vW;').replace('#include <project_vertex>','#include <project_vertex>\nvW=(modelMatrix*vec4(transformed,1.0)).xyz;');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 vW; uniform float uH; uniform float uR;').replace('void main() {','void main() {\n float rr=length(vW.xz); if(rr>uR*max(vW.y,0.0)/uH && vW.y<uH-max(rr-uR,0.0)*0.9) discard;') }; return mat }
+function card2(t,w,h){ return new THREE.Mesh(new THREE.PlaneGeometry(w,h),insideCone(new THREE.MeshBasicMaterial({map:t,transparent:true,alphaTest:.35,side:THREE.DoubleSide,depthWrite:true}))) }
+async function stemMesh(s){
+  const front=await tex(s.src); if(!front) return null;
+  const side=(await tex(s.side))||front; // no side photo yet: the front photo stands in for it
+  const img=front.image, h=s.cm*CM, w=h*img.width/img.height;
+  const g=new THREE.Group(); const a=card2(front,w,h), b=card2(side,w*(side===front?1:side.image.width/side.image.height*img.height/img.width),h); b.rotation.y=Math.PI/2;
+  a.position.y=b.position.y=h/2; g.add(a,b); g.userData.h=h; return g }
+const placed=[]; // one entry per stem in the bouquet
+const golden=Math.PI*(3-Math.sqrt(5));
+// every stem rises from the middle of the cone and leans no further than the cone wall,
+// so the paper hides the stems and the heads open just above the rim, like a real handled cone
+const MAXLEAN=0.5;
+function layout(){
+  const order=['focal','spike','filler','green']; const list=placed.slice().sort((p,q)=>order.indexOf(p.s.role)-order.indexOf(q.s.role));
+  const N=list.length;
+  list.forEach((p,i)=>{
+    const t=N>1?Math.sqrt(i/(N-1)):0, ang=i*golden+0.4;
+    const lean=Math.min(MAXLEAN,(0.04+t*0.85*MAXLEAN)*(p.s.role==='green'?1.15:1));
+    const lift={focal:12,spike:17,filler:12,green:9}[p.s.role]*CM+(1-t)*6*CM;
+    const h=p.m.userData.h, topY=CONE_H+lift;
+    p.target={lean,ang,y:topY-h*Math.cos(lean)};
+  }) }
+function poseStem(p,k){ const T=p.target; if(!T) return; p.cur=p.cur||{lean:T.lean,ang:T.ang,y:T.y+0.3};
+  p.cur.lean+=(T.lean-p.cur.lean)*k; p.cur.ang+=(T.ang-p.cur.ang)*k; p.cur.y+=(T.y-p.cur.y)*k;
+  const dir=new THREE.Vector3(Math.sin(p.cur.lean)*Math.cos(p.cur.ang),Math.cos(p.cur.lean),-Math.sin(p.cur.lean)*Math.sin(p.cur.ang));
+  p.m.position.set(0,p.cur.y,0); p.m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir); p.m.rotateY(p.cur.ang) }
+async function update(s,added){
+  if(s){ const have=placed.filter(p=>p.s===s);
+    if(have.length<s.n){ for(let k=have.length;k<s.n;k++){ const m=await stemMesh(s); if(!m) continue; bouquet.add(m); placed.push({s,m}) } }
+    else if(have.length>s.n){ have.slice(s.n).forEach(p=>{ bouquet.remove(p.m); placed.splice(placed.indexOf(p),1) }) }
+    const i=STEMS.indexOf(s); document.getElementById('q'+i).textContent=s.n; document.getElementById('st'+i).classList.toggle('on',s.n>0) }
+  layout(); summary(s,added) }
+// the bow sits on the front of the cone, always facing you
+const bow=new THREE.Sprite(new THREE.SpriteMaterial({transparent:true})); bow.position.set(0,CONE_H*0.6,CONE_R*0.6+0.035); bow.scale.set(9*CM,11*CM,1); scene.add(bow);
+async function setBow(){ const t=await tex(ribbon.src); if(t){ bow.material.map=t; bow.material.needsUpdate=true; bow.scale.set(9*CM,9*CM*t.image.height/t.image.width,1) } }
+setBow();
+// a real hand beside the bouquet, 18 cm tall, so the size is never a guess
+const hand=new THREE.Sprite(new THREE.SpriteMaterial({transparent:true})); scene.add(hand);
+tex('sprites/scale_hand_front.webp').then(t=>{ if(!t) return; hand.material.map=t; hand.material.needsUpdate=true; const h=18*CM; hand.scale.set(h*t.image.width/t.image.height,h,1); hand.position.set(-0.27,h/2,0.06) });
+
+// ---------- summary and fit check, in the counter's voice ----------
+const say=document.getElementById('say'), fit=document.getElementById('fit');
+function summary(s,added){
+  const n=placed.length, total=STEMS.reduce((a,x)=>a+x.n*x.price,0)+(n?cone.price:0);
+  document.getElementById('count').textContent=`${n} stem${n===1?'':'s'}`;
+  document.getElementById('total').textContent=`$${total}`;
+  document.getElementById('fill').style.width=Math.min(100,n/25*100)+'%';
+  document.getElementById('add').disabled=n<3;
+  const greens=STEMS.filter(x=>x.role==='green').reduce((a,x)=>a+x.n,0), focal=STEMS.filter(x=>x.role==='focal').reduce((a,x)=>a+x.n,0);
+  let msg, line;
+  if(n===0){ msg='An empty cone. Add a few stems.'; line="Start with one you love. I'll tell you if it's getting crowded." }
+  else if(n<3){ msg='Three stems at least, so it stands up in the cone.'; line=added?`Lovely. ${s.name} is a good start.`:'Add a couple more.' }
+  else if(n<9){ msg='Looks a little thin for this cone. Around 9 to 18 stems fills it.'; line='A few more and it will feel full.' }
+  else if(n>18){ msg='Getting crowded. Past 18 stems, the heads start to hide each other.'; line='Hmm, getting crowded. Maybe swap one instead of adding.' }
+  else if(focal>0&&greens===0){ msg='Fills the cone well. One or two greens would give it shape.'; line='Some eucalyptus would loosen it up.' }
+  else { msg='Fills the cone well.'; line='That looks just right to me.' }
+  fit.textContent=msg; say.textContent=line }
+document.getElementById('add').onclick=()=>{ const n=placed.length; document.getElementById('doneS').textContent=`${n} stems in a ${cone.name.toLowerCase()} cone with a ${ribbon.name.toLowerCase()} ribbon${card.value.trim()?', and your card':''}.`; document.getElementById('done').style.display='flex' };
+document.getElementById('again').onclick=()=>document.getElementById('done').style.display='none';
+
+// ---------- turning it ----------
+let yaw=0.35, vel=0, drag=null, view90=0;
+const el=renderer.domElement;
+el.addEventListener('pointerdown',e=>{drag={x:e.clientX}; el.setPointerCapture(e.pointerId)});
+el.addEventListener('pointermove',e=>{ if(!drag) return; const dx=e.clientX-drag.x; drag.x=e.clientX; vel=dx*0.008; yaw+=vel });
+el.addEventListener('pointerup',()=>drag=null);
+const vF=document.getElementById('vFront'), vS=document.getElementById('vSide');
+vF.onclick=()=>{view90=0;vF.setAttribute('aria-pressed',true);vS.setAttribute('aria-pressed',false)};
+vS.onclick=()=>{view90=1;vF.setAttribute('aria-pressed',false);vS.setAttribute('aria-pressed',true)};
+let goal=null; [vF,vS].forEach(b=>b.addEventListener('click',()=>{goal=view90?Math.PI/2:0}));
+function size(){ const r=view.getBoundingClientRect(); renderer.setSize(r.width,r.height); camera.aspect=r.width/r.height; camera.updateProjectionMatrix() }
+addEventListener('resize',size); size();
+let last=performance.now();
+renderer.setAnimationLoop(now=>{ const dt=Math.min(0.1,(now-last)/1000); last=now; const k=reduce?1:1-Math.exp(-dt*7);
+  if(goal!==null){ const d=Math.atan2(Math.sin(goal-yaw),Math.cos(goal-yaw)); yaw+=d*k; if(Math.abs(d)<0.002) goal=null; vel=0 }
+  else if(!drag){ vel*=0.93; yaw+=vel }
+  bouquet.rotation.y=yaw;
+  placed.forEach(p=>poseStem(p,k));
+  // frame the bouquet: taller bouquets pull the camera back a little
+  const tallest=placed.reduce((m,p)=>Math.max(m,p.m.position.y+p.m.userData.h),CONE_H+0.1);
+  const dist=Math.max(1.35,tallest*2.1)*(camera.aspect<1?1.25:1);
+  camera.position.set(0.04,tallest*0.62,dist); camera.lookAt(-0.03,tallest*0.5,0);
+  renderer.render(scene,camera) });
+window.__builder={STEMS,update};
+window.DONE=true;
+</script>
+</body>
+</html>
