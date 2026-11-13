@@ -6,15 +6,15 @@ The main page is built from standpoints: one realistic photo per spot in the sho
 
 - `/` the shop, built from standpoint photos
 - `/build/` build your own: every stem is two photo cards crossed in an X, so the bouquet turns. Side photos (`sprites/stem_NAME_side.webp`) are picked up automatically when added; until then the front photo stands in.
-- `/3d/` the earlier 3D room with Poly Haven and Sketchfab models
+- `/3d/` (removed Nov 14) the earlier 3D room with Poly Haven and Sketchfab models
 - `/stand/` and `/360/` the tests that led here
 
 Built with [three.js](https://threejs.org) 0.170, served as a plain static site. Open `index.html` through any local server, or turn on GitHub Pages for this repository.
 
 ## Folders
 
-- `models/` glTF binary models, resized and compressed with meshopt
-- `tex/` Poly Haven textures (1K) and the studio HDRI
+- `models/` (removed Nov 14) glTF binary models, resized and compressed with meshopt
+- `tex/` (removed Nov 14) Poly Haven textures (1K) and the studio HDRI
 - `vendor/` three.js, its loaders, fonts and brand SVGs
 - `img/` bouquet and shop photos used in the panels
 - `stand/` standpoint photos (`stand_NN_name.jpg`) and their depth maps (`stand_NN_depth.png`)
@@ -54,3 +54,8 @@ Built with [three.js](https://threejs.org) 0.170, served as a plain static site.
 - [Oak Veneer 01 (texture)](https://polyhaven.com/a/oak_veneer_01)
 
 Models were resized and compressed for the web. The floor and wall textures were recoloured to match the brand. CC BY models need this credit kept with the project.
+
+
+## Nov 14 cleanup
+The first 3D room (/3d), the 360 test and the standpoint test page were removed from the live site to keep it light.
+They live in the git history (commit e56ebcf) and in dear-stem-3d-room-version.zip.

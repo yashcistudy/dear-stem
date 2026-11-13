@@ -24,7 +24,7 @@ header{position:sticky;top:0;z-index:6;background:var(--paper)}
 .wrap{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(360px,.8fr)}
 /* the stage: the worktop seen from above, then the bouquet standing at the wrap station */
 #stage{position:sticky;top:72px;height:calc(100vh - 72px);overflow:hidden;background:#C9A57A}
-#room{position:absolute;inset:-20px;background:url(../stand/stand_04_wrap_master.jpg) 70% 50%/cover;filter:blur(7px) saturate(.9);opacity:0;transition:opacity .9s}
+#room{position:absolute;inset:-20px;background:url(../stand/stand_04_wrap_master.webp) 70% 50%/cover;filter:blur(7px) saturate(.9);opacity:0;transition:opacity .9s}
 #room::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(251,248,243,.35),rgba(251,248,243,.15) 60%,rgba(120,80,60,.25))}
 #table{position:absolute;inset:0;background:url(img/scene_worktop_top.webp) center/cover;transition:opacity .8s}
 #sheet{position:absolute;background:url(img/paper_paper.webp) center/cover;box-shadow:0 2px 3px rgba(60,35,20,.18),0 14px 30px rgba(60,35,20,.18);clip-path:polygon(0 0,100% 0,100% 100%,0 100%);transition:clip-path .55s cubic-bezier(.6,0,.3,1),transform .55s}
@@ -37,12 +37,14 @@ header{position:sticky;top:0;z-index:6;background:var(--paper)}
 #glBox canvas:active{cursor:grabbing}
 #mini{position:absolute;right:16px;bottom:16px;width:220px;height:270px;background:rgba(251,248,243,.88);border:1px solid var(--line);display:none}
 #mini p{position:absolute;left:10px;top:8px;margin:0;font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase}
-#stage[data-step="3"] #glBox,#stage[data-step="2"] #glBox{inset:0;opacity:1;pointer-events:auto}
+#stage[data-step="3"] #glBox{inset:0;opacity:1;pointer-events:auto}
 #stage[data-step="3"] #room,#stage[data-step="2"] #room{opacity:1}
-#stage[data-step="3"] #table{opacity:0;pointer-events:none}
+#stage[data-step="3"] #table,#stage[data-step="2"] #table{opacity:0;pointer-events:none}
 .guide{position:absolute;left:20px;top:20px;display:flex;gap:12px;align-items:flex-start;max-width:400px;z-index:2}
 .guide .face{width:56px;height:56px;border-radius:50%;border:1px solid var(--plum);background:var(--paper) url(../vendor/monogram_plum.svg) center/60% no-repeat;flex:none;overflow:hidden}
-.guide .face img{width:100%;height:100%;object-fit:cover;display:block}
+.guide .face.on{background-size:cover;background-position:center}
+#wrapper{position:absolute;left:50%;bottom:0;height:88%;max-width:94%;object-fit:contain;object-position:bottom;opacity:0;transform:translate(-50%,16px);transition:opacity .5s,transform .7s;pointer-events:none;z-index:1}
+#stage[data-step="2"] #wrapper{opacity:1;transform:translate(-50%,0)}
 .guide p{margin:0;background:var(--paper);border:1px solid var(--line);padding:10px 14px;font-family:'Caffe Latte',Jost,sans-serif;font-size:22px;line-height:1.3;letter-spacing:.01em}
 .steps{position:absolute;left:20px;bottom:18px;display:flex;gap:6px;margin:0;padding:0;list-style:none;z-index:2}
 .steps li{background:rgba(251,248,243,.9);border:1px solid var(--line);padding:6px 12px;font-size:13px}
@@ -103,6 +105,8 @@ textarea{min-height:90px}
 }
 @media (prefers-reduced-motion:reduce){.lay,#sheet,#glBox,#room,#table,.meter i{transition:none}}
 </style>
+<link rel="preload" as="image" href="img/scene_worktop_top.webp">
+<link rel="modulepreload" href="../vendor/three.module.min.js">
 <script type="importmap">{"imports":{"three":"../vendor/three.module.min.js"}}</script>
 </head>
 <body>
@@ -113,6 +117,7 @@ textarea{min-height:90px}
   <div id="table"><div id="sheet"></div><div id="lays"></div></div>
   <div id="mini" aria-hidden="true"><p>From the front</p></div>
   <div id="glBox"></div>
+  <img id="wrapper" src="../img/owner/half_wrapping.webp" alt="">
   <div class="guide"><div class="face" id="face"></div><p id="say" aria-live="polite">Pick a stem you love and I&#39;ll lay it on the paper.</p></div>
   <ol class="steps" aria-label="Steps"><li data-s="1" class="on">1 Making it</li><li data-s="2">2 Wrap it</li><li data-s="3">3 Checking it</li></ol>
   <p id="dragHint">Drag to turn it</p>
@@ -143,7 +148,7 @@ textarea{min-height:90px}
  <div id="fullBox"><div class="meter" aria-hidden="true"><i id="fill" style="width:0"></i><em style="left:37.5%"></em><em style="left:84%"></em></div><div class="mlab"><span>thin</span><span>full</span><span>crowded</span></div><div id="fit" class="muted" aria-live="polite">Empty paper.</div></div>
  <div class="sumrow"><b id="total">$0</b><button class="btn" id="next" disabled>Wrap it</button></div>
 </div>
-<div id="done" role="dialog" aria-modal="true" aria-labelledby="doneT"><div class="box"><img id="doneImg" alt=""><p class="ct" style="font-size:30px" id="doneT">It&#39;s in your bag</p><p style="margin:0" id="doneS"></p><p class="muted" style="margin:0;font-size:14px">Before it leaves, we send you a photo of the real bouquet to approve.</p><div class="row"><a class="btn" href="../#bag">See your bag</a><button class="btn ghost" id="again">Keep building</button></div></div></div>
+<div id="done" role="dialog" aria-modal="true" aria-labelledby="doneT"><div class="box"><div style="display:flex;gap:14px;align-items:flex-end"><img id="doneImg" alt="" style="flex:1;min-width:0"><img src="../img/owner/full_onitsway.webp" alt="" style="height:240px;width:auto;flex:none;background:none"></div><p class="ct" style="font-size:30px" id="doneT">It&#39;s in your bag</p><p style="margin:0" id="doneS"></p><p class="muted" style="margin:0;font-size:14px">Before it leaves, we send you a photo of the real bouquet to approve.</p><div class="row"><a class="btn" href="../#bag">See your bag</a><button class="btn ghost" id="again">Keep building</button></div></div></div>
 
 <script type="module">
 import * as THREE from 'three';
@@ -162,7 +167,7 @@ const STEMS = [
  ['gypsophila_white',"Baby's breath",'white',3,'filler',59,15],['eucalyptus-silver-dollar_grey-green','Eucalyptus','silver dollar',3,'green',44,14],['ruscus-italian_green-glossy','Ruscus','glossy green',3,'green',53,12]
 ].map(([id,name,col,price,role,L,w])=>({id,name,col,price,role,L,w,lay:`img/lay_${id}.webp`}));
 const byId = Object.fromEntries(STEMS.map(s=>[s.id,s]));
-const GROUPS = [['focal','The main flowers'],['filler','In between'],['spike','In between'],['green','Greens']];
+const _unused_groups = [['focal','The main flowers'],['filler','In between'],['spike','In between'],['green','Greens']];
 // size sets the cone and how wide the dome of heads can spread
 const SIZES = [{id:'petite',name:'Petite',stems:8,h:40,k:.82},{id:'classic',name:'Classic',stems:12,h:50,k:1},{id:'grand',name:'Grand',stems:18,h:60,k:1.16}];
 const PAPERS = [{id:'paper',name:'Cream paper',swatch:'#EFE5D6',price:6},{id:'petal',name:'Petal paper',swatch:'#F1B9C4',price:6}];
@@ -248,50 +253,88 @@ function photoPlane(src,wCm,anchorY,z,order){ const m=new THREE.Mesh(new THREE.P
   m.renderOrder=order; m.position.z=z; m.visible=false;
   tex(src).then(t=>{ if(!t) return; m.material.map=t; m.material.needsUpdate=true; const w=wCm||t.image.width/PX, h=w*t.image.height/t.image.width; m.scale.set(w,h,1); m.userData={w,h}; m.position.y=anchorY+h/2; m.visible=true; frame() }); return m }
 let C={}; // cone geometry in cm
-let coneBack, coneFront, bundle, bow, hand;
-function buildCone(){ const k=size.k; [coneBack,coneFront,bundle].forEach(m=>m&&fixed.remove(m));
-  C={k,rimY:27*k,R:12.6*k,top:size.h-12};
-  coneBack=photoPlane(`sprites/cone_${paper.id}_m_back.webp`,25.4*k,0,-C.R*.8,0); coneBack.material.color.setHex(0xE9E1D8);
-  coneFront=photoPlane(`sprites/cone_${paper.id}_m_front.webp`,25.2*k,0,C.R*.75,3);
-  bundle=photoPlane('sprites/stem-bundle_m_front.webp',5.6*k,-13*k,0,1);
-  fixed.add(coneBack,coneFront,bundle); setBow() }
-function setBow(){ if(bow) fixed.remove(bow); bow=photoPlane(`sprites/ribbon-bow_${ribbon.id}_front.webp`,10*C.k,C.rimY*.18,C.R*.75+.6,4); fixed.add(bow) }
+// light fixed to the camera, from the upper left like the photos, so turning never breaks the lighting
+scene.add(new THREE.HemisphereLight(0xFFF8F2,0xC9AE9C,2.6));
+const sun=new THREE.DirectionalLight(0xFFF1E4,2.4); sun.position.set(-40,70,60); scene.add(sun);
+// a real cone rolled from the shop's paper photo: the back stands taller than the front, and it turns with the flowers
+let cone, coneIn, fill, bundle, bow, hand;
+const rimAt=ph=>C.hf+(C.hb-C.hf)*(1-Math.cos(ph))/2;
+const radAt=(y,th)=>{ const t=y/C.hb; return C.r0+(C.R-C.r0)*y/C.hf+(Math.sin(th*5+1.3)*.4+Math.sin(th*11+y*.35)*.2)*t+Math.max(0,y/rimAt(th)-.86)*6+.35*Math.exp(-((wrapPi(th-.7)/.05)**2)) };
+function coneGeo(){ const S=120, Rw=28, pos=[], uv=[], idx=[];
+  for(let j=0;j<=Rw;j++) for(let i=0;i<=S;i++){ const th=i/S*Math.PI*2, y=j/Rw*rimAt(th), r=radAt(y,th);
+    pos.push(r*Math.sin(th),y,r*Math.cos(th)); uv.push(i/S*2.2,y/38) }
+  for(let j=0;j<Rw;j++) for(let i=0;i<S;i++){ const a=j*(S+1)+i, b=a+S+1; idx.push(a,b,a+1,b,b+1,a+1) }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2)); g.setIndex(idx); g.computeVertexNormals(); return g }
+function buildCone(){ const k=size.k; [cone,coneIn,bundle,bow].forEach(m=>m&&m.parent&&m.parent.remove(m));
+  C={k,hf:26*k,hb:34*k,R:12.6*k,r0:1.3*k}; C.rimY=C.hf; C.top=Math.max(size.h-12,C.hb+6);
+  const g=coneGeo();
+  cone=new THREE.Mesh(g,new THREE.MeshStandardMaterial({roughness:.96,side:THREE.FrontSide}));
+  coneIn=new THREE.Mesh(g,new THREE.MeshStandardMaterial({roughness:1,side:THREE.BackSide,color:0xD9CABE}));
+  tex(`img/paper_${paper.id}.webp`).then(t=>{ if(!t) return; t.wrapS=t.wrapT=THREE.RepeatWrapping; cone.material.map=coneIn.material.map=t; cone.material.needsUpdate=coneIn.material.needsUpdate=true; frame() });
+  heads.add(cone,coneIn);
+  // if the shop's cone has been photographed from 8 sides, show the photo and keep the 3D cone only as an invisible wall
+  coneTex(paper.id).then(t=>{ if(!t||t.some(x=>!x)||cone.parent!==heads) return; conePhoto.userData.tex=t; conePhoto.userData.f=-1;
+    cone.material.colorWrite=false; cone.renderOrder=1; coneIn.visible=false; conePhoto.visible=true; frame() });
+  conePhoto.visible=false; cone.material.colorWrite=true; coneIn.visible=true;
+  bundle=photoPlane('sprites/stem-bundle_m_front.webp',5.6*k,-13*k,0,1); fixed.add(bundle); setBow(); layoutHeads() }
+const coneTexs={};
+function coneTex(id){ return coneTexs[id] ||= Promise.all(ANG.map(a=>tex(`img/cone_${id}_${a}.webp`))) }
+const conePhoto=new THREE.Sprite(new THREE.SpriteMaterial({depthTest:false,depthWrite:false})); conePhoto.renderOrder=-1; conePhoto.center.set(.5,0); conePhoto.visible=false; scene.add(conePhoto);
+function poseCone(){ const d=conePhoto.userData; if(!conePhoto.visible||!d.tex) return; const f=((Math.round(wrapPi(yaw)/(Math.PI/4))*DIR)%8+8)%8, t=d.tex[f];
+  if(f!==d.f){ d.f=f; conePhoto.material.map=t; conePhoto.material.needsUpdate=true; conePhoto.scale.set(t.image.width/PX*C.k,t.image.height/PX*C.k,1) } }
+function setBow(){ if(bow&&bow.parent) bow.parent.remove(bow); const y=C.hf*.2; bow=photoPlane(`sprites/ribbon-bow_${ribbon.id}_front.webp`,10*C.k,y-5*C.k,radAt(y,0)+.5,4); bow.material.side=THREE.FrontSide; heads.add(bow); frame() }
 hand=photoPlane('sprites/scale_hand_front.webp',null,-13,0,1); hand.position.x=-30; fixed.add(hand);
 // heads: one sprite per stem, showing the photo taken from the side that faces you
 const hs=new Map(); // u -> {sprite, stem, slot, frame}
 const textures={}; // id -> 8 textures
 function headTex(id){ return textures[id] ||= Promise.all(ANG.map(a=>tex(`img/head_${id}_${a}.webp`))) }
-const stemMat=new THREE.MeshBasicMaterial({color:0x5E7A47});
+const stemMat=new THREE.MeshStandardMaterial({color:0x5E7A47,roughness:.8});
 function makeHead(p){ const s=byId[p.id], mat=new THREE.SpriteMaterial({alphaTest:.5,depthWrite:true,transparent:false}), sp=new THREE.Sprite(mat);
   sp.visible=false; sp.renderOrder=2; sp.center.set(.5,s.role==='green'||s.role==='spike'?.08:.22);
   const stem=new THREE.Mesh(new THREE.CylinderGeometry(.28,.28,1,5),stemMat); stem.visible=false;
-  heads.add(sp,stem); const h={sprite:sp,stem,s,p,frame:-1,tex:null}; hs.set(p.u,h);
+  heads.add(sp,stem); const h={sprite:sp,stem,s,p,frame:-1,tex:null,sc:.92+hash(p.u+11)*.16}; hs.set(p.u,h);
   headTex(s.id).then(t=>{ h.tex=t; h.frame=-1; layoutHeads() }); return h }
 function syncHeads(){ const have=new Set(picked.map(p=>p.u));
   for(const [u,h] of hs) if(!have.has(u)){ heads.remove(h.sprite,h.stem); h.sprite.material.dispose(); hs.delete(u) }
   picked.forEach(p=>{ if(!hs.has(p.u)) makeHead(p) }); layoutHeads() }
-// the dome: heads spread over a cap above the rim, main flowers in the middle, greens round the edge
+// the dome: heads start on a spiral, then settle so they just touch and lean in, like stems held in one hand
 const GOLD=Math.PI*(3-Math.sqrt(5));
-function layoutHeads(){ const order=fanOrder(), N=order.length, tmax=1.15, R=C.R*1.12, Hd=Math.max(4,C.top-C.rimY-5);
-  order.forEach((o,i)=>{ const h=hs.get(o.p.u); if(!h) return;
-    const t=(i+.5)/Math.max(1,N), th=Math.acos(1-t*(1-Math.cos(tmax))), ph=i*GOLD+hash(o.p.u)*.4;
-    const r=R*Math.sin(th)/Math.sin(tmax);
-    let y=C.rimY+1.5+Hd*(Math.cos(th)-Math.cos(tmax))/(1-Math.cos(tmax));
-    if(h.s.role==='green') y-=3; if(h.s.role==='spike') y+=2;
-    h.slot={th,ph,x:r*Math.sin(ph),z:r*Math.cos(ph),y};
-    h.sprite.position.set(h.slot.x,h.slot.y,h.slot.z);
-    // the bit of stem you can see between the heads, from the head down to the rim
-    const top=new THREE.Vector3(h.slot.x,h.slot.y,h.slot.z), base=new THREE.Vector3(0,C.rimY*.3,0), dir=base.clone().sub(top);
-    const f=(h.slot.y-(C.rimY-1))/(h.slot.y-base.y), len=dir.length()*Math.max(0,f);
+function layoutHeads(){ if(!C.hf) return; const order=fanOrder(), N=order.length, Rc=C.R*1.15, Hd=Math.max(4,C.top-C.hf-5);
+  const P=order.map((o,i)=>{ const h=hs.get(o.p.u), g=h&&h.s.role==='green', t=Math.sqrt((i+.5)/Math.max(1,N)), ph=i*GOLD+hash(o.p.u)*.5;
+    return {h, g, x:Rc*.9*t*Math.sin(ph), z:Rc*.9*t*Math.cos(ph), rad:(h?h.s.w*h.sc:8)/2*(g?.75:.95)} });
+  for(let it=0;it<70;it++){
+    for(let a=0;a<P.length;a++) for(let b=a+1;b<P.length;b++){ const A=P[a],B=P[b], dx=B.x-A.x, dz=B.z-A.z, d=Math.hypot(dx,dz)||.01, m=(A.rad+B.rad)*.8;
+      if(d<m){ const q=(m-d)/2/d; A.x-=dx*q; A.z-=dz*q; B.x+=dx*q; B.z+=dz*q } }
+    for(const p of P){ const pull=p.g?.004:.02; p.x*=1-pull; p.z*=1-pull; const r=Math.hypot(p.x,p.z), lim=Rc*(p.g?1.3:1.08); if(r>lim){ p.x*=lim/r; p.z*=lim/r } } }
+  let reach=0;
+  P.forEach(p=>{ const h=p.h; if(!h) return; const rr=Math.min(1.3,Math.hypot(p.x,p.z)/Rc), ph=Math.atan2(p.x,p.z), rim=rimAt(ph);
+    let y=Math.max(rim+1,C.hf+1+Hd*Math.cos(Math.min(1,rr)*Math.PI/2)**.8);
+    if(p.g) y-=2.5; if(h.s.role==='spike') y+=2;
+    h.slot={th:Math.min(1.3,rr*1.15),ph,x:p.x,z:p.z,y,rim}; h.sprite.position.set(p.x,y,p.z); if(!p.g) reach=Math.max(reach,Math.hypot(p.x,p.z));
+    // the bit of stem you can see between the heads, from the head down to the paper
+    const top=new THREE.Vector3(p.x,y,p.z), base=new THREE.Vector3(0,C.hf*.35,0), dir=base.clone().sub(top);
+    const f=(y-(rim-1))/(y-base.y), len=dir.length()*Math.max(0,f);
     h.stem.visible=len>.5&&!!h.tex; h.stem.scale.set(1,len,1); h.stem.position.copy(top).addScaledVector(dir.normalize(),len/2);
     h.stem.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir); h.frame=-1 });
+  // shade between the heads: a dark leafy dome under them, only as wide as the flowers reach
+  if(fill){ heads.remove(fill); fill.geometry.dispose() }
+  if(N>=3){ const S=48,Rw=10,pos=[],idx=[], R2=Math.min(Rc,reach+2);
+    for(let j=0;j<=Rw;j++) for(let i=0;i<=S;i++){ const th=i/S*Math.PI*2, rr=j/Rw, r=rr*R2, rim=rimAt(th), y=Math.max(rim-1,C.hf-1+(Hd-4)*Math.cos(Math.min(1,r/Rc)*Math.PI/2)**.8);
+      pos.push(r*Math.sin(th),y,r*Math.cos(th)) }
+    for(let j=0;j<Rw;j++) for(let i=0;i<S;i++){ const a=j*(S+1)+i,b=a+S+1; idx.push(a,b,a+1,b,b+1,a+1) }
+    const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setIndex(idx); g.computeVertexNormals();
+    fill=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0x34402A,roughness:1,side:THREE.DoubleSide})); heads.add(fill) } else fill=null;
   frame() }
 function wrapPi(a){ return Math.atan2(Math.sin(a),Math.cos(a)) }
 const smooth=(a,b,x)=>{ const t=Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*(3-2*t) };
-function poseHeads(){ for(const h of hs.values()){ if(!h.tex||!h.slot) continue;
+function poseHeads(){ const sy=Math.sin(yaw), cy=Math.cos(yaw), Rc=C.R*1.15;
+  for(const h of hs.values()){ if(!h.tex||!h.slot) continue;
   const rel=wrapPi(h.slot.ph+yaw), w=smooth(.15,.65,h.slot.th);
   const f=((Math.round(rel*w/(Math.PI/4))*DIR)%8+8)%8, t=h.tex[f]||h.tex[0]; if(!t) continue;
-  if(f!==h.frame){ h.frame=f; h.sprite.material.map=t; h.sprite.material.needsUpdate=true; h.sprite.scale.set(t.image.width/PX,t.image.height/PX,1) }
+  if(f!==h.frame){ h.frame=f; h.sprite.material.map=t; h.sprite.material.needsUpdate=true; h.sprite.scale.set(t.image.width/PX*h.sc,t.image.height/PX*h.sc,1) }
+  // heads at the back and down near the paper sit in the bouquet's own shade
+  const zc=-h.slot.x*sy+h.slot.z*cy, back=Math.min(1,Math.max(0,-zc/Rc)), low=Math.min(1,Math.max(0,(h.slot.rim+5-h.slot.y)/8));
+  h.sprite.material.color.setScalar(1-.26*back-.14*low);
   h.sprite.material.rotation=-Math.sin(h.slot.ph+yaw)*h.slot.th*.5; h.sprite.visible=true } }
 
 // ---------- camera, turning and drawing ----------
@@ -316,11 +359,14 @@ renderer.setAnimationLoop(now=>{ const dt=Math.min(.1,(now-last)/1000); last=now
   if(!drag&&Math.abs(vel)>1e-4){ vel*=.92; yaw+=vel; dirty=true }
   if(Math.abs(elevGoal-elev)>1e-3){ elev+=(elevGoal-elev)*(reduce?1:1-Math.exp(-dt*3.2)); dirty=true }
   if(!dirty) return; dirty=false;
-  heads.rotation.y=yaw; poseHeads(); hand.visible=showHand&&step!==1; aim(); renderer.render(scene,camera) });
+  heads.rotation.y=yaw; poseHeads(); poseCone(); hand.visible=showHand&&step!==1; aim(); renderer.render(scene,camera) });
 
 // ---------- fullness, in the counter's voice ----------
 const sayEl=document.getElementById('say');
 function say(html){ sayEl.innerHTML=html }
+const faceEl=document.getElementById('face');
+function setFace(k){ faceEl.classList.add('on'); faceEl.style.backgroundImage=`url(../img/owner/face_${k}.webp)` }
+['building','crowded','wrapping','forthem','counter'].forEach(k=>{ const i=new Image(); i.src=`../img/owner/face_${k}.webp` });
 function fullness(){ const area=picked.reduce((a,p)=>a+byId[p.id].w**2*.8,0), R=C.R*1.12; return area/(Math.PI*R*R*1.3) }
 function changed(id,added){ document.getElementById('q_'+id).textContent=picked.filter(p=>p.id===id).length; document.getElementById('st_'+id).classList.toggle('on',picked.some(p=>p.id===id));
   syncLays(); syncHeads(); summary(added?byId[id]:null) }
@@ -340,6 +386,7 @@ function summary(added){ const n=picked.length, f=fullness(), total=picked.reduc
   document.getElementById('fit').textContent=fit;
   // on phones the fullness waits until it stands up in the cone
   if(step===1&&phone.matches&&n>=3){ line=added?`${added.name} on the paper. ${n} stems so far.`:`${n} stems on the paper.`; if(n>=3) line+=' Wrap it when you&#39;re ready.' }
+  setFace(step===2?'wrapping':f>1.35&&n>=3?'crowded':step===3&&n>=3&&f>=.6?'forthem':n>=3&&f<.6&&!(step===1&&phone.matches)?'counter':'building');
   say(line) }
 
 // ---------- 2 · wrap it: the stems gather, the paper folds, the bouquet stands up ----------
@@ -349,13 +396,12 @@ function setStep(n){ step=n; stage.dataset.step=n; document.body.classList.toggl
   ['p1','p1b','p1c','p1d'].forEach(id=>document.getElementById(id).hidden=n!==1);
   ['p3','p3b','p3c','p3d','p3e','p3f'].forEach(id=>document.getElementById(id).hidden=n!==3);
   place(n===1&&!phone.matches?mini:glBox); summary() }
-async function wrapIt(){ if(picked.length<3) return; setStep(2); scrollTo({top:0,behavior:reduce?'auto':'smooth'}); say('Let me wrap it up for you.');
-  document.getElementById('next').disabled=true;
-  layoutLays(.85); await wait(520);
-  sheet.style.clipPath='polygon(20% 0,80% 0,52% 100%,48% 100%)'; sheet.style.transform='rotate(0deg) scale(.92)'; await wait(480);
-  elev=1.25; elevGoal=.2; yaw=0; frame(); table.style.opacity=0; await wait(950);
-  setStep(3) }
-function unwrap(){ sheet.style.clipPath=''; table.style.opacity=''; measure(); layoutLays(); elev=elevGoal=.2; setStep(1) }
+async function wrapIt(){ if(picked.length<3||step!==1) return; scrollTo({top:0,behavior:reduce?'auto':'smooth'}); document.getElementById('next').disabled=true;
+  // the stems gather where they'll be tied, then she takes it and wraps it
+  layoutLays(.85); say('Let me wrap it up for you.'); setFace('wrapping'); await wait(600);
+  setStep(2); await wait(1700);
+  elev=.75; elevGoal=.2; yaw=-.5; vel=.035; setStep(3) }
+function unwrap(){ layoutLays(); elev=elevGoal=.2; setStep(1) }
 document.getElementById('back').onclick=unwrap;
 document.querySelector('.steps').onclick=e=>{ const li=e.target.closest('li'); if(!li) return; if(li.dataset.s==='1'&&step===3) unwrap(); if(li.dataset.s!=='1'&&step===1) wrapIt() };
 document.getElementById('next').onclick=()=>{ if(step===1) wrapIt(); else if(step===3) addToBag() };
@@ -363,7 +409,7 @@ document.getElementById('next').onclick=()=>{ if(step===1) wrapIt(); else if(ste
 // ---------- the bag ----------
 function snapshot(){ const c=document.createElement('canvas'), w=240, h=300; c.width=w; c.height=h; const g=c.getContext('2d');
   g.fillStyle='#F6EDE6'; g.fillRect(0,0,w,h); const s=cv, k=Math.min(w/s.width,h/s.height)*1.1; g.drawImage(s,(w-s.width*k)/2,(h-s.height*k)/2,s.width*k,s.height*k);
-  try{ return c.toDataURL('image/jpeg',.8) }catch(e){ return '../stand/stand_04_wrap_master.jpg' } }
+  try{ return c.toDataURL('image/jpeg',.8) }catch(e){ return '../stand/stand_04_wrap_master.webp' } }
 function addToBag(){ const n=picked.length, counts={}; picked.forEach(p=>counts[p.id]=(counts[p.id]||0)+1);
   const what=Object.entries(counts).map(([id,c])=>`${c} ${byId[id].name.toLowerCase()}`).join(', ');
   const note=document.getElementById('note').value.trim(), img=snapshot();

@@ -100,7 +100,8 @@ ul.credits{margin:0;padding-left:18px;font-size:13px;line-height:1.55}ul.credits
 .link{background:none;border:0;padding:0;font-size:14px;text-decoration:underline;text-underline-offset:3px;align-self:flex-start;cursor:pointer;color:var(--plum)}
 .dots{display:flex;gap:6px}.dots i{width:22px;height:4px;background:var(--line)}.dots i.on{background:var(--plum)}
 .g{display:flex;gap:10px;align-items:flex-start}
-.g .face{width:44px;height:44px;border-radius:50%;border:1px solid var(--plum);background:var(--paper) url(vendor/monogram_plum.svg) center/60% no-repeat;flex:none}
+.g .face{width:52px;height:52px;border-radius:50%;border:1px solid var(--plum);background:var(--paper) center/cover no-repeat;flex:none}
+.starts{margin-top:8px}
 .g p{font-size:19px;background:#fff;border:1px solid var(--line);padding:8px 12px}
 .chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .chipo{background:#fff;border:1px solid var(--line);min-height:54px;padding:8px 12px;text-align:left;display:flex;flex-direction:column;gap:2px}
@@ -136,6 +137,9 @@ ul.bag .link{grid-column:2;font-size:12px}
 .form{display:flex;flex-direction:column;gap:12px}
 @media (max-width:720px){#panel{width:auto}.hd .right{gap:6px}.chip{padding:8px 10px}}
 </style>
+<link rel="preload" as="image" href="stand/stand_01_entrance.webp" fetchpriority="high">
+<link rel="preload" as="image" href="stand/stand_01_depth.png">
+<link rel="modulepreload" href="vendor/three.module.min.js">
 <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
 </head>
 <body>
@@ -158,7 +162,7 @@ ul.bag .link{grid-column:2;font-size:12px}
 <div id="hint"><span class="q" style="font-size:18px">Tap anything in the shop.</span></div>
 <aside id="panel" aria-live="polite"><div class="tie"><div class="thr" style="height:44px"></div><div class="hook"></div></div><div class="in" id="panelIn"></div></aside>
 <section id="simple" aria-label="Simple view"><div class="grid" id="simpleGrid"></div></section>
-<div id="credits">A concept shop. Photos made with AI image tools. <a href="3d/">3D room version</a></div>
+<div id="credits">A concept shop. Photos made with AI image tools.</div>
 
 <script type="module">
 import * as THREE from 'three';
@@ -169,14 +173,14 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // ---------- standpoints: one photo + one depth map each ----------
 // u,v place a dot on the photo (0 to 1 from the top left). go = walk to another standpoint, zone = open a panel
 const STANDS = {
-  door:    {title:'Inside the door', img:'stand/stand_01_entrance.jpg', depth:'stand/stand_01_depth.png', fov:112, ready:true,
+  door:    {title:'Inside the door', img:'stand/stand_01_entrance.webp', depth:'stand/stand_01_depth.png', fov:112, ready:true,
             hots:[{u:.2,v:.66,t:'The cooler',go:'cooler',zone:'cooler'},{u:.47,v:.5,t:'The counter',go:'counter',zone:'counter'},
                   {u:.8,v:.42,t:'The wrap station',go:'wrap',zone:'wrap'},{u:.65,v:.5,t:'When and where',zone:'door'},{u:.76,v:.66,t:'The café',zone:'cafe'}]},
-  cooler:  {title:'The cooler', img:'stand/stand_02_cooler.jpg', depth:'stand/stand_02_depth.png', fov:108, ready:true,
+  cooler:  {title:'The cooler', img:'stand/stand_02_cooler.webp', depth:'stand/stand_02_depth.png', fov:108, ready:true,
             hots:[{u:.49,v:.62,t:'Ready bouquets',zone:'cooler'},{u:.5,v:.34,t:'Vases and extras',zone:'shelf'},{u:.82,v:.5,t:'The counter',go:'counter',zone:'counter'}]},
-  counter: {title:'The counter', img:'stand/stand_03_counter.jpg', depth:'stand/stand_03_depth.png', fov:104, ready:true,
+  counter: {title:'The counter', img:'stand/stand_03_counter.webp', depth:'stand/stand_03_depth.png', fov:104, ready:true,
             hots:[{u:.66,v:.56,t:'Ask the counter',zone:'counter'},{u:.31,v:.5,t:'Pastries and coffee',zone:'cafe'},{u:.82,v:.5,t:'When and where',zone:'door'},{u:.14,v:.46,t:'The cooler',go:'cooler',zone:'cooler'}]},
-  wrap:    {title:'The wrap station', img:'stand/stand_04_wrap.jpg', depth:'stand/stand_04_depth.png', fov:104, ready:true,
+  wrap:    {title:'The wrap station', img:'stand/stand_04_wrap.webp', depth:'stand/stand_04_depth.png', fov:104, ready:true,
             hots:[{u:.78,v:.56,t:'Build your own',zone:'wrap'},{u:.72,v:.3,t:'The ribbon wall',zone:'wrap'},{u:.28,v:.6,t:'The café',zone:'cafe'},{u:.38,v:.46,t:'When and where',zone:'door'}]}
 };
 
@@ -187,6 +191,7 @@ const scene = new THREE.Scene(); scene.background = new THREE.Color(0xFBF8F3);
 const camera = new THREE.PerspectiveCamera(62,1,0.05,50);
 const loadImg = src => new Promise((res,rej)=>{const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=src});
 const cache = {};
+function shadowTex(){ const c=document.createElement('canvas'); c.width=c.height=128; const g=c.getContext('2d'), r=g.createRadialGradient(64,64,0,64,64,64); r.addColorStop(0,'rgba(40,20,20,.55)'); r.addColorStop(1,'rgba(40,20,20,0)'); g.fillStyle=r; g.fillRect(0,0,128,128); const t=new THREE.CanvasTexture(c); return t }
 async function build(id){
   if(cache[id]) return cache[id];
   const s = STANDS[id], [photo,dimg] = await Promise.all([loadImg(s.img),loadImg(s.depth)]);
@@ -202,6 +207,17 @@ async function build(id){
   const tex = new THREE.Texture(photo); tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=8; tex.needsUpdate=true;
   const mesh = new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:tex}));
   cache[id] = {mesh, hots:s.hots.map(h=>Object.assign({},h,{p3:point(h.u,h.v)}))};
+  // the owner stands in the empty middle of the entrance, a little in front of the floor behind her
+  if(id==='door'){ let v=.98; while(v>.55&&1.4+Math.pow(1-depthAt(.5,v),1.15)*5.6<2.9) v-=.01;
+    const feet=point(.5,v), H=1.62;
+    const ow=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({transparent:true,alphaTest:.02,color:0xFFF4EE}));
+    const sh=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,map:shadowTex()}));
+    sh.rotation.x=-Math.PI/2; sh.scale.set(.8,.32,1); sh.position.set(feet.x+.04,feet.y+.01,feet.z+.02); mesh.add(sh,ow);
+    const L=new THREE.TextureLoader(), poses={};
+    const pose=k=>{ const go=t=>{ ow.material.map=t; ow.material.needsUpdate=true; const w=H*t.image.width/t.image.height; ow.scale.set(w,H,1); ow.position.set(feet.x,feet.y+H/2,feet.z+.05) };
+      if(poses[k]) go(poses[k]); else L.load(`img/owner/full_${k}.webp`,t=>{ t.colorSpace=THREE.SRGBColorSpace; poses[k]=t; go(t) }) };
+    pose(S.set?'thisway':'welcome'); window.ownerPose=pose }
+  return cache[id];
   return cache[id];
 }
 
@@ -265,14 +281,14 @@ panel.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)retu
   if(t.dataset.close!==undefined) return closePanel();
   if(t.dataset.mode){S.mode=t.dataset.mode;panelIn.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-checked',b===t))}
   if(t.dataset.day){S.day=t.dataset.day;panelIn.querySelectorAll('[data-day]').forEach(b=>b.setAttribute('aria-checked',b===t))}
-  if(t.dataset.go!==undefined){S.zip=(panelIn.querySelector('#zip').value||'97214').trim();S.set=true;try{sessionStorage.setItem('ds-where',JSON.stringify(S))}catch(e){};document.getElementById('chipText').innerHTML=`${S.mode==='pickup'?'Pickup':S.zip} · ${S.day.toLowerCase()} <span class="full" style="color:#6B5463;text-decoration:underline">change</span>`;closePanel()}});
+  if(t.dataset.go!==undefined){S.zip=(panelIn.querySelector('#zip').value||'97214').trim();S.set=true;window.ownerPose&&window.ownerPose('thisway');try{sessionStorage.setItem('ds-where',JSON.stringify(S))}catch(e){};document.getElementById('chipText').innerHTML=`${S.mode==='pickup'?'Pickup':S.zip} · ${S.day.toLowerCase()} <span class="full" style="color:#6B5463;text-decoration:underline">change</span>`;closePanel()}});
 document.getElementById('chip').addEventListener('click',()=>openZone('door'));
 document.getElementById('bagBtn').addEventListener('click',()=>openZone('bag'));
 addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('open'))closePanel()});
 
 // ---------- simple view: the same photos, flat ----------
 const simpleGrid=document.getElementById('simpleGrid');
-const SV=[['counter','Ask the counter','Four questions, three bouquets','stand/stand_03_counter_master.jpg','55% 55%',1.3],['cooler','Shop the cooler','Ready bouquets, real heights','stand/stand_02_cooler_master.jpg','50% 70%',1.5],['wrap','Build your own','Pick every stem, paper and ribbon','stand/stand_04_wrap_master.jpg','80% 50%',1.4],['door','When and where','Delivery or pickup, and the day','stand/stand_01_entrance.jpg','66% 50%',3],['shelf','Vases and extras','Real sizes, next to your bouquet','stand/stand_02_cooler_master.jpg','50% 18%',1.8],['cafe','Visit and café','Open every day, 8 to 6','stand/stand_04_wrap_master.jpg','18% 70%',2]];
+const SV=[['counter','Ask the counter','Four questions, three bouquets','stand/stand_03_counter_master.webp','55% 55%',1.3],['cooler','Shop the cooler','Ready bouquets, real heights','stand/stand_02_cooler_master.webp','50% 70%',1.5],['wrap','Build your own','Pick every stem, paper and ribbon','stand/stand_04_wrap_master.webp','80% 50%',1.4],['door','When and where','Delivery or pickup, and the day','stand/stand_01_entrance.webp','66% 50%',3],['shelf','Vases and extras','Real sizes, next to your bouquet','stand/stand_02_cooler_master.webp','50% 18%',1.8],['cafe','Visit and café','Open every day, 8 to 6','stand/stand_04_wrap_master.webp','18% 70%',2]];
 simpleGrid.innerHTML=`<div style="grid-column:1/-1;margin-bottom:18px"><p class="ct" style="font-size:32px">The same shop, flat.</p></div><div style="grid-column:1/-1" class="rail"></div>`+SV.map(([id,t,s,img,pos,z],i)=>`<div class="cell"><div class="thr" style="height:${[26,52,36,44,30,58][i]}px"></div><div class="hook"></div><article><div class="ph"><img src="${img}" alt="" style="transform:scale(${z});transform-origin:${pos}" loading="lazy"></div><div><h3>${t}</h3><span class="muted" style="font-size:14px">${s}</span><button class="btn ghost" data-open="${id}" style="margin-top:6px">Open</button></div></article></div>`).join('');
 simpleGrid.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openZone(b.dataset.open)});
 const tog=document.getElementById('viewToggle');

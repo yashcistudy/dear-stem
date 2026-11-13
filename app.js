@@ -2,13 +2,13 @@
 // Every screen opens in the same side panel, from a dot in the shop or a card in the simple view.
 
 export const BQ = [
- {id:'b01',name:'Red classic',img:'img/bq/b01-red-classic.jpg',feel:'round',price:55,occ:['birthday','sorry','just','congrats'],who:['partner'],line:'Red roses, round and full, with a little eucalyptus.'},
- {id:'b02',name:'Blush garden',img:'img/bq/b02-blush-garden.jpg',feel:'garden',price:65,occ:['birthday','thanks','just','congrats'],who:['mom','friend','partner'],line:'Garden roses, ranunculus and lisianthus, loose like they were just picked.'},
- {id:'b03',name:'White and calm',img:'img/bq/b03-white-calm.jpg',feel:'round',price:60,occ:['sympathy','sorry','thanks'],who:['grieving','colleague','mom'],line:'All white and green. Quiet and kind.'},
- {id:'b04',name:'Peach ranunculus',img:'img/bq/b04-peach-ranunculus.jpg',feel:'sweet',price:45,occ:['thanks','just','birthday'],who:['friend','colleague','me'],line:'Peach ranunculus with soft greens.'},
- {id:'b05',name:'Sunny',img:'img/bq/b05-sunny.jpg',feel:'garden',price:50,occ:['congrats','birthday','thanks'],who:['friend','colleague','me'],line:'Yellow and white, bright enough for good news.'},
- {id:'b09',name:'Bright birthday',img:'img/bq/b09-bright-birthday.jpg',feel:'tall',price:70,occ:['birthday','congrats'],who:['friend','partner','me'],line:'Tall and colourful, for a birthday that deserves a fuss.'},
- {id:'b10',name:'Petite sweet',img:'img/bq/b10-petite-sweet.jpg',feel:'sweet',price:35,occ:['just','thanks','sorry'],who:['friend','mom','me','colleague'],line:'A small handful of blush and cream. Easy to carry.'}
+ {id:'b01',name:'Red classic',img:'img/bq/b01-red-classic.webp',feel:'round',price:55,occ:['birthday','sorry','just','congrats'],who:['partner'],line:'Red roses, round and full, with a little eucalyptus.'},
+ {id:'b02',name:'Blush garden',img:'img/bq/b02-blush-garden.webp',feel:'garden',price:65,occ:['birthday','thanks','just','congrats'],who:['mom','friend','partner'],line:'Garden roses, ranunculus and lisianthus, loose like they were just picked.'},
+ {id:'b03',name:'White and calm',img:'img/bq/b03-white-calm.webp',feel:'round',price:60,occ:['sympathy','sorry','thanks'],who:['grieving','colleague','mom'],line:'All white and green. Quiet and kind.'},
+ {id:'b04',name:'Peach ranunculus',img:'img/bq/b04-peach-ranunculus.webp',feel:'sweet',price:45,occ:['thanks','just','birthday'],who:['friend','colleague','me'],line:'Peach ranunculus with soft greens.'},
+ {id:'b05',name:'Sunny',img:'img/bq/b05-sunny.webp',feel:'garden',price:50,occ:['congrats','birthday','thanks'],who:['friend','colleague','me'],line:'Yellow and white, bright enough for good news.'},
+ {id:'b09',name:'Bright birthday',img:'img/bq/b09-bright-birthday.webp',feel:'tall',price:70,occ:['birthday','congrats'],who:['friend','partner','me'],line:'Tall and colourful, for a birthday that deserves a fuss.'},
+ {id:'b10',name:'Petite sweet',img:'img/bq/b10-petite-sweet.webp',feel:'sweet',price:35,occ:['just','thanks','sorry'],who:['friend','mom','me','colleague'],line:'A small handful of blush and cream. Easy to carry.'}
 ];
 // honest sizes: stem count and height from the cut end to the tallest head
 export const SIZES = {petite:{name:'Petite',stems:8,h:40,k:.7},classic:{name:'Classic',stems:12,h:50,k:1},grand:{name:'Grand',stems:18,h:60,k:1.45}};
@@ -19,7 +19,7 @@ export const VASES = [
  {id:'ceramic_vase_04',name:'White jug',h:34,price:26},{id:'ceramic_vase_01',name:'White bottle vase',h:40,price:28},
  {id:'ceramic_vase_03',name:'Slim white vase',h:41,price:24},{id:'antique_ceramic_vase_01',name:'Blue and white vase',h:44,price:38},
  {id:'brass_vase_02',name:'Tall brass ewer',h:53,price:42}
-].map(v=>Object.assign(v,{img:`img/vases/${v.id}.jpg`}));
+].map(v=>Object.assign(v,{img:`img/vases/${v.id}.webp`}));
 // a vase suits a bouquet when it is about half to three quarters of its height
 const fits=(v,h)=>v.h>=h*.45&&v.h<=h*.78;
 const WHO=[['mom','Mom'],['partner','My partner'],['friend','A friend'],['grieving','Someone grieving'],['colleague','A colleague'],['me','Me'],['other','Someone else']];
@@ -45,7 +45,7 @@ export function journey({panelIn, show, closePanel, S, setChip}){
   const tag=k=>AC[k]==='other'?guess(k,AC[k+'T']):AC[k];
   const close='<button class="close" aria-label="Close" data-close>×</button>';
   // the owner guides each step; her stills replace the monogram when they arrive
-  const guide=(line)=>`<div class="g"><span class="face" aria-hidden="true"></span><p class="q">${line}</p></div>`;
+  const guide=(line,m='counter')=>`<div class="g"><span class="face" aria-hidden="true" style="background-image:url(img/owner/face_${m}.webp)"></span><p class="q">${line}</p></div>`;
   const who=()=>AC.who==='other'?esc(AC.whoT||'them'):(WHO.find(w=>w[0]===AC.who)||[,'them'])[1].replace('My ','your ').replace(/^Mom$/,'your mom').replace(/^A /,'a ').replace(/^Me$/,'you');
   const money=n=>'$'+n;
   const updBag=()=>{ store.set('ds-bag',bag); const n=bag.length; document.getElementById('bagN').textContent=n?`Bag · ${n}`:'Bag' };
@@ -80,7 +80,7 @@ export function journey({panelIn, show, closePanel, S, setChip}){
     const scored=BQ.map(b=>{ let sc=0; if(b.occ.includes(tag('occ'))) sc+=3; if(b.feel===tag('feel')) sc+=3; if(b.who.includes(tag('who'))) sc+=2;
       const size=['grand','classic','petite'].find(s=>priceOf(b,s)<=AC.budget); return {b,sc,size} }).filter(x=>x.size).sort((a,c)=>c.sc-a.sc||priceOf(c.b,c.size)-priceOf(a.b,a.size)).slice(0,3);
     if(!scored.length) return `${close}${guide('Under $35 is hard for a full bouquet. A single stem with a card works beautifully, though.')}<button class="btn" data-zone="cooler">See everything in the cooler</button><button class="link" data-ask="4">← Change the budget</button>`;
-    return `${close}<button class="link" data-ask="4">← Back</button>${guide(`Here are three we&#39;d make for ${who()}. Each one is real, and you&#39;ll see a photo before it leaves.${notes()?' I&#39;ll pass your note to the florist too.':''}`)}
+    return `${close}<button class="link" data-ask="4">← Back</button>${guide(`Here are three we&#39;d make for ${who()}. Each one is real, and you&#39;ll see a photo before it leaves.${notes()?' I&#39;ll pass your note to the florist too.':''}`,'forthem')}
      <div class="picks">${scored.map(({b,size})=>`<button class="pickc" data-prod="${b.id}" data-size="${size}"><img src="${b.img}" alt=""><span><b>${b.name}</b><em>${SIZES[size].name} · ${SIZES[size].stems} stems · ${SIZES[size].h} cm</em><strong>${money(priceOf(b,size))}</strong></span></button>`).join('')}</div>`;
   }
 
@@ -101,7 +101,7 @@ export function journey({panelIn, show, closePanel, S, setChip}){
     <div><p class="lab">If a flower sells out</p><div class="seg" role="radiogroup"><button role="radio" aria-checked="${P.backup==='florist'}" data-backup="florist">Florist&#39;s choice</button><button role="radio" aria-checked="${P.backup==='ask'}" data-backup="ask">Text me first</button></div>
     <p class="muted" style="margin:6px 0 0;font-size:13px">We swap like for like: a round flower for a round one, same size, same price.</p></div>
     <div><p class="lab">Add a vase that fits</p><div class="vrow">${vs.map(v=>`<button class="vpick" aria-pressed="${P.vase===v.id}" data-vase="${v.id}"><img src="${v.img}" alt=""><b>${v.name}</b><span>${v.h} cm · ${money(v.price)}</span></button>`).join('')||'<p class="muted" style="margin:0">No vase on our shelf suits this size.</p>'}</div></div>
-    <div><p class="lab">The card</p><textarea id="cardT" maxlength="180" placeholder="We copy it out by hand.">${esc(P.card)}</textarea><div class="starts">${STARTS.map(t=>`<button data-start>${t}</button>`).join('')}</div></div>
+    <div><p class="lab">The card</p>${guide('Not sure what to write? Start with one of these and make it yours.','sayit')}<textarea id="cardT" maxlength="180" placeholder="We copy it out by hand.">${esc(P.card)}</textarea><div class="starts">${STARTS.map(t=>`<button data-start>${t}</button>`).join('')}</div></div>
     <label class="f">Anything else the florist should know?<input id="noteT" maxlength="140" value="${esc(P.note)}" placeholder="A colour to avoid, an allergy, a flower they love"></label>
     <p class="muted" style="margin:0;font-size:14px">${whenLine()}. Before it leaves, we send you a photo of the real bouquet to approve.</p>
     <button class="btn" data-addp>Add to bag · ${money(priceOf(b,P.size)+(P.vase?VASES.find(v=>v.id===P.vase).price:0))}</button>` }
@@ -113,14 +113,14 @@ export function journey({panelIn, show, closePanel, S, setChip}){
 
   // ---------- build your own ----------
   function wrap(){ return `${close}<p class="lab">The wrap station</p><p class="ct" style="font-size:44px">Build your own</p>
-    ${guide('Pick every stem yourself, then the paper and a ribbon. I&#39;ll tell you if it&#39;s getting crowded.')}
-    <img class="hero" src="stand/stand_04_wrap_master.jpg" alt="The ribbon wall and wrapping paper at the wrap station">
+    ${guide('Pick every stem yourself, then the paper and a ribbon. I&#39;ll tell you if it&#39;s getting crowded.','building')}
+    <img class="hero" src="stand/stand_04_wrap_master.webp" alt="The ribbon wall and wrapping paper at the wrap station">
     <a class="btn" href="build/" style="text-decoration:none">Start building</a>` }
 
   // ---------- café ----------
   function cafe(){ return `${close}<p class="lab">The café</p><p class="ct" style="font-size:44px">Visit</p>
     <p style="margin:0">Coffee and pastries from the counter, in the shop only. Collect your order here or choose your flowers in person. Open every day, 8 to 6.</p>
-    <img class="hero" src="stand/stand_03_counter_master.jpg" alt="The pastry counter">
+    <img class="hero" src="stand/stand_03_counter_master.webp" alt="The pastry counter">
     <p class="muted" style="margin:0;font-size:14px">A concept shop in Portland, Oregon.</p>` }
 
   // ---------- bag and checkout ----------
@@ -135,7 +135,8 @@ export function journey({panelIn, show, closePanel, S, setChip}){
     <label class="f">Your email, for the photo before it leaves<input required type="email" name="email" autocomplete="email"></label>
     <p class="muted" style="margin:0;font-size:13px">dear stem is a concept shop. Nothing is charged and nothing you type here is sent anywhere.</p>
     <button class="btn" type="submit">Place order</button></form>` }
-  function done(){ return `${close}${guide('Thank you. I&#39;ll send you a photo of the real bouquet before it leaves the shop.')}<p class="ct" style="font-size:44px">It&#39;s on its way</p>
+  function done(){ return `${close}${guide('Thank you. I&#39;ll send you a photo of the real bouquet before it leaves the shop.','forthem')}<p class="ct" style="font-size:44px">It&#39;s on its way</p>
+    <img src="img/owner/full_onitsway.webp" alt="The owner holding a wrapped bouquet, smiling" style="height:300px;width:auto;align-self:center">
     <p style="margin:0">${whenLine()}.</p><button class="btn ghost" data-close>Back to the shop</button>` }
 
   const Z={door:()=>whenWhere(false),counter:()=>ask(AC.who?1:1),cooler,shelf,wrap,cafe,bag:bagView};
