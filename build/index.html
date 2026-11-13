@@ -29,7 +29,8 @@ header{position:sticky;top:0;z-index:6;background:var(--paper)}
 #table{position:absolute;inset:0;background:url(img/scene_worktop_top.webp) center/cover;transition:opacity .8s}
 #sheet{position:absolute;background:url(img/paper_paper.webp) center/cover;box-shadow:0 2px 3px rgba(60,35,20,.18),0 14px 30px rgba(60,35,20,.18);clip-path:polygon(0 0,100% 0,100% 100%,0 100%);transition:clip-path .55s cubic-bezier(.6,0,.3,1),transform .55s}
 #lays{position:absolute;inset:0}
-.lay{position:absolute;transform-origin:50% 72%;transition:transform .5s cubic-bezier(.3,1.35,.5,1),opacity .35s;filter:drop-shadow(1px 3px 2px rgba(50,30,20,.35));cursor:pointer;user-select:none;-webkit-user-drag:none}
+#lays.hit{cursor:pointer}
+.lay{position:absolute;pointer-events:none;transform-origin:50% 72%;transition:transform .5s cubic-bezier(.3,1.35,.5,1),opacity .35s;filter:drop-shadow(1px 3px 2px rgba(50,30,20,.35));cursor:pointer;user-select:none;-webkit-user-drag:none}
 .lay.drop{opacity:0}
 #glBox{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .7s}
 #glBox canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
@@ -207,14 +208,26 @@ function layoutLays(gather=0){
     const side=k%2?1:-1, ang=(side*Math.ceil(k/2)*step+(hash(o.p.u+7)-.5)*5)*(1-gather);
     const off=({focal:3,spike:5,filler:1,green:-2}[s.role]+(hash(o.p.u+3)-.5)*3)*T.s*(1-gather*.7);
     Object.assign(el.style,{width:w+'px',height:h+'px',left:(T.bx-w/2)+'px',top:(T.by-h*.72)+'px',zIndex:o.i+1});
-    el.dataset.t=`rotate(${ang}deg) translateY(${-off}px)`;
+    el.dataset.t=`rotate(${ang}deg) translateY(${-off}px)`; el._g={ang,off,w,h,u:o.p.u,z:o.i};
     if(!el.classList.contains('drop')) el.style.transform=el.dataset.t }) }
 function addLay(p){ const s=byId[p.id], el=new Image(); el.src=s.lay; el.alt=`${s.name}, ${s.col}`; el.className='lay drop'; el.draggable=false;
   el.onload=()=>{ natural[s.id]={w:el.naturalWidth,h:el.naturalHeight}; layoutLays() };
-  el.onclick=()=>{ if(step!==1) return; const i=picked.findIndex(x=>x.u===p.u); if(i>-1){ picked.splice(i,1); changed(p.id,false) } };
   laysEl.appendChild(el); layEls.set(p.u,el); layoutLays();
   el.style.transform=(el.dataset.t||'')+' translateY(-46px) scale(1.06)';
   requestAnimationFrame(()=>requestAnimationFrame(()=>{ el.classList.remove('drop'); el.style.transform=el.dataset.t })) }
+// tapping takes off the stem you actually touched: the top one whose photo is solid under your finger
+const alphaCache={};
+function alphaAt(src,img,fx,fy){ let a=alphaCache[src]; if(!a){ const c=document.createElement('canvas'); c.width=img.naturalWidth; c.height=img.naturalHeight; const g=c.getContext('2d'); g.drawImage(img,0,0); try{ a=alphaCache[src]={d:g.getImageData(0,0,c.width,c.height).data,w:c.width,h:c.height} }catch(e){ return 255 } }
+  const x=Math.floor(fx*a.w), y=Math.floor(fy*a.h); if(x<0||y<0||x>=a.w||y>=a.h) return 0; return a.d[(y*a.w+x)*4+3] }
+function stemAt(cx,cy){ const r=laysEl.getBoundingClientRect(); let best=null;
+  for(const el of layEls.values()){ const g=el._g; if(!g||!el.complete) continue;
+    const ox=T.bx, oy=T.by, dx=cx-r.left-ox, dy=cy-r.top-oy, a=-g.ang*Math.PI/180;
+    const lx=dx*Math.cos(a)-dy*Math.sin(a), ly=dx*Math.sin(a)+dy*Math.cos(a)+g.off;
+    const fx=(lx+g.w/2)/g.w, fy=(ly+g.h*.72)/g.h;
+    if(alphaAt(el.src,el,fx,fy)>60&&(!best||g.z>best._g.z)) best=el }
+  return best }
+table.addEventListener('click',e=>{ if(step!==1) return; const el=stemAt(e.clientX,e.clientY); if(!el) return; const u=el._g.u, i=picked.findIndex(x=>x.u===u); if(i>-1){ const id=picked[i].id; picked.splice(i,1); changed(id,false) } });
+table.addEventListener('pointermove',e=>{ if(e.pointerType!=='mouse'||step!==1) return; laysEl.classList.toggle('hit',!!stemAt(e.clientX,e.clientY)) });
 function syncLays(){ const have=new Set(picked.map(p=>p.u));
   for(const [u,el] of layEls) if(!have.has(u)){ el.style.opacity=0; el.style.transform=el.dataset.t+' translateY(-30px)'; setTimeout(()=>el.remove(),reduce?0:300); layEls.delete(u) }
   picked.forEach(p=>{ if(!layEls.has(p.u)) addLay(p) }); layoutLays() }
@@ -228,7 +241,7 @@ const loader=new THREE.TextureLoader(), cache={};
 function tex(src){ return cache[src] ||= new Promise(res=>loader.load(src,t=>{ t.colorSpace=THREE.SRGBColorSpace; t.anisotropy=4; res(t) },undefined,()=>res(null))) }
 const PX=15; // the photos are 15 px to the cm
 const ANG=['000','045','090','135','180','225','270','315'];
-const DIR=1; // which way the sheets turn; flip to -1 if the real sheets spin the other way
+const DIR=-1; // picture 3 of each sheet faces left, so a head on the right of the dome uses picture 7
 // the cone and its stems are photographs that face you; the heads turn inside it
 const fixed=new THREE.Group(), heads=new THREE.Group(); scene.add(fixed,heads);
 function photoPlane(src,wCm,anchorY,z,order){ const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({transparent:true,alphaTest:.5,depthWrite:true}));
