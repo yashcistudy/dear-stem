@@ -9,7 +9,6 @@
 @font-face{font-family:Jost;font-weight:300;src:url(vendor/jost-latin-300-normal.woff2) format('woff2')}
 @font-face{font-family:Jost;font-weight:400;src:url(vendor/jost-latin-400-normal.woff2) format('woff2')}
 @font-face{font-family:Jost;font-weight:500;src:url(vendor/jost-latin-500-normal.woff2) format('woff2')}
-@font-face{font-family:'Homemade Apple';src:url(vendor/homemade-apple-latin-400-normal.woff2) format('woff2')}
 @font-face{font-family:'Caffe Latte';src:url(vendor/caffe-latte.woff2) format('woff2')}
 :root{--paper:#FBF8F3;--plum:#3A2233;--ink2:#6B5463;--petal:#F1B9C4;--butter:#F2D98B;--lilac:#C3B3E0;--blue:#7E9CCB;--mint:#BFD8C2;--line:rgba(58,34,51,.16)}
 *{box-sizing:border-box}
@@ -34,8 +33,8 @@ header{position:fixed;left:0;right:0;top:0;z-index:5;background:var(--paper)}
 .toggle[aria-checked=true] .sw::after{left:21px}
 .btn{background:var(--plum);color:var(--paper);border:1.5px solid var(--plum);font-weight:500;font-size:16px;min-height:50px;padding:0 22px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn.ghost{background:var(--paper);color:var(--plum)}
-.q{font-family:'Homemade Apple',cursive;line-height:1.5;margin:0}
-.ct{font-family:'Caffe Latte',serif;font-weight:400;margin:0;line-height:1.05;white-space:nowrap}
+.q{font-family:'Caffe Latte',Jost,sans-serif;font-size:19px;line-height:1.3;margin:0}
+.ct{font-family:Jost,sans-serif;font-weight:300;margin:0;line-height:1.1;letter-spacing:-.01em}
 .lab{font-size:13px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;margin:0}
 .muted{color:var(--ink2)}
 /* side panel */
@@ -102,7 +101,7 @@ ul.credits{margin:0;padding-left:18px;font-size:13px;line-height:1.55}ul.credits
 .dots{display:flex;gap:6px}.dots i{width:22px;height:4px;background:var(--line)}.dots i.on{background:var(--plum)}
 .g{display:flex;gap:10px;align-items:flex-start}
 .g .face{width:44px;height:44px;border-radius:50%;border:1px solid var(--plum);background:var(--paper) url(vendor/monogram_plum.svg) center/60% no-repeat;flex:none}
-.g p{font-size:15px;background:#fff;border:1px solid var(--line);padding:8px 12px}
+.g p{font-size:19px;background:#fff;border:1px solid var(--line);padding:8px 12px}
 .chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .chipo{background:#fff;border:1px solid var(--line);min-height:54px;padding:8px 12px;text-align:left;display:flex;flex-direction:column;gap:2px}
 .chipo b{font-weight:500;font-size:15px}.chipo span{font-size:12px;color:var(--ink2)}
@@ -127,7 +126,7 @@ input[type=range]{width:100%;accent-color:var(--plum)}
 .vpick{background:#fff;border:1px solid var(--line);padding:6px;text-align:left;display:flex;flex-direction:column;gap:2px}
 .vpick img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.vpick b{font-weight:500;font-size:13px}.vpick span{font-size:12px;color:var(--ink2)}
 .vpick[aria-pressed=true]{border-color:var(--plum);box-shadow:inset 0 0 0 1px var(--plum)}
-textarea{width:100%;min-height:80px;font-family:'Homemade Apple',cursive;font-size:15px;line-height:1.7;color:var(--plum);background:#fff;border:1px solid var(--line);padding:10px}
+textarea{width:100%;min-height:80px;font-family:Jost,sans-serif;font-size:16px;line-height:1.6;color:var(--plum);background:#fff;border:1px solid var(--line);padding:10px}
 .starts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.starts button{background:var(--paper);border:1px solid var(--line);padding:5px 9px;font-size:12px}
 ul.bag{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
 ul.bag li{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);padding:6px}
@@ -156,7 +155,7 @@ ul.bag .link{grid-column:2;font-size:12px}
 <div id="fade"></div>
 <div id="here"><button class="back" id="back" type="button">← Back to the door</button><span class="lab" id="hereT"></span></div>
 <div id="dragtip">Drag to look around</div>
-<div id="hint"><span class="q" style="font-size:15px">Tap anything in the shop.</span></div>
+<div id="hint"><span class="q" style="font-size:18px">Tap anything in the shop.</span></div>
 <aside id="panel" aria-live="polite"><div class="tie"><div class="thr" style="height:44px"></div><div class="hook"></div></div><div class="in" id="panelIn"></div></aside>
 <section id="simple" aria-label="Simple view"><div class="grid" id="simpleGrid"></div></section>
 <div id="credits">A concept shop. Photos made with AI image tools. <a href="3d/">3D room version</a></div>
@@ -274,7 +273,7 @@ addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('op
 // ---------- simple view: the same photos, flat ----------
 const simpleGrid=document.getElementById('simpleGrid');
 const SV=[['counter','Ask the counter','Four questions, three bouquets','stand/stand_03_counter_master.jpg','55% 55%',1.3],['cooler','Shop the cooler','Ready bouquets, real heights','stand/stand_02_cooler_master.jpg','50% 70%',1.5],['wrap','Build your own','Pick every stem, paper and ribbon','stand/stand_04_wrap_master.jpg','80% 50%',1.4],['door','When and where','Delivery or pickup, and the day','stand/stand_01_entrance.jpg','66% 50%',3],['shelf','Vases and extras','Real sizes, next to your bouquet','stand/stand_02_cooler_master.jpg','50% 18%',1.8],['cafe','Visit and café','Open every day, 8 to 6','stand/stand_04_wrap_master.jpg','18% 70%',2]];
-simpleGrid.innerHTML=`<div style="grid-column:1/-1;margin-bottom:18px"><p class="q" style="font-size:26px">The same shop, flat.</p></div><div style="grid-column:1/-1" class="rail"></div>`+SV.map(([id,t,s,img,pos,z],i)=>`<div class="cell"><div class="thr" style="height:${[26,52,36,44,30,58][i]}px"></div><div class="hook"></div><article><div class="ph"><img src="${img}" alt="" style="transform:scale(${z});transform-origin:${pos}" loading="lazy"></div><div><h3>${t}</h3><span class="muted" style="font-size:14px">${s}</span><button class="btn ghost" data-open="${id}" style="margin-top:6px">Open</button></div></article></div>`).join('');
+simpleGrid.innerHTML=`<div style="grid-column:1/-1;margin-bottom:18px"><p class="ct" style="font-size:32px">The same shop, flat.</p></div><div style="grid-column:1/-1" class="rail"></div>`+SV.map(([id,t,s,img,pos,z],i)=>`<div class="cell"><div class="thr" style="height:${[26,52,36,44,30,58][i]}px"></div><div class="hook"></div><article><div class="ph"><img src="${img}" alt="" style="transform:scale(${z});transform-origin:${pos}" loading="lazy"></div><div><h3>${t}</h3><span class="muted" style="font-size:14px">${s}</span><button class="btn ghost" data-open="${id}" style="margin-top:6px">Open</button></div></article></div>`).join('');
 simpleGrid.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openZone(b.dataset.open)});
 const tog=document.getElementById('viewToggle');
 function setSimple(on){tog.setAttribute('aria-checked',on);simple.style.display=on?'block':'none';document.getElementById('here').style.display=on?'none':'flex';hint.style.display=(!on&&S.set&&!panel.classList.contains('open'))?'flex':'none'}
@@ -283,7 +282,7 @@ tog.addEventListener('click',()=>setSimple(tog.getAttribute('aria-checked')!=='t
 // first visit: when and where before stepping in; phones start in the simple view
 if(innerWidth<720) setSimple(true);
 await goTo('door');
-show(whenWhere(true));
+if(location.hash==='#bag') openZone('bag'); else show(whenWhere(true));
 window.DONE=true;
 </script>
 </body>

@@ -22,9 +22,16 @@ export const VASES = [
 ].map(v=>Object.assign(v,{img:`img/vases/${v.id}.jpg`}));
 // a vase suits a bouquet when it is about half to three quarters of its height
 const fits=(v,h)=>v.h>=h*.45&&v.h<=h*.78;
-const WHO=[['mom','Mom'],['partner','My partner'],['friend','A friend'],['grieving','Someone grieving'],['colleague','A colleague'],['me','Me']];
-const OCC=[['birthday','Birthday'],['thanks','Thank you'],['sorry','Sorry'],['sympathy','Sympathy'],['just','Just because'],['congrats','Congrats']];
-const FEEL=[['garden','Loose garden','like it was just picked'],['round','Round classic','full and even'],['tall','Tall dramatic','long stems, big presence'],['sweet','Small sweet','a little handful']];
+const WHO=[['mom','Mom'],['partner','My partner'],['friend','A friend'],['grieving','Someone grieving'],['colleague','A colleague'],['me','Me'],['other','Someone else']];
+const OCC=[['birthday','Birthday'],['thanks','Thank you'],['sorry','Sorry'],['sympathy','Sympathy'],['just','Just because'],['congrats','Congrats'],['other','Something else']];
+const FEEL=[['garden','Loose garden','like it was just picked'],['round','Round classic','full and even'],['tall','Tall dramatic','long stems, big presence'],['sweet','Small sweet','a little handful'],['other','Something else','tell me in your words']];
+// 'other' answers: typed in their own words, matched to our tags where we can, and always passed to the florist
+const OTHER_HINT={who:'My neighbour, my teacher, a new dad',occ:'An anniversary, a new home, a first show',feel:'All white, wild and bright, only greens'};
+const GUESS={
+ who:[[/mom|mum|mother|grand|aunt/i,'mom'],[/wife|husband|girl|boy|partner|fianc/i,'partner'],[/boss|cowork|colleague|team|teacher|client/i,'colleague'],[/friend|neighbo|sister|brother|cousin/i,'friend'],[/loss|griev|passed/i,'grieving']],
+ occ:[[/sorry|apolog/i,'sorry'],[/funeral|loss|passed|memorial|condolence/i,'sympathy'],[/thank/i,'thanks'],[/birth|bday/i,'birthday'],[/congrat|graduat|promot|job|baby|wedding|engag|home|open|show/i,'congrats'],[/anniver|love|valentine|date|miss/i,'just']],
+ feel:[[/white|calm|quiet|soft|simple/i,'round'],[/wild|loose|garden|natural|bright|sunny|colou?r/i,'garden'],[/tall|big|dramatic|statement/i,'tall'],[/small|little|tiny|cute/i,'sweet']]};
+const guess=(k,t)=>((GUESS[k].find(([r])=>r.test(t||''))||[])[1])||null;
 const STARTS=['Thinking of you today.','Happy birthday. Have the loveliest day.','I am so proud of you.','Sorry, and I love you.','With you, always.'];
 
 const listJoin=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];
@@ -33,11 +40,13 @@ const store={ get(k,d){ try{ const v=sessionStorage.getItem(k); return v?JSON.pa
 
 export function journey({panelIn, show, closePanel, S, setChip}){
   const bag = store.get('ds-bag',[]);
-  const AC = {who:null,occ:null,feel:null,budget:65};
+  const AC = {who:null,occ:null,feel:null,budget:65,whoT:'',occT:'',feelT:''};
+  const notes=()=>[AC.who==='other'&&AC.whoT,AC.occ==='other'&&AC.occT,AC.feel==='other'&&AC.feelT].filter(Boolean).join('; ');
+  const tag=k=>AC[k]==='other'?guess(k,AC[k+'T']):AC[k];
   const close='<button class="close" aria-label="Close" data-close>×</button>';
   // the owner guides each step; her stills replace the monogram when they arrive
   const guide=(line)=>`<div class="g"><span class="face" aria-hidden="true"></span><p class="q">${line}</p></div>`;
-  const who=()=>(WHO.find(w=>w[0]===AC.who)||[,'them'])[1].replace('My ','your ').replace(/^Mom$/,'your mom').replace(/^A /,'a ').replace(/^Me$/,'you');
+  const who=()=>AC.who==='other'?esc(AC.whoT||'them'):(WHO.find(w=>w[0]===AC.who)||[,'them'])[1].replace('My ','your ').replace(/^Mom$/,'your mom').replace(/^A /,'a ').replace(/^Me$/,'you');
   const money=n=>'$'+n;
   const updBag=()=>{ store.set('ds-bag',bag); const n=bag.length; document.getElementById('bagN').textContent=n?`Bag · ${n}`:'Bag' };
   updBag();
@@ -55,7 +64,8 @@ export function journey({panelIn, show, closePanel, S, setChip}){
 
   // ---------- Ask the counter: four questions, then three bouquets ----------
   const steps=n=>`<div class="dots" aria-label="Question ${n} of 4">${[1,2,3,4].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div>`;
-  const chips=(list,cur,key)=>`<div class="chips" role="radiogroup">${list.map(([v,l,s])=>`<button class="chipo" role="radio" aria-checked="${cur===v}" data-ac="${key}" data-v="${v}"><b>${l}</b>${s?`<span>${s}</span>`:''}</button>`).join('')}</div>`;
+  const chips=(list,cur,key)=>`<div class="chips" role="radiogroup">${list.map(([v,l,s])=>`<button class="chipo" role="radio" aria-checked="${cur===v}" data-ac="${key}" data-v="${v}"><b>${l}</b>${s?`<span>${s}</span>`:''}</button>`).join('')}</div>
+   ${cur==='other'?`<label class="f">In your words<input id="otherT" maxlength="60" value="${esc(AC[key+'T'])}" placeholder="${OTHER_HINT[key]}"></label><button class="btn" data-other="${key}">Next</button>`:''}`;
   function ask(n){
     const back=n>1?`<button class="link" data-ask="${n-1}">← Back</button>`:'';
     if(n===1) return `${close}${steps(1)}${guide('Hi, I&#39;m at the counter. Who are they for?')}<p class="ct" style="font-size:40px">Who is it for?</p>${chips(WHO,AC.who,'who')}`;
@@ -67,10 +77,10 @@ export function journey({panelIn, show, closePanel, S, setChip}){
   }
   function sizeFor(b){ return b<45?'That buys a petite one, about 8 stems.':b<80?'That buys a classic, about 12 stems.':'That buys a grand one, about 18 stems.' }
   function results(){
-    const scored=BQ.map(b=>{ let sc=0; if(b.occ.includes(AC.occ)) sc+=3; if(b.feel===AC.feel) sc+=3; if(b.who.includes(AC.who)) sc+=2;
+    const scored=BQ.map(b=>{ let sc=0; if(b.occ.includes(tag('occ'))) sc+=3; if(b.feel===tag('feel')) sc+=3; if(b.who.includes(tag('who'))) sc+=2;
       const size=['grand','classic','petite'].find(s=>priceOf(b,s)<=AC.budget); return {b,sc,size} }).filter(x=>x.size).sort((a,c)=>c.sc-a.sc||priceOf(c.b,c.size)-priceOf(a.b,a.size)).slice(0,3);
     if(!scored.length) return `${close}${guide('Under $35 is hard for a full bouquet. A single stem with a card works beautifully, though.')}<button class="btn" data-zone="cooler">See everything in the cooler</button><button class="link" data-ask="4">← Change the budget</button>`;
-    return `${close}<button class="link" data-ask="4">← Back</button>${guide(`Here are three we&#39;d make for ${who()}. Each one is real, and you&#39;ll see a photo before it leaves.`)}
+    return `${close}<button class="link" data-ask="4">← Back</button>${guide(`Here are three we&#39;d make for ${who()}. Each one is real, and you&#39;ll see a photo before it leaves.${notes()?' I&#39;ll pass your note to the florist too.':''}`)}
      <div class="picks">${scored.map(({b,size})=>`<button class="pickc" data-prod="${b.id}" data-size="${size}"><img src="${b.img}" alt=""><span><b>${b.name}</b><em>${SIZES[size].name} · ${SIZES[size].stems} stems · ${SIZES[size].h} cm</em><strong>${money(priceOf(b,size))}</strong></span></button>`).join('')}</div>`;
   }
 
@@ -81,7 +91,7 @@ export function journey({panelIn, show, closePanel, S, setChip}){
 
   // ---------- one bouquet ----------
   let P=null;
-  function product(id,size){ const b=BQ.find(x=>x.id===id); P=P&&P.b===b?P:{b,size:size||'classic',vase:null,backup:'florist',card:''}; if(size) P.size=size;
+  function product(id,size){ const b=BQ.find(x=>x.id===id); P=P&&P.b===b?P:{b,size:size||'classic',vase:null,backup:'florist',card:'',note:notes()}; if(size) P.size=size;
     const s=SIZES[P.size], vs=VASES.filter(v=>fits(v,s.h));
     return `${close}<button class="link" data-zone="cooler">← All bouquets</button>
     <img class="hero" src="${b.img}" alt="${b.name}"><div><p class="ct" style="font-size:40px">${b.name}</p><p style="margin:6px 0 0">${b.line}</p></div>
@@ -92,6 +102,7 @@ export function journey({panelIn, show, closePanel, S, setChip}){
     <p class="muted" style="margin:6px 0 0;font-size:13px">We swap like for like: a round flower for a round one, same size, same price.</p></div>
     <div><p class="lab">Add a vase that fits</p><div class="vrow">${vs.map(v=>`<button class="vpick" aria-pressed="${P.vase===v.id}" data-vase="${v.id}"><img src="${v.img}" alt=""><b>${v.name}</b><span>${v.h} cm · ${money(v.price)}</span></button>`).join('')||'<p class="muted" style="margin:0">No vase on our shelf suits this size.</p>'}</div></div>
     <div><p class="lab">The card</p><textarea id="cardT" maxlength="180" placeholder="We copy it out by hand.">${esc(P.card)}</textarea><div class="starts">${STARTS.map(t=>`<button data-start>${t}</button>`).join('')}</div></div>
+    <label class="f">Anything else the florist should know?<input id="noteT" maxlength="140" value="${esc(P.note)}" placeholder="A colour to avoid, an allergy, a flower they love"></label>
     <p class="muted" style="margin:0;font-size:14px">${whenLine()}. Before it leaves, we send you a photo of the real bouquet to approve.</p>
     <button class="btn" data-addp>Add to bag · ${money(priceOf(b,P.size)+(P.vase?VASES.find(v=>v.id===P.vase).price:0))}</button>` }
 
@@ -131,6 +142,8 @@ export function journey({panelIn, show, closePanel, S, setChip}){
 
   // ---------- one click handler for every screen ----------
   panelIn.addEventListener('click',e=>{ const t=e.target.closest('button,a'); if(!t) return; const d=t.dataset;
+    if(d.ac&&d.v==='other'){ AC[d.ac]='other'; show(ask({who:1,occ:2,feel:3}[d.ac])); const i=panelIn.querySelector('#otherT'); if(i) i.focus(); return }
+    if(d.other){ const i=panelIn.querySelector('#otherT'), v=(i&&i.value||'').trim(); if(!v){ i&&i.focus(); return } AC[d.other+'T']=v; if(d.other==='who'&&guess('who',v)==='grieving') AC.occ='sympathy'; show(ask({who:2,occ:3,feel:4}[d.other])); return }
     if(d.ac){ AC[d.ac]=d.v; if(d.ac==='who'&&d.v==='grieving') AC.occ='sympathy'; show(ask({who:2,occ:3,feel:4}[d.ac])); return }
     if(d.ask){ show(ask(+d.ask)); return }
     if(d.results!==undefined){ show(results()); return }
@@ -141,7 +154,7 @@ export function journey({panelIn, show, closePanel, S, setChip}){
     if(d.vase){ P.vase=P.vase===d.vase?null:d.vase; keepCard(); show(product(P.b.id)); return }
     if(d.start!==undefined){ const ta=panelIn.querySelector('#cardT,#card'); if(ta) ta.value=t.textContent; return }
     if(d.addp!==undefined){ keepCard(); const b=P.b, s=SIZES[P.size];
-      bag.push({name:b.name,detail:`${s.name}, ${s.stems} stems, ${s.h} cm${P.card?' · card':''}${P.backup==='ask'?' · text me first':''}`,price:priceOf(b,P.size),img:b.img});
+      bag.push({name:b.name,detail:`${s.name}, ${s.stems} stems, ${s.h} cm${P.card?' · card':''}${P.backup==='ask'?' · text me first':''}${P.note?' · note: '+P.note:''}`,price:priceOf(b,P.size),img:b.img});
       if(P.vase){ const v=VASES.find(x=>x.id===P.vase); bag.push({name:v.name,detail:`${v.h} cm`,price:v.price,img:v.img}) }
       updBag(); show(bagView()); return }
     if(d.addv){ const v=VASES.find(x=>x.id===d.addv); bag.push({name:v.name,detail:`${v.h} cm`,price:v.price,img:v.img}); updBag(); t.textContent='Added'; return }
@@ -150,8 +163,9 @@ export function journey({panelIn, show, closePanel, S, setChip}){
     if(d.bag!==undefined){ show(bagView()); return }
   });
   panelIn.addEventListener('input',e=>{ if(e.target.id==='budget'){ AC.budget=+e.target.value; panelIn.querySelector('#bOut').textContent=money(AC.budget); panelIn.querySelector('#bHint').textContent=sizeFor(AC.budget) } });
+  panelIn.addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.id==='otherT'){ e.preventDefault(); const b=panelIn.querySelector('[data-other]'); if(b) b.click() } });
   panelIn.addEventListener('submit',e=>{ if(e.target.id==='co'){ e.preventDefault(); bag.splice(0); updBag(); show(done()) } });
-  function keepCard(){ const ta=panelIn.querySelector('#cardT'); if(ta&&P) P.card=ta.value }
+  function keepCard(){ const ta=panelIn.querySelector('#cardT'), nt=panelIn.querySelector('#noteT'); if(ta&&P) P.card=ta.value; if(nt&&P) P.note=nt.value.trim() }
   // items added in the builder page arrive through the same bag
   return {Z, whenWhere, bagView};
 }

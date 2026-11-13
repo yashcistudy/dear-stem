@@ -9,7 +9,6 @@
 @font-face{font-family:Jost;font-weight:300;src:url(../vendor/jost-latin-300-normal.woff2) format('woff2')}
 @font-face{font-family:Jost;font-weight:400;src:url(../vendor/jost-latin-400-normal.woff2) format('woff2')}
 @font-face{font-family:Jost;font-weight:500;src:url(../vendor/jost-latin-500-normal.woff2) format('woff2')}
-@font-face{font-family:'Homemade Apple';src:url(../vendor/homemade-apple-latin-400-normal.woff2) format('woff2')}
 @font-face{font-family:'Caffe Latte';src:url(../vendor/caffe-latte.woff2) format('woff2')}
 :root{--paper:#FBF8F3;--plum:#3A2233;--ink2:#6B5463;--petal:#F1B9C4;--butter:#F2D98B;--lilac:#C3B3E0;--blue:#7E9CCB;--mint:#BFD8C2;--line:rgba(58,34,51,.16)}
 *{box-sizing:border-box}
@@ -34,8 +33,8 @@ header{position:fixed;left:0;right:0;top:0;z-index:5;background:var(--paper)}
 .toggle[aria-checked=true] .sw::after{left:21px}
 .btn{background:var(--plum);color:var(--paper);border:1.5px solid var(--plum);font-weight:500;font-size:16px;min-height:50px;padding:0 22px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn.ghost{background:var(--paper);color:var(--plum)}
-.q{font-family:'Homemade Apple',cursive;line-height:1.5;margin:0}
-.ct{font-family:'Caffe Latte',serif;font-weight:400;margin:0;line-height:1.05;white-space:nowrap}
+.q{font-family:Jost,sans-serif;line-height:1.5;margin:0}
+.ct{font-family:Jost,sans-serif;font-weight:300;margin:0;line-height:1.05;white-space:nowrap}
 .lab{font-size:13px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;margin:0}
 .muted{color:var(--ink2)}
 /* side panel */
@@ -176,7 +175,7 @@ for(let i=0;i<6;i++) box(0.012,0.84,0.005,M(C.wallDark),-1.05+i*0.42,0.5,-3.265,
 const glass = new THREE.Mesh(new THREE.BoxGeometry(0.9,0.36,0.5), new THREE.MeshPhysicalMaterial({color:0xffffff,transmission:.9,roughness:.05,thickness:.02,transparent:true,opacity:.35}));
 glass.position.set(-0.55,1.21,-3.62); counter.add(glass);
 for(let i=0;i<5;i++){const p=new THREE.Mesh(new THREE.TorusGeometry(0.045,0.022,10,20),M(i%2?0xE7C27D:0xD9A35E,{roughness:.7}));p.rotation.x=Math.PI/2;p.position.set(-0.85+i*0.15,1.08,-3.6);p.castShadow=true;counter.add(p);STAND.pastry.push(p)}
-const easelT = canvasTex(512,640,(g,w,h)=>{g.fillStyle='#FBF8F3';g.fillRect(0,0,w,h);g.strokeStyle='#3A2233';g.lineWidth=6;g.strokeRect(14,14,w-28,h-28);g.fillStyle='#3A2233';g.textAlign='center';g.font="54px 'Homemade Apple'";g.fillText('Ask the',w/2,250);g.fillText('counter',w/2,350);g.font="30px Jost";g.fillText('4 questions',w/2,470)});
+const easelT = canvasTex(512,640,(g,w,h)=>{g.fillStyle='#FBF8F3';g.fillRect(0,0,w,h);g.strokeStyle='#3A2233';g.lineWidth=6;g.strokeRect(14,14,w-28,h-28);g.fillStyle='#3A2233';g.textAlign='center';g.font="54px Jost";g.fillText('Ask the',w/2,250);g.fillText('counter',w/2,350);g.font="30px Jost";g.fillText('4 questions',w/2,470)});
 const easel = new THREE.Mesh(new THREE.PlaneGeometry(0.32,0.4), new THREE.MeshStandardMaterial({map:easelT,roughness:.9})); easel.position.set(0.55,1.23,-3.55); easel.rotation.x=-0.18; counter.add(easel);
 zone('counter','Ask the counter','Four questions, three bouquets',counter,{pos:new THREE.Vector3(0.2,1.55,-1.6),look:new THREE.Vector3(0,1.15,-3.6)},[2.6,1.6,1],new THREE.Vector3(0,0.8,-3.6));
 
@@ -220,7 +219,7 @@ zone('wrap','Build your own','Pick every stem, paper and ribbon',wrap,{pos:new T
 const door = new THREE.Group(); scene.add(door);
 box(1.15,2.25,0.06,M(C.plum,{roughness:.5}),2.55,1.125,-D+0.03,door);
 const pane = new THREE.Mesh(new THREE.PlaneGeometry(0.85,1.5), new THREE.MeshBasicMaterial({color:0xFFF4E2})); pane.position.set(2.55,1.35,-D+0.07); door.add(pane);
-const openT = canvasTex(256,160,(g,w,h)=>{g.fillStyle='#FBF8F3';g.fillRect(0,0,w,h);g.fillStyle='#3A2233';g.textAlign='center';g.font="44px 'Homemade Apple'";g.fillText('open',w/2,100)});
+const openT = canvasTex(256,160,(g,w,h)=>{g.fillStyle='#FBF8F3';g.fillRect(0,0,w,h);g.fillStyle='#3A2233';g.textAlign='center';g.font="44px Jost";g.fillText('open',w/2,100)});
 const openSign = new THREE.Mesh(new THREE.PlaneGeometry(0.3,0.19), new THREE.MeshStandardMaterial({map:openT})); openSign.position.set(2.55,1.55,-D+0.09); door.add(openSign);
 zone('door','When and where','Delivery or pickup, and the day',door,{pos:new THREE.Vector3(2.0,1.6,-2.4),look:new THREE.Vector3(2.55,1.3,-D)},[1.3,2.4,0.4],new THREE.Vector3(2.55,1.15,-D+0.2));
 
