@@ -138,7 +138,7 @@ ul.bag .link{grid-column:2;font-size:12px}
 .form{display:flex;flex-direction:column;gap:12px}
 @media (max-width:720px){#panel{width:auto}.hd .right{gap:6px}.chip{padding:8px 10px}}
 #jump{display:none}
-@media (max-width:720px){#jump{display:flex;position:fixed;left:0;right:0;bottom:44px;z-index:3;gap:8px;overflow-x:auto;padding:0 12px 4px;scrollbar-width:none}#jump::-webkit-scrollbar{display:none}#jump button{flex:none;background:rgba(251,248,243,.94);border:1px solid var(--plum);padding:9px 14px;font-size:14px;white-space:nowrap}body.simple-on #jump{display:none}#hint{display:none!important}}
+@media (max-width:720px){#jump{display:flex;position:fixed;left:0;right:0;bottom:44px;z-index:3;gap:8px;overflow-x:auto;padding:0 12px 4px;scrollbar-width:none}#jump::-webkit-scrollbar{display:none}#jump button{flex:none;background:rgba(251,248,243,.94);border:1px solid var(--plum);padding:9px 14px;font-size:14px;white-space:nowrap}body.simple-on #jump{display:none}#hint{display:none!important}#dragtip{bottom:96px!important}}
 @media (max-width:520px){.toggle>span:last-child{display:none}.chip{white-space:nowrap;font-size:13px;padding:8px}#bagBtn{padding:8px 10px}}
 </style>
 <link rel="preload" as="image" href="stand/stand_01_entrance.webp" fetchpriority="high">
@@ -215,10 +215,11 @@ async function build(id){
   // the owner stands in the empty middle of the entrance, a little in front of the floor behind her
   if(id==='door'){ let v=.98; while(v>.55&&1.4+Math.pow(1-depthAt(.5,v),1.15)*5.6<2.9) v-=.01;
     // she stands closer than that floor point, about two steps in front of you, on the same floor
-    const f0=point(.5,v), D=innerWidth<innerHeight?1.85:2.35, feet=new THREE.Vector3(f0.x*D/-f0.z, f0.y, -D), H=1.62;
+    // the photo's units aren't metres: the floor sits about one eye height below the camera, so measure everything in eye heights
+    const f0=point(.5,v), u=Math.min(3,Math.max(.6,-f0.y/1.6)), D=(innerWidth<innerHeight?1.5:1.75)*u, feet=new THREE.Vector3(f0.x*D/-f0.z, f0.y, -D), H=1.66*u;
     const ow=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({transparent:true,alphaTest:.02,color:0xFFF4EE}));
     const sh=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,map:shadowTex()}));
-    sh.rotation.x=-Math.PI/2; sh.scale.set(.8,.32,1); sh.position.set(feet.x+.04,feet.y+.01,feet.z+.02); mesh.add(sh,ow);
+    sh.rotation.x=-Math.PI/2; sh.scale.set(.8*u,.32*u,1); sh.position.set(feet.x+.04,feet.y+.01,feet.z+.02); mesh.add(sh,ow);
     const L=new THREE.TextureLoader(), poses={};
     const pose=k=>{ const go=t=>{ ow.material.map=t; ow.material.needsUpdate=true; const w=H*t.image.width/t.image.height; ow.scale.set(w,H,1); ow.position.set(feet.x,feet.y+H/2,feet.z+.05) };
       if(poses[k]) go(poses[k]); else L.load(`img/owner/full_${k}.webp`,t=>{ t.colorSpace=THREE.SRGBColorSpace; poses[k]=t; go(t) }) };

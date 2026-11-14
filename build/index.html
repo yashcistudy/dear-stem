@@ -295,7 +295,7 @@ function bowTex(id){ return bowTexs[id] ||= Promise.all(ANG.map(a=>tex(`img/bow_
 const bowPhoto=new THREE.Sprite(new THREE.SpriteMaterial({alphaTest:.5,depthWrite:true,transparent:false})); bowPhoto.center.set(.5,1); bowPhoto.renderOrder=3; bowPhoto.visible=false; scene.add(bowPhoto);
 function useBowPhoto(){ bowTex(ribbon.id).then(t=>{ const ok=t&&t.every(Boolean); bowPhoto.userData={tex:ok?t:null,f:-1}; bowPhoto.visible=!!ok; if(bundle) bundle.visible=!ok; if(bow) bow.userData.photo=!!ok; frame() }) }
 function poseBowPhoto(){ const d=bowPhoto.userData; if(!bowPhoto.visible||!d||!d.tex) return; const f=((Math.round(wrapPi(yaw)/(Math.PI/4))*DIR)%8+8)%8, t=d.tex[f];
-  if(f!==d.f){ d.f=f; bowPhoto.material.map=t; bowPhoto.material.needsUpdate=true; bowPhoto.scale.set(t.image.width/PX*C.k,t.image.height/PX*C.k,1) } bowPhoto.position.set(0,4*C.k,0); if(bundle) bundle.visible=false }
+  if(f!==d.f){ d.f=f; bowPhoto.material.map=t; bowPhoto.material.needsUpdate=true; bowPhoto.scale.set(t.image.width/PX*C.k,t.image.height/PX*C.k,1) } bowPhoto.position.set(0,3*C.k,0); if(bundle) bundle.visible=false }
 function poseBow(){ if(!bow||!bow.userData.w) return; if(bow.userData.photo){ bow.visible=false; return } const c=Math.cos(yaw), y=C.hf*.2, r=radAt(y,0)*.7+.5; bow.position.x=r*Math.sin(yaw); bow.position.z=r*c; bow.scale.x=bow.userData.w*Math.max(.05,c); bow.visible=c>.12 }
 hand=photoPlane('sprites/scale_hand_front.webp',null,-13,0,1); hand.position.x=-30; fixed.add(hand);
 // heads: one sprite per stem, showing the photo taken from the side that faces you
