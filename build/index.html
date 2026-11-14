@@ -40,20 +40,21 @@ header{position:sticky;top:0;z-index:6;background:var(--paper)}
 #stage[data-step="3"] #glBox{inset:0;opacity:1;pointer-events:auto}
 #stage[data-step="3"] #room,#stage[data-step="2"] #room{opacity:1}
 #stage[data-step="3"] #table,#stage[data-step="2"] #table{opacity:0;pointer-events:none}
-.guide{position:absolute;left:20px;top:20px;display:flex;gap:12px;align-items:flex-start;max-width:400px;z-index:2}
-.guide .face{width:56px;height:56px;border-radius:50%;border:1px solid var(--plum);background:var(--paper) url(../vendor/monogram_plum.svg) center/60% no-repeat;flex:none;overflow:hidden}
-.guide .face.on{background-size:cover;background-position:center}
+.talk{display:flex;gap:12px;align-items:center}
+.talk .face{width:56px;height:56px;border-radius:50%;border:1px solid var(--plum);background:var(--paper) url(../vendor/monogram_plum.svg) center/60% no-repeat;flex:none;overflow:hidden}
+.talk .face.on{background-size:cover;background-position:center}
 #wrapper{position:absolute;left:50%;bottom:0;height:88%;max-width:94%;object-fit:contain;object-position:bottom;opacity:0;transform:translate(-50%,16px);transition:opacity .5s,transform .7s;pointer-events:none;z-index:1}
 #stage[data-step="2"] #wrapper{opacity:1;transform:translate(-50%,0)}
-.guide p{margin:0;background:var(--paper);border:1px solid var(--line);padding:10px 14px;font-family:'Caffe Latte',Jost,sans-serif;font-size:22px;line-height:1.3;letter-spacing:.01em}
+.talk p{margin:0;font-size:17px;line-height:1.4}
+.talk p::first-letter,.ct::first-letter{font-family:'Caffe Latte',Jost,sans-serif;font-size:1.35em;line-height:0}
 .steps{position:absolute;left:20px;bottom:18px;display:flex;gap:6px;margin:0;padding:0;list-style:none;z-index:2}
 .steps li{background:rgba(251,248,243,.9);border:1px solid var(--line);padding:6px 12px;font-size:13px}
 .steps li.on{background:var(--plum);color:var(--paper);border-color:var(--plum)}
 #dragHint{position:absolute;right:20px;bottom:22px;margin:0;font-size:13px;color:var(--ink2);background:rgba(251,248,243,.9);padding:4px 10px;display:none;z-index:2}
 #stage[data-step="3"] #dragHint{display:block}
 /* the panel */
-.side{padding:22px 28px 190px;display:flex;flex-direction:column;gap:24px}
-.ct{font-family:Jost,sans-serif;font-weight:300;margin:0;line-height:1.1;font-size:40px}
+.side{padding:22px 28px 260px;display:flex;flex-direction:column;gap:24px}
+.ct{font-family:Jost,sans-serif;font-weight:300;margin:0;line-height:1.1;font-size:38px}
 .lab{font-size:13px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;margin:0 0 10px}
 .muted{color:var(--ink2)}
 .link{background:none;border:0;padding:0;font-size:14px;text-decoration:underline;align-self:flex-start}
@@ -83,7 +84,8 @@ textarea{min-height:90px}
 .mlab{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2);margin-top:4px}
 .sumrow{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .sumrow b{font-weight:500;font-size:20px}
-#fit{font-size:14px;margin-top:6px}
+#fit .on{font-weight:500;color:var(--plum)}
+.sumrow b{font-size:22px}
 .btn{background:var(--plum);color:var(--paper);border:1.5px solid var(--plum);font-weight:500;font-size:16px;min-height:50px;padding:0 22px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
 .btn.ghost{background:var(--paper);color:var(--plum)}
 .btn[disabled]{opacity:.4;cursor:default}
@@ -95,10 +97,10 @@ textarea{min-height:90px}
  .wrap{grid-template-columns:1fr}
  #stage{position:sticky;top:58px;height:46vh;z-index:3}
  #stage[data-step="3"]{height:58vh}
- .guide{right:12px;left:12px;top:12px}.guide .face{width:44px;height:44px}.guide p{font-size:19px}
+ .talk .face{width:44px;height:44px}.talk p{font-size:16px}
  .steps{left:12px;bottom:12px}.steps li{padding:4px 9px;font-size:12px}
  #dragHint{right:12px;bottom:46px}
- .side{padding:18px 16px 200px}
+ .side{padding:18px 16px 270px}
  .sum{width:100%;min-width:0;padding:12px 16px 14px}
  body:not(.checking) #fullBox{display:none}
  .hd{padding:6px 14px}.hd img{height:32px}
@@ -118,13 +120,12 @@ textarea{min-height:90px}
   <div id="mini" aria-hidden="true"><p>From the front</p></div>
   <div id="glBox"></div>
   <img id="wrapper" src="../img/owner/half_wrapping.webp" alt="">
-  <div class="guide"><div class="face" id="face"></div><p id="say" aria-live="polite">Pick a stem you love and I&#39;ll lay it on the paper.</p></div>
   <ol class="steps" aria-label="Steps"><li data-s="1" class="on">1 Making it</li><li data-s="2">2 Wrap it</li><li data-s="3">3 Checking it</li></ol>
   <p id="dragHint">Drag to turn it</p>
  </section>
  <section class="side">
   <div id="p1">
-   <p class="lab">Build your own · 1 of 3</p><h1 class="ct">Making it</h1>
+   <p class="lab">Build your own</p><h1 class="ct">Making it</h1>
    <p class="muted" style="margin:10px 0 0">Every stem you pick goes on the paper. Tap one on the paper to take it off.</p>
   </div>
   <div id="p1b"><p class="lab">Size</p><div class="row" id="sizes" role="radiogroup" aria-label="Size"></div></div>
@@ -133,7 +134,7 @@ textarea{min-height:90px}
 
   <div id="p3" hidden>
    <button class="link" id="back">← Back to the table</button>
-   <p class="lab" style="margin-top:14px">Build your own · 3 of 3</p><h1 class="ct">Checking it</h1>
+   <p class="lab" style="margin-top:14px">Build your own</p><h1 class="ct">Checking it</h1>
    <p class="muted" style="margin:10px 0 0">This is how it stands in the cone. Drag it round to see every side.</p>
   </div>
   <div id="p3b" hidden><p class="lab">Ribbon</p><div class="row" id="ribbons" role="radiogroup" aria-label="Ribbon"></div></div>
@@ -144,9 +145,10 @@ textarea{min-height:90px}
  </section>
 </main>
 <div class="sum">
- <div class="sumrow"><span id="count">0 stems</span><span class="muted" id="where"></span></div>
- <div id="fullBox"><div class="meter" aria-hidden="true"><i id="fill" style="width:0"></i><em style="left:37.5%"></em><em style="left:84%"></em></div><div class="mlab"><span>thin</span><span>full</span><span>crowded</span></div><div id="fit" class="muted" aria-live="polite">Empty paper.</div></div>
- <div class="sumrow"><b id="total">$0</b><button class="btn" id="next" disabled>Wrap it</button></div>
+ <div class="talk"><div class="face" id="face"></div><p id="say" aria-live="polite">Pick a stem you love and I&#39;ll lay it on the paper.</p></div>
+ <div id="fullBox"><div class="meter" aria-hidden="true"><i id="fill" style="width:0"></i><em style="left:37.5%"></em><em style="left:84%"></em></div><div class="mlab" id="fit"><span>thin</span><span>full</span><span>crowded</span></div></div>
+ <div class="sumrow"><span><b id="total">$0</b> <span class="muted" id="count">0 stems</span></span><button class="btn" id="next" disabled>Wrap it</button></div>
+ <p class="muted" id="where" style="margin:-4px 0 0;font-size:13px"></p>
 </div>
 <div id="done" role="dialog" aria-modal="true" aria-labelledby="doneT"><div class="box"><div style="display:flex;gap:14px;align-items:flex-end"><img id="doneImg" alt="" style="flex:1;min-width:0"><img src="../img/owner/full_onitsway.webp" alt="" style="height:240px;width:auto;flex:none;background:none"></div><p class="ct" style="font-size:30px" id="doneT">It&#39;s in your bag</p><p style="margin:0" id="doneS"></p><p class="muted" style="margin:0;font-size:14px">Before it leaves, we send you a photo of the real bouquet to approve.</p><div class="row"><a class="btn" href="../#bag">See your bag</a><button class="btn ghost" id="again">Keep building</button></div></div></div>
 
@@ -285,9 +287,16 @@ function coneTex(id){ return coneTexs[id] ||= Promise.all(ANG.map(a=>tex(`img/co
 const conePhoto=new THREE.Sprite(new THREE.SpriteMaterial({depthTest:false,depthWrite:false})); conePhoto.renderOrder=-1; conePhoto.center.set(.5,0); conePhoto.visible=false; scene.add(conePhoto);
 function poseCone(){ const d=conePhoto.userData; if(!conePhoto.visible||!d.tex) return; const f=((Math.round(wrapPi(yaw)/(Math.PI/4))*DIR)%8+8)%8, t=d.tex[f];
   if(f!==d.f){ d.f=f; conePhoto.material.map=t; conePhoto.material.needsUpdate=true; conePhoto.scale.set(t.image.width/PX*C.k,t.image.height/PX*C.k,1) } }
-function setBow(){ if(bow&&bow.parent) bow.parent.remove(bow); const y=C.hf*.2; bow=photoPlane(`sprites/ribbon-bow_${ribbon.id}_front.webp`,10*C.k,y-5*C.k,radAt(y,0)+.5,4); fixed.add(bow); frame() }
+function setBow(){ if(bow&&bow.parent) bow.parent.remove(bow); const y=C.hf*.2; bow=photoPlane(`sprites/ribbon-bow_${ribbon.id}_front.webp`,10*C.k,y-5*C.k,radAt(y,0)+.5,4); fixed.add(bow); useBowPhoto(); frame() }
 // the bow is tied at the front: it slides round with the cone, narrows as it turns away and disappears behind the paper
-function poseBow(){ if(!bow||!bow.userData.w) return; const c=Math.cos(yaw), y=C.hf*.2, r=radAt(y,0)*.7+.5; bow.position.x=r*Math.sin(yaw); bow.position.z=r*c; bow.scale.x=bow.userData.w*Math.max(.05,c); bow.visible=c>.12 }
+// if the ribbon has been photographed tied round the stems from 8 sides, that photo replaces the flat bow and the stem bundle
+const bowTexs={};
+function bowTex(id){ return bowTexs[id] ||= Promise.all(ANG.map(a=>tex(`img/bow_${id}_${a}.webp`))) }
+const bowPhoto=new THREE.Sprite(new THREE.SpriteMaterial({alphaTest:.5,depthWrite:true,transparent:false})); bowPhoto.center.set(.5,1); bowPhoto.renderOrder=3; bowPhoto.visible=false; scene.add(bowPhoto);
+function useBowPhoto(){ bowTex(ribbon.id).then(t=>{ const ok=t&&t.every(Boolean); bowPhoto.userData={tex:ok?t:null,f:-1}; bowPhoto.visible=!!ok; if(bundle) bundle.visible=!ok; if(bow) bow.userData.photo=!!ok; frame() }) }
+function poseBowPhoto(){ const d=bowPhoto.userData; if(!bowPhoto.visible||!d||!d.tex) return; const f=((Math.round(wrapPi(yaw)/(Math.PI/4))*DIR)%8+8)%8, t=d.tex[f];
+  if(f!==d.f){ d.f=f; bowPhoto.material.map=t; bowPhoto.material.needsUpdate=true; bowPhoto.scale.set(t.image.width/PX*C.k,t.image.height/PX*C.k,1) } bowPhoto.position.set(0,4*C.k,0); if(bundle) bundle.visible=false }
+function poseBow(){ if(!bow||!bow.userData.w) return; if(bow.userData.photo){ bow.visible=false; return } const c=Math.cos(yaw), y=C.hf*.2, r=radAt(y,0)*.7+.5; bow.position.x=r*Math.sin(yaw); bow.position.z=r*c; bow.scale.x=bow.userData.w*Math.max(.05,c); bow.visible=c>.12 }
 hand=photoPlane('sprites/scale_hand_front.webp',null,-13,0,1); hand.position.x=-30; fixed.add(hand);
 // heads: one sprite per stem, showing the photo taken from the side that faces you
 const hs=new Map(); // u -> {sprite, stem, slot, frame}
@@ -311,20 +320,21 @@ function layoutHeads(){ if(!C.hf) return; const order=fanOrder(), N=order.length
     for(let a=0;a<P.length;a++) for(let b=a+1;b<P.length;b++){ const A=P[a],B=P[b], dx=B.x-A.x, dz=B.z-A.z, d=Math.hypot(dx,dz)||.01, m=(A.rad+B.rad)*.8;
       if(d<m){ const q=(m-d)/2/d; A.x-=dx*q; A.z-=dz*q; B.x+=dx*q; B.z+=dz*q } }
     for(const p of P){ const pull=p.g?.004:.02; p.x*=1-pull; p.z*=1-pull; const r=Math.hypot(p.x,p.z), lim=Rc*(p.g?1.3:1.08); if(r>lim){ p.x*=lim/r; p.z*=lim/r } } }
-  let reach=0;
+  let reach=0; const reachAll=P.reduce((m,p)=>Math.max(m,Math.hypot(p.x,p.z)+p.rad),0);
   P.forEach(p=>{ const h=p.h; if(!h) return; const rr=Math.min(1.3,Math.hypot(p.x,p.z)/Rc), ph=Math.atan2(p.x,p.z), rim=rimAt(ph);
-    let y=Math.max(rim+1,C.hf+1+Hd*Math.cos(Math.min(1,rr)*Math.PI/2)**.8);
+    const lift=Math.min(1,Math.max(.25,(reachAll/Rc)**1.3));
+    let y=rim-1.5+Hd*lift*Math.cos(Math.min(1,rr)*Math.PI/2)**.9;
     if(p.g) y-=2.5; if(h.s.role==='spike') y+=2;
     h.slot={th:Math.min(1.3,rr*1.15),ph,x:p.x,z:p.z,y,rim}; h.sprite.position.set(p.x,y,p.z); if(!p.g) reach=Math.max(reach,Math.hypot(p.x,p.z));
     // the bit of stem you can see between the heads, from the head down to the paper
     const top=new THREE.Vector3(p.x,y,p.z), base=new THREE.Vector3(0,C.hf*.35,0), dir=base.clone().sub(top);
     const f=(y-(rim-1))/(y-base.y), len=dir.length()*Math.max(0,f);
-    h.stem.visible=len>.5&&!!h.tex; h.stem.scale.set(1,len,1); h.stem.position.copy(top).addScaledVector(dir.normalize(),len/2);
+    h.stem.visible=false; h.stem.scale.set(1,len,1); h.stem.position.copy(top).addScaledVector(dir.normalize(),len/2);
     h.stem.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir); h.frame=-1 });
   // shade between the heads: a dark leafy dome under them, only as wide as the flowers reach
   if(fill){ heads.remove(fill); fill.geometry.dispose() }
   if(N>=3){ const S=48,Rw=10,pos=[],idx=[], R2=Math.min(Rc,reach+2);
-    for(let j=0;j<=Rw;j++) for(let i=0;i<=S;i++){ const th=i/S*Math.PI*2, rr=j/Rw, r=rr*R2, rim=rimAt(th), y=Math.max(rim-1,C.hf-1+(Hd-4)*Math.cos(Math.min(1,r/Rc)*Math.PI/2)**.8);
+    for(let j=0;j<=Rw;j++) for(let i=0;i<=S;i++){ const th=i/S*Math.PI*2, rr=j/Rw, r=rr*R2, rim=rimAt(th), y=rim-3+Math.max(0,(Hd*Math.min(1,Math.max(.25,(reachAll/Rc)**1.3))-4))*Math.cos(Math.min(1,r/Rc)*Math.PI/2)**.9;
       pos.push(r*Math.sin(th),y,r*Math.cos(th)) }
     for(let j=0;j<Rw;j++) for(let i=0;i<S;i++){ const a=j*(S+1)+i,b=a+S+1; idx.push(a,b,a+1,b,b+1,a+1) }
     const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setIndex(idx); g.computeVertexNormals();
@@ -364,7 +374,7 @@ renderer.setAnimationLoop(now=>{ const dt=Math.min(.1,(now-last)/1000); last=now
   if(!drag&&Math.abs(vel)>1e-4){ vel*=.92; yaw+=vel; dirty=true }
   if(Math.abs(elevGoal-elev)>1e-3){ elev+=(elevGoal-elev)*(reduce?1:1-Math.exp(-dt*3.2)); dirty=true }
   if(!dirty) return; dirty=false;
-  heads.rotation.y=yaw; poseHeads(); poseCone(); poseBow(); hand.visible=showHand&&step!==1; aim(); renderer.render(scene,camera) });
+  heads.rotation.y=yaw; poseHeads(); poseCone(); poseBow(); poseBowPhoto(); hand.visible=showHand&&step!==1; aim(); renderer.render(scene,camera) });
 
 // ---------- fullness, in the counter's voice ----------
 const sayEl=document.getElementById('say');
@@ -377,7 +387,7 @@ function changed(id,added){ document.getElementById('q_'+id).textContent=picked.
   syncLays(); syncHeads(); summary(added?byId[id]:null) }
 function summary(added){ const n=picked.length, f=fullness(), total=picked.reduce((a,p)=>a+byId[p.id].price,0)+(n?paper.price:0);
   const greens=picked.filter(p=>byId[p.id].role==='green').length, focal=picked.filter(p=>byId[p.id].role==='focal').length;
-  document.getElementById('count').textContent=`${n} stem${n===1?'':'s'}${n?` · a ${size.name.toLowerCase()} is about ${size.stems}`:''}`;
+  document.getElementById('count').textContent=`· ${n} stem${n===1?'':'s'}${n?`, a ${size.name.toLowerCase()} holds about ${size.stems}`:''}`;
   document.getElementById('total').textContent='$'+total;
   document.getElementById('fill').style.width=Math.min(100,f/1.6*100)+'%';
   const nx=document.getElementById('next'); if(step===1){ nx.textContent='Wrap it'; nx.disabled=n<3 } else { nx.textContent='Add to bag'; nx.disabled=n<3 }
@@ -388,7 +398,7 @@ function summary(added){ const n=picked.length, f=fullness(), total=picked.reduc
   else if(f>1.35){ fit='Getting crowded. The heads start to hide each other.'; line='Hmm, getting crowded. Swap one instead of adding, or go up a size.' }
   else if(focal&&!greens){ fit='Full enough. One or two greens would give it shape.'; line='A little eucalyptus would loosen it up.' }
   else { fit='Nicely full for this size.'; line='That looks just right to me.' }
-  document.getElementById('fit').textContent=fit;
+  const st=n<3?-1:f<.6?0:f>1.35?2:1; [...document.getElementById('fit').children].forEach((el,i)=>el.classList.toggle('on',i===st));
   // on phones the fullness waits until it stands up in the cone
   if(step===1&&phone.matches&&n>=3){ line=added?`${added.name} on the paper. ${n} stems so far.`:`${n} stems on the paper.`; if(n>=3) line+=' Wrap it when you&#39;re ready.' }
   setFace(step===2?'wrapping':f>1.35&&n>=3?'crowded':step===3&&n>=3&&f>=.6?'forthem':n>=3&&f<.6&&!(step===1&&phone.matches)?'counter':'building');

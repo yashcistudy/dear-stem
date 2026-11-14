@@ -68,7 +68,7 @@ export function journey({panelIn, show, closePanel, S, setChip}){
    ${cur==='other'?`<label class="f">In your words<input id="otherT" maxlength="60" value="${esc(AC[key+'T'])}" placeholder="${OTHER_HINT[key]}"></label><button class="btn" data-other="${key}">Next</button>`:''}`;
   function ask(n){
     const back=n>1?`<button class="link" data-ask="${n-1}">← Back</button>`:'';
-    if(n===1) return `${close}${steps(1)}${guide('Hi, I&#39;m at the counter. Who are they for?')}<p class="ct" style="font-size:40px">Who is it for?</p>${chips(WHO,AC.who,'who')}`;
+    if(n===1) return `${close}${steps(1)}${guide('Hi, I&#39;m at the counter. Four quick questions and I&#39;ll pick three for you.')}<p class="ct" style="font-size:40px">Who is it for?</p>${chips(WHO,AC.who,'who')}`;
     if(n===2) return `${close}${steps(2)}${back}${guide(`Lovely. What&#39;s the occasion for ${who()}?`)}<p class="ct" style="font-size:40px">The occasion</p>${chips(OCC,AC.occ,'occ')}`;
     if(n===3) return `${close}${steps(3)}${back}${guide('And how should it feel when they open the door?')}<p class="ct" style="font-size:40px">The feeling</p>${chips(FEEL,AC.feel,'feel')}`;
     if(n===4){ const s=sizeFor(AC.budget); return `${close}${steps(4)}${back}${guide('Last one. What would you like to spend?')}<p class="ct" style="font-size:40px">Your budget</p>

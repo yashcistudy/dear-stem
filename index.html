@@ -33,7 +33,8 @@ header{position:fixed;left:0;right:0;top:0;z-index:5;background:var(--paper)}
 .toggle[aria-checked=true] .sw::after{left:21px}
 .btn{background:var(--plum);color:var(--paper);border:1.5px solid var(--plum);font-weight:500;font-size:16px;min-height:50px;padding:0 22px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn.ghost{background:var(--paper);color:var(--plum)}
-.q{font-family:'Caffe Latte',Jost,sans-serif;font-size:19px;line-height:1.3;margin:0}
+.q{font-family:Jost,sans-serif;font-size:17px;line-height:1.45;margin:0}
+.q::first-letter,.ct::first-letter{font-family:'Caffe Latte',Jost,sans-serif;font-size:1.35em;line-height:0}
 .ct{font-family:Jost,sans-serif;font-weight:300;margin:0;line-height:1.1;letter-spacing:-.01em}
 .lab{font-size:13px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;margin:0}
 .muted{color:var(--ink2)}
@@ -102,7 +103,7 @@ ul.credits{margin:0;padding-left:18px;font-size:13px;line-height:1.55}ul.credits
 .g{display:flex;gap:10px;align-items:flex-start}
 .g .face{width:52px;height:52px;border-radius:50%;border:1px solid var(--plum);background:var(--paper) center/cover no-repeat;flex:none}
 .starts{margin-top:8px}
-.g p{font-size:19px;background:#fff;border:1px solid var(--line);padding:8px 12px}
+.g p{font-size:17px;background:#fff;border:1px solid var(--line);padding:8px 12px}
 .chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .chipo{background:#fff;border:1px solid var(--line);min-height:54px;padding:8px 12px;text-align:left;display:flex;flex-direction:column;gap:2px}
 .chipo b{font-weight:500;font-size:15px}.chipo span{font-size:12px;color:var(--ink2)}
@@ -136,6 +137,7 @@ ul.bag .link{grid-column:2;font-size:12px}
 .tot{display:flex;justify-content:space-between;font-size:14px;color:var(--ink2)}.tot.big{font-size:20px;color:var(--plum);font-weight:500}
 .form{display:flex;flex-direction:column;gap:12px}
 @media (max-width:720px){#panel{width:auto}.hd .right{gap:6px}.chip{padding:8px 10px}}
+@media (max-width:520px){.toggle>span:last-child{display:none}.chip{white-space:nowrap;font-size:13px;padding:8px}#bagBtn{padding:8px 10px}}
 </style>
 <link rel="preload" as="image" href="stand/stand_01_entrance.webp" fetchpriority="high">
 <link rel="preload" as="image" href="stand/stand_01_depth.png">
@@ -150,7 +152,7 @@ ul.bag .link{grid-column:2;font-size:12px}
   <div class="right">
    <button class="chip" id="bagBtn" type="button"><span id="bagN">Bag</span></button>
    <button class="chip" id="chip" type="button"><span aria-hidden="true">⌖</span><span id="chipText">where to?</span></button>
-   <button class="toggle" id="viewToggle" role="switch" aria-checked="false" type="button"><span class="sw" aria-hidden="true"></span><span>Simple view</span></button>
+   <button class="toggle" id="viewToggle" role="switch" aria-checked="false" type="button" aria-label="Simple view"><span class="sw" aria-hidden="true"></span><span>Simple view</span></button>
   </div>
  </div>
  <div class="rule"></div>
