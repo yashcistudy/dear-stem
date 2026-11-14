@@ -270,12 +270,14 @@ function coneGeo(){ const S=120, Rw=28, pos=[], uv=[], idx=[];
   const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2)); g.setIndex(idx); g.computeVertexNormals(); return g }
 function buildCone(){ const k=size.k; [cone,coneIn,bundle,bow].forEach(m=>m&&m.parent&&m.parent.remove(m));
   // measured from the photographed cones (front edge, back edge, radius of the opening, in cm)
-  const F={paper:{hf:27.5,hb:29.8,R:11.5},petal:{hf:27.8,hb:29.2,R:13.8}}[paper.id];
-  C={k,hf:F.hf*k,hb:F.hb*k,R:F.R*k,r0:.5*k,photo:true}; C.rimY=C.hf; C.top=Math.max(size.h-12,C.hb+6);
+  const F={paper:{hf:27.5,hb:29.8,R:11.5,flat:.62},petal:{hf:27.8,hb:29.2,R:13.8,flat:.47}}[paper.id];
+  C={k,hf:F.hf*k,hb:F.hb*k,R:F.R*k,r0:.5*k,photo:true,flat:F.flat}; C.rimY=C.hf; C.top=Math.max(size.h-12,C.hb+6);
   const g=coneGeo();
   cone=new THREE.Mesh(g,new THREE.MeshStandardMaterial({roughness:.96,side:THREE.FrontSide}));
   coneIn=new THREE.Mesh(g,new THREE.MeshStandardMaterial({roughness:1,side:THREE.BackSide,color:0xD9CABE}));
   tex(`img/paper_${paper.id}.webp`).then(t=>{ if(!t) return; t.wrapS=t.wrapT=THREE.RepeatWrapping; cone.material.map=coneIn.material.map=t; cone.material.needsUpdate=coneIn.material.needsUpdate=true; frame() });
+  // the photographed cone is a flattened wrap, wide from the front and narrow from the side, so everything inside is squeezed the same way
+  cone.scale.z=coneIn.scale.z=C.flat;
   heads.add(cone,coneIn);
   // if the shop's cone has been photographed from 8 sides, show the photo and keep the 3D cone only as an invisible wall
   coneTex(paper.id).then(t=>{ if(!t||t.some(x=>!x)||cone.parent!==heads) return; conePhoto.userData.tex=t; conePhoto.userData.f=-1;
@@ -315,17 +317,17 @@ function syncHeads(){ const have=new Set(picked.map(p=>p.u));
 const GOLD=Math.PI*(3-Math.sqrt(5));
 function layoutHeads(){ if(!C.hf) return; const order=fanOrder(), N=order.length, Rc=C.R*1.15, Hd=Math.max(4,C.top-C.hf-5);
   const P=order.map((o,i)=>{ const h=hs.get(o.p.u), g=h&&h.s.role==='green', t=Math.sqrt((i+.5)/Math.max(1,N)), ph=i*GOLD+hash(o.p.u)*.5;
-    return {h, g, x:C.R*.6*t*Math.sin(ph), z:C.R*.6*t*Math.cos(ph), rad:(h?h.s.w*h.sc:8)/2*(g?.75:.95)} });
+    return {h, g, x:C.R*.6*t*Math.sin(ph), z:C.R*.6*t*Math.cos(ph)*C.flat, rad:(h?h.s.w*h.sc:8)/2*(g?.75:.95)} });
   for(let it=0;it<70;it++){
-    for(let a=0;a<P.length;a++) for(let b=a+1;b<P.length;b++){ const A=P[a],B=P[b], dx=B.x-A.x, dz=B.z-A.z, d=Math.hypot(dx,dz)||.01, m=(A.rad+B.rad)*.55;
+    for(let a=0;a<P.length;a++) for(let b=a+1;b<P.length;b++){ const A=P[a],B=P[b], dx=B.x-A.x, dz=B.z-A.z, d=Math.hypot(dx,dz)||.01, m=(A.rad+B.rad)*.62;
       if(d<m){ const q=(m-d)/2/d; A.x-=dx*q; A.z-=dz*q; B.x+=dx*q; B.z+=dz*q } }
-    for(const p of P){ const pull=p.g?.004:.02; p.x*=1-pull; p.z*=1-pull; const r=Math.hypot(p.x,p.z), lim=C.R*(p.g?.95:.72); if(r>lim){ p.x*=lim/r; p.z*=lim/r } } }
-  let reach=0; const reachAll=P.reduce((m,p)=>Math.max(m,Math.hypot(p.x,p.z)+p.rad),0);
-  P.forEach(p=>{ const h=p.h; if(!h) return; const rr=Math.min(1.3,Math.hypot(p.x,p.z)/Rc), ph=Math.atan2(p.x,p.z), rim=rimAt(ph);
+    for(const p of P){ const pull=p.g?.004:.02; p.x*=1-pull; p.z*=1-pull; const r=Math.hypot(p.x,p.z/C.flat), lim=C.R*(p.g?.98:.8); if(r>lim){ p.x*=lim/r; p.z*=lim/r } } }
+  let reach=0; const reachAll=P.reduce((m,p)=>Math.max(m,Math.hypot(p.x,p.z/C.flat)+p.rad),0);
+  P.forEach(p=>{ const h=p.h; if(!h) return; const rr=Math.min(1.3,Math.hypot(p.x,p.z/C.flat)/Rc), ph=Math.atan2(p.x,p.z), rim=rimAt(ph);
     const lift=Math.min(1,Math.max(.25,(reachAll/Rc)**1.3));
-    let y=rim-1.5+Hd*lift*Math.cos(Math.min(1,rr)*Math.PI/2)**.9;
+    let y=rim-4.5+Hd*lift*Math.cos(Math.min(1,rr)*Math.PI/2)**.9;
     if(p.g) y-=2.5; if(h.s.role==='spike') y+=2;
-    h.slot={th:Math.min(1.3,rr*1.15),ph,x:p.x,z:p.z,y,rim}; h.sprite.position.set(p.x,y,p.z); if(!p.g) reach=Math.max(reach,Math.hypot(p.x,p.z));
+    h.slot={th:Math.min(1.3,rr*1.15),ph,x:p.x,z:p.z,y,rim}; h.sprite.position.set(p.x,y,p.z); if(!p.g) reach=Math.max(reach,Math.hypot(p.x,p.z/C.flat));
     // the bit of stem you can see between the heads, from the head down to the paper
     const top=new THREE.Vector3(p.x,y,p.z), base=new THREE.Vector3(0,C.hf*.35,0), dir=base.clone().sub(top);
     const f=(y-(rim-1))/(y-base.y), len=dir.length()*Math.max(0,f);
@@ -333,12 +335,12 @@ function layoutHeads(){ if(!C.hf) return; const order=fanOrder(), N=order.length
     h.stem.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir); h.frame=-1 });
   // shade between the heads: a dark leafy dome under them, only as wide as the flowers reach
   if(fill){ heads.remove(fill); fill.geometry.dispose() }
-  if(N>=3){ const S=48,Rw=10,pos=[],idx=[], R2=Math.min(C.R*.92,reach+2);
-    for(let j=0;j<=Rw;j++) for(let i=0;i<=S;i++){ const th=i/S*Math.PI*2, rr=j/Rw, r=rr*R2, rim=rimAt(th), y=rim-3+Math.max(0,(Hd*Math.min(1,Math.max(.25,(reachAll/Rc)**1.3))-4))*Math.cos(Math.min(1,r/Rc)*Math.PI/2)**.9;
+  if(N>=3){ const S=48,Rw=10,pos=[],idx=[], R2=Math.min(C.R*.88,reach+2);
+    for(let j=0;j<=Rw;j++) for(let i=0;i<=S;i++){ const th=i/S*Math.PI*2, rr=j/Rw, r=rr*R2, rim=rimAt(th), y=rim-6+Math.max(0,(Hd*Math.min(1,Math.max(.25,(reachAll/Rc)**1.3))-4))*Math.cos(Math.min(1,r/Rc)*Math.PI/2)**.9;
       pos.push(r*Math.sin(th),y,r*Math.cos(th)) }
     for(let j=0;j<Rw;j++) for(let i=0;i<S;i++){ const a=j*(S+1)+i,b=a+S+1; idx.push(a,b,a+1,b,b+1,a+1) }
     const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setIndex(idx); g.computeVertexNormals();
-    fill=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0x34402A,roughness:1,side:THREE.DoubleSide})); heads.add(fill) } else fill=null;
+    fill=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0x34402A,roughness:1,side:THREE.DoubleSide})); fill.scale.z=C.flat; heads.add(fill) } else fill=null;
   frame() }
 function wrapPi(a){ return Math.atan2(Math.sin(a),Math.cos(a)) }
 const smooth=(a,b,x)=>{ const t=Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*(3-2*t) };
