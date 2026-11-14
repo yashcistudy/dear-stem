@@ -137,6 +137,8 @@ ul.bag .link{grid-column:2;font-size:12px}
 .tot{display:flex;justify-content:space-between;font-size:14px;color:var(--ink2)}.tot.big{font-size:20px;color:var(--plum);font-weight:500}
 .form{display:flex;flex-direction:column;gap:12px}
 @media (max-width:720px){#panel{width:auto}.hd .right{gap:6px}.chip{padding:8px 10px}}
+#jump{display:none}
+@media (max-width:720px){#jump{display:flex;position:fixed;left:0;right:0;bottom:44px;z-index:3;gap:8px;overflow-x:auto;padding:0 12px 4px;scrollbar-width:none}#jump::-webkit-scrollbar{display:none}#jump button{flex:none;background:rgba(251,248,243,.94);border:1px solid var(--plum);padding:9px 14px;font-size:14px;white-space:nowrap}body.simple-on #jump{display:none}#hint{display:none!important}}
 @media (max-width:520px){.toggle>span:last-child{display:none}.chip{white-space:nowrap;font-size:13px;padding:8px}#bagBtn{padding:8px 10px}}
 </style>
 <link rel="preload" as="image" href="stand/stand_01_entrance.webp" fetchpriority="high">
@@ -193,6 +195,7 @@ const scene = new THREE.Scene(); scene.background = new THREE.Color(0xFBF8F3);
 const camera = new THREE.PerspectiveCamera(62,1,0.05,50);
 const loadImg = src => new Promise((res,rej)=>{const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=src});
 const cache = {};
+let owner=null; const ray=new THREE.Raycaster();
 function shadowTex(){ const c=document.createElement('canvas'); c.width=c.height=128; const g=c.getContext('2d'), r=g.createRadialGradient(64,64,0,64,64,64); r.addColorStop(0,'rgba(40,20,20,.55)'); r.addColorStop(1,'rgba(40,20,20,0)'); g.fillStyle=r; g.fillRect(0,0,128,128); const t=new THREE.CanvasTexture(c); return t }
 async function build(id){
   if(cache[id]) return cache[id];
@@ -211,14 +214,15 @@ async function build(id){
   cache[id] = {mesh, hots:s.hots.map(h=>Object.assign({},h,{p3:point(h.u,h.v)}))};
   // the owner stands in the empty middle of the entrance, a little in front of the floor behind her
   if(id==='door'){ let v=.98; while(v>.55&&1.4+Math.pow(1-depthAt(.5,v),1.15)*5.6<2.9) v-=.01;
-    const feet=point(.5,v), H=1.62;
+    // she stands closer than that floor point, about two steps in front of you, on the same floor
+    const f0=point(.5,v), D=innerWidth<innerHeight?1.85:2.35, feet=new THREE.Vector3(f0.x*D/-f0.z, f0.y, -D), H=1.62;
     const ow=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({transparent:true,alphaTest:.02,color:0xFFF4EE}));
     const sh=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,map:shadowTex()}));
     sh.rotation.x=-Math.PI/2; sh.scale.set(.8,.32,1); sh.position.set(feet.x+.04,feet.y+.01,feet.z+.02); mesh.add(sh,ow);
     const L=new THREE.TextureLoader(), poses={};
     const pose=k=>{ const go=t=>{ ow.material.map=t; ow.material.needsUpdate=true; const w=H*t.image.width/t.image.height; ow.scale.set(w,H,1); ow.position.set(feet.x,feet.y+H/2,feet.z+.05) };
       if(poses[k]) go(poses[k]); else L.load(`img/owner/full_${k}.webp`,t=>{ t.colorSpace=THREE.SRGBColorSpace; poses[k]=t; go(t) }) };
-    pose(S.set?'thisway':'welcome'); window.ownerPose=pose }
+    pose(S.set?'thisway':'welcome'); window.ownerPose=pose; owner={mesh:ow,shadow:sh,a:1} }
   return cache[id];
   return cache[id];
 }
@@ -227,16 +231,25 @@ async function build(id){
 let t={x:0,y:0}, cur={x:0,y:0}, hov={x:0,y:0}, drag=null, walking=false;
 const el = renderer.domElement;
 el.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,moved:0}; el.setPointerCapture(e.pointerId); document.getElementById('dragtip').style.display='none'});
-el.addEventListener('pointermove',e=>{ hov.x=e.clientX/innerWidth*2-1; hov.y=e.clientY/innerHeight*2-1; if(!drag) return;
+el.addEventListener('pointermove',e=>{ hov.x=e.clientX/innerWidth*2-1; hov.y=e.clientY/innerHeight*2-1; if(owner&&!drag) el.style.cursor=here==='door'&&onOwner(e)?'pointer':''; if(!drag) return; drag.moved+=Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y);
   t.x=Math.max(-1,Math.min(1,t.x-(e.clientX-drag.x)/innerWidth*2.2)); t.y=Math.max(-1,Math.min(1,t.y-(e.clientY-drag.y)/innerHeight*2)); drag.x=e.clientX; drag.y=e.clientY });
-el.addEventListener('pointerup',()=>drag=null);
+el.addEventListener('pointerup',e=>{ const tap=drag&&drag.moved<8; drag=null; if(tap&&here==='door'&&onOwner(e)) openZone('counter') });
+function onOwner(e){ if(!owner||owner.a<.5) return false; ray.setFromCamera({x:e.clientX/innerWidth*2-1,y:-(e.clientY/innerHeight*2-1)},camera);
+  const hit=ray.intersectObject(owner.mesh)[0]; if(!hit||!hit.uv||!owner.mesh.material.map) return false;
+  // only count a tap on her, not on the clear space around her
+  const img=owner.mesh.material.map.image; if(!onOwner.c){ onOwner.c=document.createElement('canvas') } const c=onOwner.c;
+  if(c.src!==img.src){ c.width=img.width; c.height=img.height; c.getContext('2d').drawImage(img,0,0); c.src=img.src }
+  return c.getContext('2d').getImageData(Math.floor(hit.uv.x*img.width),Math.floor((1-hit.uv.y)*img.height),1,1).data[3]>40 }
 addEventListener('keydown',e=>{ if(panel.classList.contains('open')) return; if(e.key==='ArrowLeft') t.x=Math.max(-1,t.x-0.15); if(e.key==='ArrowRight') t.x=Math.min(1,t.x+0.15) });
 
 // ---------- dots on the photo ----------
 let here=null, dots=[];
+const jump=document.createElement('nav'); jump.id='jump'; jump.setAttribute('aria-label','Places in this spot'); document.body.appendChild(jump);
 const fade=document.getElementById('fade'), back=document.getElementById('back'), hereT=document.getElementById('hereT');
 function placeDots(st){
   dots.forEach(d=>d.el.remove());
+  jump.innerHTML=st.hots.map((h,i)=>`<button type="button" data-j="${i}">${h.go&&STANDS[h.go].ready?'Go to ':''}${h.go&&STANDS[h.go].ready?h.t.replace(/^The /,'the '):h.t}</button>`).join('');
+  jump.onclick=e=>{ const b=e.target.closest('[data-j]'); if(!b) return; const h=st.hots[+b.dataset.j]; h.go&&STANDS[h.go].ready?goTo(h.go):openZone(h.zone) };
   dots = st.hots.map(h=>{ const canGo = h.go && STANDS[h.go].ready; const b=document.createElement('button'); b.type='button'; b.className='hot'+(canGo?' go':'');
     b.innerHTML=`<i></i><b>${canGo?'Go to ':''}${h.t.replace(/^The /,canGo?'the ':'The ')}</b>`; b.setAttribute('aria-label',(canGo?'Go to '+h.t.replace(/^The /,'the '):'Open '+h.t));
     b.onclick=()=> canGo ? goTo(h.go) : openZone(h.zone); document.body.appendChild(b); return {el:b,p3:h.p3} });
@@ -265,8 +278,11 @@ renderer.setAnimationLoop(now=>{ const dt=Math.min(0.1,(now-last)/1000); last=no
   cur.x+=(gx-cur.x)*k; cur.y+=(gy-cur.y)*k;
   // a short step forward when you walk to the next spot
   const z = camera.position.z + ((walking?-0.45:0)-camera.position.z)*k;
-  camera.position.set(cur.x*0.18, 0.02-cur.y*0.06, z);
-  camera.rotation.set(-cur.y*0.08-0.04, -cur.x*0.16, 0);
+  camera.position.set(cur.x*0.18*(camera.aspect<1?.5:1), 0.02-cur.y*0.06, z);
+  const half=STANDS[here||'door'].fov*Math.PI/360, camHalf=Math.atan(Math.tan(camera.fov*Math.PI/360)*camera.aspect), yawMax=Math.max(.16,half-camHalf-.06);
+  camera.rotation.set(-cur.y*0.08-0.04, -cur.x*yawMax, 0);
+  // she steps aside while you look around, and comes back when you face her
+  if(owner){ const want=here==='door'&&!(drag&&drag.moved>12)&&Math.abs(t.x)<.22?1:0; owner.a+=(want-owner.a)*(reduce?1:1-Math.exp(-dt*8)); owner.mesh.material.opacity=owner.a; owner.shadow.material.opacity=owner.a; owner.mesh.visible=owner.shadow.visible=owner.a>.02 }
   renderer.render(scene,camera);
   dots.forEach(d=>{ const p=d.p3.clone().project(camera), vis=p.z<1&&Math.abs(p.x)<0.96&&Math.abs(p.y)<0.9; d.el.style.display=vis&&simple.style.display!=='block'?'flex':'none'; if(vis){ d.el.style.left=(p.x+1)/2*innerWidth+'px'; d.el.style.top=(1-p.y)/2*innerHeight+'px' } }) });
 
@@ -294,7 +310,7 @@ const SV=[['counter','Ask the counter','Four questions, three bouquets','stand/s
 simpleGrid.innerHTML=`<div style="grid-column:1/-1;margin-bottom:18px"><p class="ct" style="font-size:32px">The same shop, flat.</p></div><div style="grid-column:1/-1" class="rail"></div>`+SV.map(([id,t,s,img,pos,z],i)=>`<div class="cell"><div class="thr" style="height:${[26,52,36,44,30,58][i]}px"></div><div class="hook"></div><article><div class="ph"><img src="${img}" alt="" style="transform:scale(${z});transform-origin:${pos}" loading="lazy"></div><div><h3>${t}</h3><span class="muted" style="font-size:14px">${s}</span><button class="btn ghost" data-open="${id}" style="margin-top:6px">Open</button></div></article></div>`).join('');
 simpleGrid.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openZone(b.dataset.open)});
 const tog=document.getElementById('viewToggle');
-function setSimple(on){tog.setAttribute('aria-checked',on);simple.style.display=on?'block':'none';document.getElementById('here').style.display=on?'none':'flex';hint.style.display=(!on&&S.set&&!panel.classList.contains('open'))?'flex':'none'}
+function setSimple(on){document.body.classList.toggle('simple-on',on);tog.setAttribute('aria-checked',on);simple.style.display=on?'block':'none';document.getElementById('here').style.display=on?'none':'flex';hint.style.display=(!on&&S.set&&!panel.classList.contains('open'))?'flex':'none'}
 tog.addEventListener('click',()=>setSimple(tog.getAttribute('aria-checked')!=='true'));
 
 // first visit: when and where before stepping in; phones start in the simple view
