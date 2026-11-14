@@ -295,7 +295,7 @@ function bowTex(id){ return bowTexs[id] ||= Promise.all(ANG.map(a=>tex(`img/bow_
 const bowPhoto=new THREE.Sprite(new THREE.SpriteMaterial({alphaTest:.5,depthWrite:true,transparent:false})); bowPhoto.center.set(.5,1); bowPhoto.renderOrder=3; bowPhoto.visible=false; scene.add(bowPhoto);
 function useBowPhoto(){ bowTex(ribbon.id).then(t=>{ const ok=t&&t.every(Boolean); bowPhoto.userData={tex:ok?t:null,f:-1}; bowPhoto.visible=!!ok; if(bundle) bundle.visible=!ok; if(bow) bow.userData.photo=!!ok; frame() }) }
 function poseBowPhoto(){ const d=bowPhoto.userData; if(!bowPhoto.visible||!d||!d.tex) return; const f=((Math.round(wrapPi(yaw)/(Math.PI/4))*DIR)%8+8)%8, t=d.tex[f];
-  if(f!==d.f){ d.f=f; bowPhoto.material.map=t; bowPhoto.material.needsUpdate=true; bowPhoto.scale.set(t.image.width/PX*C.k,t.image.height/PX*C.k,1) } bowPhoto.position.set(0,3*C.k,0); if(bundle) bundle.visible=false }
+  if(f!==d.f){ d.f=f; bowPhoto.material.map=t; bowPhoto.material.needsUpdate=true; bowPhoto.scale.set(t.image.width/PX*C.k,t.image.height/PX*C.k,1) } bowPhoto.position.set(0,.6*C.k,0); if(bundle) bundle.visible=false }
 function poseBow(){ if(!bow||!bow.userData.w) return; if(bow.userData.photo){ bow.visible=false; return } const c=Math.cos(yaw), y=C.hf*.2, r=radAt(y,0)*.7+.5; bow.position.x=r*Math.sin(yaw); bow.position.z=r*c; bow.scale.x=bow.userData.w*Math.max(.05,c); bow.visible=c>.12 }
 hand=photoPlane('sprites/scale_hand_front.webp',null,-13,0,1); hand.position.x=-30; fixed.add(hand);
 // heads: one sprite per stem, showing the photo taken from the side that faces you
@@ -315,11 +315,11 @@ function syncHeads(){ const have=new Set(picked.map(p=>p.u));
 const GOLD=Math.PI*(3-Math.sqrt(5));
 function layoutHeads(){ if(!C.hf) return; const order=fanOrder(), N=order.length, Rc=C.R*1.15, Hd=Math.max(4,C.top-C.hf-5);
   const P=order.map((o,i)=>{ const h=hs.get(o.p.u), g=h&&h.s.role==='green', t=Math.sqrt((i+.5)/Math.max(1,N)), ph=i*GOLD+hash(o.p.u)*.5;
-    return {h, g, x:Rc*.9*t*Math.sin(ph), z:Rc*.9*t*Math.cos(ph), rad:(h?h.s.w*h.sc:8)/2*(g?.75:.95)} });
+    return {h, g, x:C.R*.6*t*Math.sin(ph), z:C.R*.6*t*Math.cos(ph), rad:(h?h.s.w*h.sc:8)/2*(g?.75:.95)} });
   for(let it=0;it<70;it++){
-    for(let a=0;a<P.length;a++) for(let b=a+1;b<P.length;b++){ const A=P[a],B=P[b], dx=B.x-A.x, dz=B.z-A.z, d=Math.hypot(dx,dz)||.01, m=(A.rad+B.rad)*.8;
+    for(let a=0;a<P.length;a++) for(let b=a+1;b<P.length;b++){ const A=P[a],B=P[b], dx=B.x-A.x, dz=B.z-A.z, d=Math.hypot(dx,dz)||.01, m=(A.rad+B.rad)*.55;
       if(d<m){ const q=(m-d)/2/d; A.x-=dx*q; A.z-=dz*q; B.x+=dx*q; B.z+=dz*q } }
-    for(const p of P){ const pull=p.g?.004:.02; p.x*=1-pull; p.z*=1-pull; const r=Math.hypot(p.x,p.z), lim=Rc*(p.g?1.3:1.08); if(r>lim){ p.x*=lim/r; p.z*=lim/r } } }
+    for(const p of P){ const pull=p.g?.004:.02; p.x*=1-pull; p.z*=1-pull; const r=Math.hypot(p.x,p.z), lim=C.R*(p.g?.95:.72); if(r>lim){ p.x*=lim/r; p.z*=lim/r } } }
   let reach=0; const reachAll=P.reduce((m,p)=>Math.max(m,Math.hypot(p.x,p.z)+p.rad),0);
   P.forEach(p=>{ const h=p.h; if(!h) return; const rr=Math.min(1.3,Math.hypot(p.x,p.z)/Rc), ph=Math.atan2(p.x,p.z), rim=rimAt(ph);
     const lift=Math.min(1,Math.max(.25,(reachAll/Rc)**1.3));
@@ -333,7 +333,7 @@ function layoutHeads(){ if(!C.hf) return; const order=fanOrder(), N=order.length
     h.stem.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir); h.frame=-1 });
   // shade between the heads: a dark leafy dome under them, only as wide as the flowers reach
   if(fill){ heads.remove(fill); fill.geometry.dispose() }
-  if(N>=3){ const S=48,Rw=10,pos=[],idx=[], R2=Math.min(Rc,reach+2);
+  if(N>=3){ const S=48,Rw=10,pos=[],idx=[], R2=Math.min(C.R*.92,reach+2);
     for(let j=0;j<=Rw;j++) for(let i=0;i<=S;i++){ const th=i/S*Math.PI*2, rr=j/Rw, r=rr*R2, rim=rimAt(th), y=rim-3+Math.max(0,(Hd*Math.min(1,Math.max(.25,(reachAll/Rc)**1.3))-4))*Math.cos(Math.min(1,r/Rc)*Math.PI/2)**.9;
       pos.push(r*Math.sin(th),y,r*Math.cos(th)) }
     for(let j=0;j<Rw;j++) for(let i=0;i<S;i++){ const a=j*(S+1)+i,b=a+S+1; idx.push(a,b,a+1,b,b+1,a+1) }
