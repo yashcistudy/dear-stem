@@ -259,14 +259,17 @@ const sun=new THREE.DirectionalLight(0xFFF1E4,2.4); sun.position.set(-40,70,60);
 // a real cone rolled from the shop's paper photo: the back stands taller than the front, and it turns with the flowers
 let cone, coneIn, fill, bundle, bow, hand;
 const rimAt=ph=>C.hf+(C.hb-C.hf)*(1-Math.cos(ph))/2;
-const radAt=(y,th)=>{ const t=y/C.hb; return C.r0+(C.R-C.r0)*y/C.hf+(Math.sin(th*5+1.3)*.4+Math.sin(th*11+y*.35)*.2)*t+Math.max(0,y/rimAt(th)-.86)*6+.35*Math.exp(-((wrapPi(th-.7)/.05)**2)) };
+// kept a touch inside the photographed cone's outline, so it only ever hides stems behind real paper
+const radAt=(y,th)=>{ const t=y/C.hb, w=C.photo?0:1; return C.r0+(C.R*(C.photo?.94:1)-C.r0)*y/C.hf+w*((Math.sin(th*5+1.3)*.4+Math.sin(th*11+y*.35)*.2)*t+Math.max(0,y/rimAt(th)-.86)*6+.35*Math.exp(-((wrapPi(th-.7)/.05)**2))) };
 function coneGeo(){ const S=120, Rw=28, pos=[], uv=[], idx=[];
   for(let j=0;j<=Rw;j++) for(let i=0;i<=S;i++){ const th=i/S*Math.PI*2, y=j/Rw*rimAt(th), r=radAt(y,th);
     pos.push(r*Math.sin(th),y,r*Math.cos(th)); uv.push(i/S*2.2,y/38) }
   for(let j=0;j<Rw;j++) for(let i=0;i<S;i++){ const a=j*(S+1)+i, b=a+S+1; idx.push(a,b,a+1,b,b+1,a+1) }
   const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2)); g.setIndex(idx); g.computeVertexNormals(); return g }
 function buildCone(){ const k=size.k; [cone,coneIn,bundle,bow].forEach(m=>m&&m.parent&&m.parent.remove(m));
-  C={k,hf:26*k,hb:34*k,R:12.6*k,r0:1.3*k}; C.rimY=C.hf; C.top=Math.max(size.h-12,C.hb+6);
+  // measured from the photographed cones (front edge, back edge, radius of the opening, in cm)
+  const F={paper:{hf:27.5,hb:29.8,R:11.5},petal:{hf:27.8,hb:29.2,R:13.8}}[paper.id];
+  C={k,hf:F.hf*k,hb:F.hb*k,R:F.R*k,r0:.5*k,photo:true}; C.rimY=C.hf; C.top=Math.max(size.h-12,C.hb+6);
   const g=coneGeo();
   cone=new THREE.Mesh(g,new THREE.MeshStandardMaterial({roughness:.96,side:THREE.FrontSide}));
   coneIn=new THREE.Mesh(g,new THREE.MeshStandardMaterial({roughness:1,side:THREE.BackSide,color:0xD9CABE}));
@@ -282,7 +285,9 @@ function coneTex(id){ return coneTexs[id] ||= Promise.all(ANG.map(a=>tex(`img/co
 const conePhoto=new THREE.Sprite(new THREE.SpriteMaterial({depthTest:false,depthWrite:false})); conePhoto.renderOrder=-1; conePhoto.center.set(.5,0); conePhoto.visible=false; scene.add(conePhoto);
 function poseCone(){ const d=conePhoto.userData; if(!conePhoto.visible||!d.tex) return; const f=((Math.round(wrapPi(yaw)/(Math.PI/4))*DIR)%8+8)%8, t=d.tex[f];
   if(f!==d.f){ d.f=f; conePhoto.material.map=t; conePhoto.material.needsUpdate=true; conePhoto.scale.set(t.image.width/PX*C.k,t.image.height/PX*C.k,1) } }
-function setBow(){ if(bow&&bow.parent) bow.parent.remove(bow); const y=C.hf*.2; bow=photoPlane(`sprites/ribbon-bow_${ribbon.id}_front.webp`,10*C.k,y-5*C.k,radAt(y,0)+.5,4); bow.material.side=THREE.FrontSide; heads.add(bow); frame() }
+function setBow(){ if(bow&&bow.parent) bow.parent.remove(bow); const y=C.hf*.2; bow=photoPlane(`sprites/ribbon-bow_${ribbon.id}_front.webp`,10*C.k,y-5*C.k,radAt(y,0)+.5,4); fixed.add(bow); frame() }
+// the bow is tied at the front: it slides round with the cone, narrows as it turns away and disappears behind the paper
+function poseBow(){ if(!bow||!bow.userData.w) return; const c=Math.cos(yaw), y=C.hf*.2, r=radAt(y,0)*.7+.5; bow.position.x=r*Math.sin(yaw); bow.position.z=r*c; bow.scale.x=bow.userData.w*Math.max(.05,c); bow.visible=c>.12 }
 hand=photoPlane('sprites/scale_hand_front.webp',null,-13,0,1); hand.position.x=-30; fixed.add(hand);
 // heads: one sprite per stem, showing the photo taken from the side that faces you
 const hs=new Map(); // u -> {sprite, stem, slot, frame}
@@ -359,7 +364,7 @@ renderer.setAnimationLoop(now=>{ const dt=Math.min(.1,(now-last)/1000); last=now
   if(!drag&&Math.abs(vel)>1e-4){ vel*=.92; yaw+=vel; dirty=true }
   if(Math.abs(elevGoal-elev)>1e-3){ elev+=(elevGoal-elev)*(reduce?1:1-Math.exp(-dt*3.2)); dirty=true }
   if(!dirty) return; dirty=false;
-  heads.rotation.y=yaw; poseHeads(); poseCone(); hand.visible=showHand&&step!==1; aim(); renderer.render(scene,camera) });
+  heads.rotation.y=yaw; poseHeads(); poseCone(); poseBow(); hand.visible=showHand&&step!==1; aim(); renderer.render(scene,camera) });
 
 // ---------- fullness, in the counter's voice ----------
 const sayEl=document.getElementById('say');
