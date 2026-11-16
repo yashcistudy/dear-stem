@@ -10,7 +10,7 @@
 @font-face{font-family:Jost;font-weight:400;src:url(../vendor/jost-latin-400-normal.woff2) format('woff2')}
 @font-face{font-family:Jost;font-weight:500;src:url(../vendor/jost-latin-500-normal.woff2) format('woff2')}
 @font-face{font-family:'Caffe Latte';src:url(../vendor/caffe-latte.woff2) format('woff2')}
-:root{--paper:#FBF8F3;--plum:#3A2233;--ink2:#6B5463;--petal:#F1B9C4;--butter:#F2D98B;--line:rgba(58,34,51,.16)}
+:root{--card:#FFFCF8;--paper:#FBF8F3;--plum:#3A2233;--ink2:#6B5463;--petal:#F1B9C4;--butter:#F2D98B;--line:rgba(58,34,51,.16)}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--paper);color:var(--plum);font-family:Jost,sans-serif}
 button,a,input,textarea{font-family:inherit;color:inherit}
@@ -25,7 +25,7 @@ header{position:sticky;top:0;z-index:6;background:var(--paper)}
 /* the stage: the worktop seen from above, then the bouquet standing at the wrap station */
 #stage{position:sticky;top:72px;height:calc(100vh - 72px);overflow:hidden;background:#C9A57A}
 #room{position:absolute;inset:-20px;background:url(../stand/stand_04_wrap_master.webp) 70% 50%/cover;filter:blur(7px) saturate(.9);opacity:0;transition:opacity .9s}
-#room::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(251,248,243,.35),rgba(251,248,243,.15) 60%,rgba(120,80,60,.25))}
+#room::after{content:"";position:absolute;inset:0;background:rgba(251,248,243,.22)}
 #table{position:absolute;inset:0;background:url(img/scene_worktop_top.webp) center/cover;transition:opacity .8s}
 #sheet{position:absolute;background:url(img/paper_paper.webp) center/cover;box-shadow:0 2px 3px rgba(60,35,20,.18),0 14px 30px rgba(60,35,20,.18);clip-path:polygon(0 0,100% 0,100% 100%,0 100%);transition:clip-path .55s cubic-bezier(.6,0,.3,1),transform .55s}
 #lays{position:absolute;inset:0}
@@ -59,7 +59,7 @@ header{position:sticky;top:0;z-index:6;background:var(--paper)}
 .muted{color:var(--ink2)}
 .link{background:none;border:0;padding:0;font-size:14px;text-decoration:underline;align-self:flex-start}
 .stems{display:flex;flex-direction:column;gap:8px}
-.stem{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);padding:6px 10px 6px 6px}
+.stem{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);padding:6px 10px 6px 6px}
 .stem.on{border-color:var(--plum)}
 .stem .pic{height:64px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .stem .pic img{height:100%;width:100%;object-fit:contain;object-position:top}
@@ -69,11 +69,11 @@ header{position:sticky;top:0;z-index:6;background:var(--paper)}
 .qty button{width:36px;height:36px;border:1px solid var(--plum);background:var(--paper);font-size:18px;line-height:1}
 .qty output{font-weight:500;min-width:18px;text-align:center}
 .row{display:flex;gap:8px;flex-wrap:wrap}
-.pick{background:#fff;border:1px solid var(--line);min-height:50px;padding:6px 14px 6px 6px;display:flex;align-items:center;gap:10px;font-size:15px;text-align:left}
+.pick{background:var(--card);border:1px solid var(--line);min-height:50px;padding:6px 14px 6px 6px;display:flex;align-items:center;gap:10px;font-size:15px;text-align:left}
 .pick i{width:36px;height:36px;border:1px solid var(--line);display:block;flex:none}
 .pick small{display:block;font-size:12px;color:var(--ink2)}
 .pick[aria-checked=true]{border-color:var(--plum);box-shadow:inset 0 0 0 1px var(--plum)}
-textarea,input[type=text]{width:100%;font-size:16px;line-height:1.5;color:var(--plum);background:#fff;border:1px solid var(--line);padding:10px 12px}
+textarea,input[type=text]{width:100%;font-size:16px;line-height:1.5;color:var(--plum);background:var(--card);border:1px solid var(--line);padding:10px 12px}
 textarea{min-height:90px}
 .starts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .starts button{background:var(--paper);border:1px solid var(--line);padding:6px 10px;font-size:13px}
@@ -139,7 +139,7 @@ textarea{min-height:90px}
   </div>
   <div id="p3b" hidden><p class="lab">Ribbon</p><div class="row" id="ribbons" role="radiogroup" aria-label="Ribbon"></div></div>
   <div id="p3c" hidden><p class="lab">Paper</p><div class="row papers" role="radiogroup" aria-label="Paper"></div></div>
-  <div id="p3d" hidden><button class="pick" id="handT" role="switch" aria-checked="false"><i style="background:url(sprites/scale_hand_front.webp) center/contain no-repeat #fff"></i>Show a hand next to it<small>&nbsp;18 cm, for scale</small></button></div>
+  <div id="p3d" hidden><button class="pick" id="handT" role="switch" aria-checked="false"><i style="background:url(sprites/scale_hand_front.webp) center/contain no-repeat var(--card)"></i>Show a hand next to it<small>&nbsp;18 cm, for scale</small></button></div>
   <div id="p3e" hidden><p class="lab">The card</p><textarea id="card" maxlength="180" placeholder="Write it here. We copy it out by hand."></textarea><div class="starts" id="starts"></div></div>
   <div id="p3f" hidden><p class="lab">Missing something?</p><input type="text" id="note" maxlength="140" placeholder="A flower that isn't here, a colour to avoid, an allergy"><p class="muted" style="font-size:13px;margin:6px 0 0">We read every note and text you if we need to change anything.</p></div>
  </section>

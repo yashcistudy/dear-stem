@@ -10,7 +10,7 @@
 @font-face{font-family:Jost;font-weight:400;src:url(vendor/jost-latin-400-normal.woff2) format('woff2')}
 @font-face{font-family:Jost;font-weight:500;src:url(vendor/jost-latin-500-normal.woff2) format('woff2')}
 @font-face{font-family:'Caffe Latte';src:url(vendor/caffe-latte.woff2) format('woff2')}
-:root{--paper:#FBF8F3;--plum:#3A2233;--ink2:#6B5463;--petal:#F1B9C4;--butter:#F2D98B;--lilac:#C3B3E0;--blue:#7E9CCB;--mint:#BFD8C2;--line:rgba(58,34,51,.16)}
+:root{--card:#FFFCF8;--paper:#FBF8F3;--plum:#3A2233;--ink2:#6B5463;--petal:#F1B9C4;--butter:#F2D98B;--lilac:#C3B3E0;--blue:#7E9CCB;--mint:#BFD8C2;--line:rgba(58,34,51,.16)}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--paper);color:var(--plum);font-family:Jost,sans-serif;overflow:hidden}
 button{font-family:inherit;color:inherit;cursor:pointer}
@@ -27,8 +27,8 @@ header{position:fixed;left:0;right:0;top:0;z-index:5;background:var(--paper)}
 .hd .right{display:flex;gap:10px;align-items:center}
 .chip{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--plum);padding:8px 12px;min-height:44px;font-size:14px}
 .toggle{display:inline-flex;align-items:center;gap:10px;background:transparent;border:0;font-size:14px;min-height:44px}
-.sw{width:42px;height:24px;border-radius:12px;background:var(--line);position:relative;transition:background .2s}
-.sw::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:var(--paper);transition:left .2s}
+.sw{width:42px;height:24px;border-radius:0;background:var(--line);position:relative;transition:background .2s}
+.sw::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:0;background:var(--paper);transition:left .2s}
 .toggle[aria-checked=true] .sw{background:var(--plum)}
 .toggle[aria-checked=true] .sw::after{left:21px}
 .btn{background:var(--plum);color:var(--paper);border:1.5px solid var(--plum);font-weight:500;font-size:16px;min-height:50px;padding:0 22px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
@@ -45,14 +45,14 @@ header{position:fixed;left:0;right:0;top:0;z-index:5;background:var(--paper)}
 #panel .in{position:relative;padding:22px 24px 24px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--line);background:var(--paper)}
 #panel .close{position:absolute;right:10px;top:8px;border:0;background:transparent;font-size:26px;width:44px;height:44px}
 .opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.opt{background:#fff;border:1px solid var(--line);min-height:62px;padding:8px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.opt{background:var(--card);border:1px solid var(--line);min-height:62px;padding:8px;text-align:left;display:flex;flex-direction:column;gap:2px}
 .opt[aria-checked=true]{background:var(--petal);border:7px solid transparent;border-image:url(vendor/box.svg) 9 stretch;padding:2px}
 .opt b{font-weight:500;font-size:15px}.opt span{font-size:12px;color:var(--ink2)}
 .seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--plum)}
-.seg button{border:0;min-height:46px;background:#fff;font-size:15px}
+.seg button{border:0;min-height:46px;background:var(--card);font-size:15px}
 .seg button[aria-checked=true]{background:var(--plum);color:var(--paper);font-weight:500}
 label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500}
-label.f input{font-family:inherit;font-size:17px;color:var(--plum);background:#fff;border:1px solid var(--plum);padding:10px 12px;min-height:48px}
+label.f input{font-family:inherit;font-size:17px;color:var(--plum);background:var(--card);border:1px solid var(--plum);padding:10px 12px;min-height:48px}
 .thumbs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .thumbs img{width:100%;aspect-ratio:4/5;object-fit:cover;border:1px solid var(--line);display:block}
 /* hint + tag */
@@ -65,7 +65,7 @@ label.f input{font-family:inherit;font-size:17px;color:var(--plum);background:#f
 #simple{position:fixed;inset:0;z-index:3;overflow:auto;background:var(--paper);padding:110px 28px 60px;display:none}
 #simple .grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 20px}
 #simple .cell{display:flex;flex-direction:column;align-items:center}
-#simple article{background:#fff;border:1px solid var(--line);width:100%;margin-top:-12px;text-align:left}
+#simple article{background:var(--card);border:1px solid var(--line);width:100%;margin-top:-12px;text-align:left}
 #simple article img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block}
 #simple article div{padding:14px 16px 18px;display:flex;flex-direction:column;gap:6px}
 #simple h3{margin:0;font-size:18px;font-weight:500}
@@ -103,18 +103,18 @@ ul.credits{margin:0;padding-left:18px;font-size:13px;line-height:1.55}ul.credits
 .g{display:flex;gap:10px;align-items:flex-start}
 .g .face{width:52px;height:52px;border-radius:50%;border:1px solid var(--plum);background:var(--paper) center/cover no-repeat;flex:none}
 .starts{margin-top:8px}
-.g p{font-size:17px;background:#fff;border:1px solid var(--line);padding:8px 12px}
+.g p{font-size:17px;background:var(--card);border:1px solid var(--line);padding:8px 12px}
 .chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.chipo{background:#fff;border:1px solid var(--line);min-height:54px;padding:8px 12px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.chipo{background:var(--card);border:1px solid var(--line);min-height:54px;padding:8px 12px;text-align:left;display:flex;flex-direction:column;gap:2px}
 .chipo b{font-weight:500;font-size:15px}.chipo span{font-size:12px;color:var(--ink2)}
 .chipo[aria-checked=true]{background:var(--petal);border-color:var(--plum)}
 input[type=range]{width:100%;accent-color:var(--plum)}
 .picks{display:flex;flex-direction:column;gap:10px}
-.pickc{display:grid;grid-template-columns:96px 1fr;gap:12px;background:#fff;border:1px solid var(--line);padding:8px;text-align:left}
+.pickc{display:grid;grid-template-columns:96px 1fr;gap:12px;background:var(--card);border:1px solid var(--line);padding:8px;text-align:left}
 .pickc img{width:96px;height:120px;object-fit:cover;display:block}
 .pickc span{display:flex;flex-direction:column;gap:4px;justify-content:center}.pickc b{font-weight:500;font-size:17px}.pickc em{font-style:normal;font-size:13px;color:var(--ink2)}.pickc strong{font-weight:500}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.card{background:#fff;border:1px solid var(--line);padding:8px;text-align:left;display:flex;flex-direction:column;gap:3px}
+.card{background:var(--card);border:1px solid var(--line);padding:8px;text-align:left;display:flex;flex-direction:column;gap:3px}
 .card img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;margin-bottom:4px}
 .card b{font-weight:500;font-size:15px}.card span{font-size:13px;color:var(--ink2)}
 .btn.sm{min-height:38px;font-size:14px;margin-top:6px}
@@ -125,13 +125,13 @@ input[type=range]{width:100%;accent-color:var(--plum)}
 .ruler .bar{width:26px;background:var(--line);position:relative}.ruler .bar.on{background:var(--petal);outline:1px solid var(--plum)}
 .ruler .bar em{position:absolute;top:-18px;left:0;right:0;text-align:center;font-style:normal;font-size:11px;color:var(--ink2)}
 .vrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.vpick{background:#fff;border:1px solid var(--line);padding:6px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.vpick{background:var(--card);border:1px solid var(--line);padding:6px;text-align:left;display:flex;flex-direction:column;gap:2px}
 .vpick img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.vpick b{font-weight:500;font-size:13px}.vpick span{font-size:12px;color:var(--ink2)}
 .vpick[aria-pressed=true]{border-color:var(--plum);box-shadow:inset 0 0 0 1px var(--plum)}
-textarea{width:100%;min-height:80px;font-family:Jost,sans-serif;font-size:16px;line-height:1.6;color:var(--plum);background:#fff;border:1px solid var(--line);padding:10px}
+textarea{width:100%;min-height:80px;font-family:Jost,sans-serif;font-size:16px;line-height:1.6;color:var(--plum);background:var(--card);border:1px solid var(--line);padding:10px}
 .starts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.starts button{background:var(--paper);border:1px solid var(--line);padding:5px 9px;font-size:12px}
 ul.bag{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-ul.bag li{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);padding:6px}
+ul.bag li{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);padding:6px}
 ul.bag img{width:56px;height:56px;object-fit:cover}ul.bag span{display:flex;flex-direction:column}ul.bag b{font-weight:500}ul.bag em{font-style:normal;font-size:12px;color:var(--ink2)}
 ul.bag .link{grid-column:2;font-size:12px}
 .tot{display:flex;justify-content:space-between;font-size:14px;color:var(--ink2)}.tot.big{font-size:20px;color:var(--plum);font-weight:500}
@@ -307,7 +307,7 @@ addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('op
 
 // ---------- simple view: the same photos, flat ----------
 const simpleGrid=document.getElementById('simpleGrid');
-const SV=[['counter','Ask the counter','Four questions, three bouquets','stand/stand_03_counter_master.webp','55% 55%',1.3],['cooler','Shop the cooler','Ready bouquets, real heights','stand/stand_02_cooler_master.webp','50% 70%',1.5],['wrap','Build your own','Pick every stem, paper and ribbon','stand/stand_04_wrap_master.webp','80% 50%',1.4],['door','When and where','Delivery or pickup, and the day','stand/stand_01_entrance.webp','66% 50%',3],['shelf','Vases and extras','Real sizes, next to your bouquet','stand/stand_02_cooler_master.webp','50% 18%',1.8],['cafe','Visit and café','Open every day, 8 to 6','stand/stand_04_wrap_master.webp','18% 70%',2]];
+const SV=[['counter','Ask the counter','Four questions, three bouquets','stand/stand_03_counter_master.webp','55% 55%',1.3],['cooler','Shop the cooler','Ready bouquets at their real height','stand/stand_02_cooler_master.webp','50% 70%',1.5],['wrap','Build your own','Pick every stem and the paper','stand/stand_04_wrap_master.webp','80% 50%',1.4],['door','When and where','Delivery or pickup, and the day','stand/stand_01_entrance.webp','66% 50%',3],['shelf','Vases and extras','Real sizes, next to your bouquet','stand/stand_02_cooler_master.webp','50% 18%',1.8],['cafe','Visit and café','Open every day, 8 to 6','stand/stand_04_wrap_master.webp','18% 70%',2]];
 simpleGrid.innerHTML=`<div style="grid-column:1/-1;margin-bottom:18px"><p class="ct" style="font-size:32px">The same shop, flat.</p></div><div style="grid-column:1/-1" class="rail"></div>`+SV.map(([id,t,s,img,pos,z],i)=>`<div class="cell"><div class="thr" style="height:${[26,52,36,44,30,58][i]}px"></div><div class="hook"></div><article><div class="ph"><img src="${img}" alt="" style="transform:scale(${z});transform-origin:${pos}" loading="lazy"></div><div><h3>${t}</h3><span class="muted" style="font-size:14px">${s}</span><button class="btn ghost" data-open="${id}" style="margin-top:6px">Open</button></div></article></div>`).join('');
 simpleGrid.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openZone(b.dataset.open)});
 const tog=document.getElementById('viewToggle');
