@@ -183,9 +183,9 @@ const STANDS = {
   cooler:  {title:'The cooler', img:'stand/stand_02_cooler.webp', depth:'stand/stand_02_depth.png', fov:108, ready:true,
             hots:[{u:.49,v:.62,t:'Ready bouquets',zone:'cooler'},{u:.5,v:.34,t:'Vases and extras',zone:'shelf'},{u:.82,v:.5,t:'The counter',go:'counter',zone:'counter'}]},
   counter: {title:'The counter', img:'stand/stand_03_counter.webp', depth:'stand/stand_03_depth.png', fov:104, ready:true,
-            hots:[{u:.66,v:.56,t:'Ask the counter',zone:'counter'},{u:.31,v:.5,t:'Pastries and coffee',zone:'cafe'},{u:.82,v:.5,t:'When and where',zone:'door'},{u:.14,v:.46,t:'The cooler',go:'cooler',zone:'cooler'}]},
+            hots:[{u:.66,v:.56,t:'Ask the counter',zone:'counter'},{u:.31,v:.5,t:'Pastries and coffee',zone:'cafe'},{u:.82,v:.5,t:'When and where',zone:'door'},{u:.14,v:.46,t:'The cooler',go:'cooler',zone:'cooler'},{u:.95,v:.5,t:'The wrap station',go:'wrap',zone:'wrap'}]},
   wrap:    {title:'The wrap station', img:'stand/stand_04_wrap.webp', depth:'stand/stand_04_depth.png', fov:104, ready:true,
-            hots:[{u:.78,v:.56,t:'Build your own',zone:'wrap'},{u:.72,v:.3,t:'The ribbon wall',zone:'wrap'},{u:.28,v:.6,t:'The café',zone:'cafe'},{u:.38,v:.46,t:'When and where',zone:'door'}]}
+            hots:[{u:.78,v:.56,t:'Build your own',zone:'wrap'},{u:.72,v:.3,t:'The ribbon wall',zone:'wrap'},{u:.28,v:.6,t:'The café',zone:'cafe'},{u:.38,v:.46,t:'When and where',zone:'door'},{u:.05,v:.5,t:'The counter',go:'counter',zone:'counter'}]}
 };
 
 const renderer = new THREE.WebGLRenderer({antialias:true});
@@ -318,6 +318,7 @@ tog.addEventListener('click',()=>setSimple(tog.getAttribute('aria-checked')!=='t
 if(innerWidth<720) setSimple(true);
 await goTo('door');
 if(location.hash==='#bag') openZone('bag'); else show(whenWhere(true));
+addEventListener('hashchange',()=>{ if(location.hash==='#bag') openZone('bag') });
 window.DONE=true;
 </script>
 </body>

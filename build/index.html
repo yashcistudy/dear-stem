@@ -403,7 +403,7 @@ function summary(added){ const n=picked.length, f=fullness(), total=picked.reduc
   else if(f<.6){ fit=`Looks a little thin for a ${size.name.toLowerCase()}. Bigger heads or a few more stems will fill it.`; line='Looks a little thin. Some hydrangea or eucalyptus fills it fast.' }
   else if(f>1.35){ fit='Getting crowded. The heads start to hide each other.'; line='Hmm, getting crowded. Swap one instead of adding, or go up a size.' }
   else if(focal&&!greens){ fit='Full enough. One or two greens would give it shape.'; line='A little eucalyptus would loosen it up.' }
-  else { fit='Nicely full for this size.'; line='That looks just right to me.' }
+  else { fit='Nicely full for this size.'; line='That&#39;s a good, full bunch. I&#39;d send that.' }
   const st=n<3?-1:f<.6?0:f>1.35?2:1; [...document.getElementById('fit').children].forEach((el,i)=>el.classList.toggle('on',i===st));
   // on phones the fullness waits until it stands up in the cone
   if(step===1&&phone.matches&&n>=3){ line=added?`${added.name} on the paper. ${n} stems so far.`:`${n} stems on the paper.`; if(n>=3) line+=' Wrap it when you&#39;re ready.' }
