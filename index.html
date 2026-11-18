@@ -1,325 +1,306 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>dear stem · the shop</title>
-<link rel="icon" href="vendor/monogram_plum.svg" type="image/svg+xml">
-<style>
-@font-face{font-family:Jost;font-weight:300;src:url(vendor/jost-latin-300-normal.woff2) format('woff2')}
-@font-face{font-family:Jost;font-weight:400;src:url(vendor/jost-latin-400-normal.woff2) format('woff2')}
-@font-face{font-family:Jost;font-weight:500;src:url(vendor/jost-latin-500-normal.woff2) format('woff2')}
-@font-face{font-family:'Caffe Latte';src:url(vendor/caffe-latte.woff2) format('woff2')}
-:root{--card:#FFFCF8;--paper:#FBF8F3;--plum:#3A2233;--ink2:#6B5463;--petal:#F1B9C4;--butter:#F2D98B;--lilac:#C3B3E0;--blue:#7E9CCB;--mint:#BFD8C2;--line:rgba(58,34,51,.16)}
-*{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--paper);color:var(--plum);font-family:Jost,sans-serif;overflow:hidden}
-button{font-family:inherit;color:inherit;cursor:pointer}
-#stage{position:fixed;inset:0}
-canvas{display:block}
-header{position:fixed;left:0;right:0;top:0;z-index:5;background:var(--paper)}
-.rail{height:10px;background:url(vendor/rail.svg) center/100% 100% no-repeat}
-.rule{height:6px;background:url(vendor/rule.svg) center/100% 100% no-repeat}
-.thr{width:8px;background:url(vendor/thread.svg) center/100% 100% no-repeat}
-.hook{width:20px;height:26px;background:url(vendor/hook.svg) center top/contain no-repeat}
-.frame{border:7px solid transparent;border-image:url(vendor/box.svg) 9 stretch}
-.hd{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:6px 28px 6px}
-.hd img{height:44px;display:block}
-.hd .right{display:flex;gap:10px;align-items:center}
-.chip{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--plum);padding:8px 12px;min-height:44px;font-size:14px}
-.toggle{display:inline-flex;align-items:center;gap:10px;background:transparent;border:0;font-size:14px;min-height:44px}
-.sw{width:42px;height:24px;border-radius:0;background:var(--line);position:relative;transition:background .2s}
-.sw::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:0;background:var(--paper);transition:left .2s}
-.toggle[aria-checked=true] .sw{background:var(--plum)}
-.toggle[aria-checked=true] .sw::after{left:21px}
-.btn{background:var(--plum);color:var(--paper);border:1.5px solid var(--plum);font-weight:500;font-size:16px;min-height:50px;padding:0 22px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-.btn.ghost{background:var(--paper);color:var(--plum)}
-.q{font-family:Jost,sans-serif;font-size:17px;line-height:1.45;margin:0}
-.q::first-letter,.ct::first-letter{font-family:'Caffe Latte',Jost,sans-serif;font-size:1.17em;vertical-align:-.25em;line-height:1}
-.ct{font-family:Jost,sans-serif;font-weight:300;margin:0;line-height:1.1;letter-spacing:-.01em}
-.lab{font-size:13px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;margin:0}
-.muted{color:var(--ink2)}
-/* side panel */
-#panel{position:fixed;z-index:6;top:96px;right:24px;width:400px;height:auto;max-height:calc(100% - 130px);overflow:auto;background:transparent;padding:0;transform:translateX(440px);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
-#panel.open{transform:none}
-#panel .tie{display:flex;flex-direction:column;align-items:center;position:absolute;left:50%;top:-58px;margin-left:-10px}
-#panel .in{position:relative;padding:22px 24px 24px;display:flex;flex-direction:column;gap:14px;border:1px solid var(--line);background:var(--paper)}
-#panel .close{position:absolute;right:10px;top:8px;border:0;background:transparent;font-size:26px;width:44px;height:44px}
-.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.opt{background:var(--card);border:1px solid var(--line);min-height:62px;padding:8px;text-align:left;display:flex;flex-direction:column;gap:2px}
-.opt[aria-checked=true]{background:var(--petal);border:7px solid transparent;border-image:url(vendor/box.svg) 9 stretch;padding:2px}
-.opt b{font-weight:500;font-size:15px}.opt span{font-size:12px;color:var(--ink2)}
-.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--plum)}
-.seg button{border:0;min-height:46px;background:var(--card);font-size:15px}
-.seg button[aria-checked=true]{background:var(--plum);color:var(--paper);font-weight:500}
-label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500}
-label.f input{font-family:inherit;font-size:17px;color:var(--plum);background:var(--card);border:1px solid var(--plum);padding:10px 12px;min-height:48px}
-.thumbs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.thumbs img{width:100%;aspect-ratio:4/5;object-fit:cover;border:1px solid var(--line);display:block}
-/* hint + tag */
-#hint{position:fixed;z-index:4;left:50%;bottom:26px;transform:translateX(-50%);background:var(--paper);border:1px solid var(--plum);padding:10px 16px;font-size:15px;display:none;align-items:center;gap:10px}
-#tag{position:fixed;z-index:4;pointer-events:none;display:none;flex-direction:column;align-items:center}
-#tag .t{background:var(--paper);border:1px solid var(--plum);padding:10px 14px;margin-top:-12px;text-align:center;min-width:150px}
-#tag .t b{display:block;font-weight:500;font-size:16px}
-#tag .t span{font-size:13px;color:var(--ink2)}
-/* simple view */
-#simple{position:fixed;inset:0;z-index:3;overflow:auto;background:var(--paper);padding:110px 28px 60px;display:none}
-#simple .grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 20px}
-#simple .cell{display:flex;flex-direction:column;align-items:center}
-#simple article{background:var(--card);border:1px solid var(--line);width:100%;margin-top:-12px;text-align:left}
-#simple article img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block}
-#simple article div{padding:14px 16px 18px;display:flex;flex-direction:column;gap:6px}
-#simple h3{margin:0;font-size:18px;font-weight:500}
-#credits{position:fixed;z-index:4;left:20px;bottom:16px;font-size:12px;color:var(--ink2);background:rgba(251,248,243,.85);padding:4px 8px}
-#credits a{color:var(--plum)}
-@media (max-width:720px){
- .hd{padding:6px 14px}.hd img{height:34px}.chip .full{display:none}
- #panel{left:10px;right:10px;width:auto;top:auto;bottom:10px;max-height:72%;transform:translateY(110%)}
- #panel.open{transform:none}
- #simple{padding:96px 16px 40px}#simple .grid{grid-template-columns:1fr}
- .opts{grid-template-columns:repeat(3,1fr)}
-}
-@media (prefers-reduced-motion:reduce){#panel{transition:none}}
-ul.credits{margin:0;padding-left:18px;font-size:13px;line-height:1.55}ul.credits a{color:var(--plum,#3A2233)}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#FBF8F3">
+  <link rel="canonical" href="http://localhost:8771/"><link rel="icon" type="image/svg+xml" href="/dear-stem/assets/monogram_plum.svg"><title>dear stem</title><meta name="description" content=""><meta property="og:site_name" content="dear stem">
+<meta property="og:url" content="http://localhost:8771/">
+<meta property="og:title" content="dear stem">
+<meta property="og:type" content="website">
+<meta property="og:description" content="A flower shop and café in Portland, Oregon."><meta name="twitter:card" content="summary_large_image">
 
-/* standpoints */
-#stage canvas{touch-action:none;cursor:grab}#stage canvas:active{cursor:grabbing}
-#fade{position:fixed;inset:0;z-index:2;background:var(--paper);opacity:1;pointer-events:none;transition:opacity .32s ease}
-.hot{position:fixed;z-index:3;transform:translate(-11px,-50%);display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;font:inherit;color:var(--plum)}
-.hot i{width:18px;height:18px;border-radius:50%;background:var(--paper);border:2px solid var(--plum);box-shadow:0 0 0 6px rgba(251,248,243,.5);flex:none}
-.hot.go i{background:var(--plum);box-shadow:0 0 0 6px rgba(251,248,243,.6)}
-.hot b{font-weight:500;font-size:14px;background:var(--paper);padding:6px 10px;border:1px solid var(--plum);opacity:0;transform:translateX(-4px);transition:.2s;white-space:nowrap}
-.hot:hover b,.hot:focus-visible b,body.touch .hot b{opacity:1;transform:none}
-#here{position:fixed;z-index:3;left:20px;top:96px;display:flex;align-items:center;gap:10px}
-#here .back{background:var(--paper);border:1px solid var(--plum);min-height:44px;padding:0 14px;font-size:14px;display:none;align-items:center}
-#simple .ph{aspect-ratio:3/2;overflow:hidden}#simple .ph img{width:100%;height:100%;object-fit:cover;display:block}
-#here .lab{background:rgba(251,248,243,.88);padding:6px 10px}
-#dragtip{position:fixed;z-index:3;left:50%;bottom:26px;transform:translateX(-50%);background:var(--paper);border:1px solid var(--line);padding:8px 14px;font-size:14px}
-@media (max-width:720px){#here{top:84px;left:12px}}
 
-#panel{width:440px}
-#panel .in{gap:16px}
-.link{background:none;border:0;padding:0;font-size:14px;text-decoration:underline;text-underline-offset:3px;align-self:flex-start;cursor:pointer;color:var(--plum)}
-.dots{display:flex;gap:6px}.dots i{width:22px;height:4px;background:var(--line)}.dots i.on{background:var(--plum)}
-.g{display:flex;gap:10px;align-items:flex-start}
-.g .face{width:52px;height:52px;border-radius:50%;border:1px solid var(--plum);background:var(--paper) center/cover no-repeat;flex:none}
-.starts{margin-top:8px}
-.g p{font-size:17px;background:var(--card);border:1px solid var(--line);padding:8px 12px}
-.chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.chipo{background:var(--card);border:1px solid var(--line);min-height:54px;padding:8px 12px;text-align:left;display:flex;flex-direction:column;gap:2px}
-.chipo b{font-weight:500;font-size:15px}.chipo span{font-size:12px;color:var(--ink2)}
-.chipo[aria-checked=true]{background:var(--petal);border-color:var(--plum)}
-input[type=range]{width:100%;accent-color:var(--plum)}
-.picks{display:flex;flex-direction:column;gap:10px}
-.pickc{display:grid;grid-template-columns:96px 1fr;gap:12px;background:var(--card);border:1px solid var(--line);padding:8px;text-align:left}
-.pickc img{width:96px;height:120px;object-fit:cover;display:block}
-.pickc span{display:flex;flex-direction:column;gap:4px;justify-content:center}.pickc b{font-weight:500;font-size:17px}.pickc em{font-style:normal;font-size:13px;color:var(--ink2)}.pickc strong{font-weight:500}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.card{background:var(--card);border:1px solid var(--line);padding:8px;text-align:left;display:flex;flex-direction:column;gap:3px}
-.card img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;margin-bottom:4px}
-.card b{font-weight:500;font-size:15px}.card span{font-size:13px;color:var(--ink2)}
-.btn.sm{min-height:38px;font-size:14px;margin-top:6px}
-.hero{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;border:1px solid var(--line)}
-.opt span{line-height:1.4}
-.ruler{display:flex;align-items:flex-end;gap:14px;height:90px;margin-top:12px;padding:0 6px;border-bottom:1px solid var(--plum)}
-.ruler .hand{width:16px;background:url(build/sprites/scale_hand_front.webp) bottom/contain no-repeat}
-.ruler .bar{width:26px;background:var(--line);position:relative}.ruler .bar.on{background:var(--petal);outline:1px solid var(--plum)}
-.ruler .bar em{position:absolute;top:-18px;left:0;right:0;text-align:center;font-style:normal;font-size:11px;color:var(--ink2)}
-.vrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.vpick{background:var(--card);border:1px solid var(--line);padding:6px;text-align:left;display:flex;flex-direction:column;gap:2px}
-.vpick img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.vpick b{font-weight:500;font-size:13px}.vpick span{font-size:12px;color:var(--ink2)}
-.vpick[aria-pressed=true]{border-color:var(--plum);box-shadow:inset 0 0 0 1px var(--plum)}
-textarea{width:100%;min-height:80px;font-family:Jost,sans-serif;font-size:16px;line-height:1.6;color:var(--plum);background:var(--card);border:1px solid var(--line);padding:10px}
-.starts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.starts button{background:var(--paper);border:1px solid var(--line);padding:5px 9px;font-size:12px}
-ul.bag{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-ul.bag li{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);padding:6px}
-ul.bag img{width:56px;height:56px;object-fit:cover}ul.bag span{display:flex;flex-direction:column}ul.bag b{font-weight:500}ul.bag em{font-style:normal;font-size:12px;color:var(--ink2)}
-ul.bag .link{grid-column:2;font-size:12px}
-.tot{display:flex;justify-content:space-between;font-size:14px;color:var(--ink2)}.tot.big{font-size:20px;color:var(--plum);font-weight:500}
-.form{display:flex;flex-direction:column;gap:12px}
-@media (max-width:720px){#panel{width:auto}.hd .right{gap:6px}.chip{padding:8px 10px}}
-#jump{display:none}
-@media (max-width:720px){#jump{display:flex;position:fixed;left:0;right:0;bottom:44px;z-index:3;gap:8px;overflow-x:auto;padding:0 12px 4px;scrollbar-width:none}#jump::-webkit-scrollbar{display:none}#jump button{flex:none;background:rgba(251,248,243,.94);border:1px solid var(--plum);padding:9px 14px;font-size:14px;white-space:nowrap}body.simple-on #jump{display:none}#hint{display:none!important}#dragtip{bottom:96px!important}}
-@media (max-width:520px){.toggle>span:last-child{display:none}.chip{white-space:nowrap;font-size:13px;padding:8px}#bagBtn{padding:8px 10px}}
-</style>
-<link rel="preload" as="image" href="stand/stand_01_entrance.webp" fetchpriority="high">
-<link rel="preload" as="image" href="stand/stand_01_depth.png">
-<link rel="modulepreload" href="vendor/three.module.min.js">
-<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
-</head>
-<body>
-<header>
- <div class="rail"></div>
- <div class="hd">
-  <img src="vendor/logo-one-line_plum.svg" alt="dear stem">
-  <div class="right">
-   <button class="chip" id="bagBtn" type="button"><span id="bagN">Bag</span></button>
-   <button class="chip" id="chip" type="button"><span aria-hidden="true">⌖</span><span id="chipText">where to?</span></button>
-   <button class="toggle" id="viewToggle" role="switch" aria-checked="false" type="button" aria-label="Simple view"><span class="sw" aria-hidden="true"></span><span>Simple view</span></button>
+  <link href="/dear-stem/assets/jost-latin-400-normal.woff2" rel="preload" as="font" type="font/woff2" crossorigin="anonymous">
+  <style>
+    @font-face{font-family:Jost;font-weight:300;font-display:swap;src:url(/dear-stem/assets/jost-latin-300-normal.woff2) format('woff2')}
+    @font-face{font-family:Jost;font-weight:400;font-display:swap;src:url(/dear-stem/assets/jost-latin-400-normal.woff2) format('woff2')}
+    @font-face{font-family:Jost;font-weight:500;font-display:swap;src:url(/dear-stem/assets/jost-latin-500-normal.woff2) format('woff2')}
+    @font-face{font-family:'Caffe Latte';font-display:swap;src:url(/dear-stem/assets/caffe-latte.woff2) format('woff2')}
+    :root{
+      --rail:url(/dear-stem/assets/rail.svg);--rule:url(/dear-stem/assets/rule.svg);--thread:url(/dear-stem/assets/thread.svg);
+      --hook:url(/dear-stem/assets/hook.svg);--box:url(/dear-stem/assets/box.svg);--hand:url(/dear-stem/assets/scale_hand_front.webp);
+    }
+  </style>
+  <link href="/dear-stem/assets/base.css" rel="stylesheet" type="text/css" media="all">
+  <script type="importmap">{"imports":{"three":"/dear-stem/assets/three.module.min.js"}}</script>
+  <script>
+    window.DS = {
+      root: "/dear-stem/",
+      cartAdd: "/dear-stem/cart/add",
+      cartChange: "/dear-stem/cart/change",
+      cartUpdate: "/dear-stem/cart/update",
+      cartUrl: "/dear-stem/cart",
+      faces: {"welcome": "/dear-stem/assets/face_welcome.webp","counter": "/dear-stem/assets/face_counter.webp","thisway": "/dear-stem/assets/face_thisway.webp","forthem": "/dear-stem/assets/face_forthem.webp","sayit": "/dear-stem/assets/face_sayit.webp","building": "/dear-stem/assets/face_building.webp","crowded": "/dear-stem/assets/face_crowded.webp","wrapping": "/dear-stem/assets/face_wrapping.webp"},
+      where: {
+        mode: "",
+        zip: "",
+        day: ""
+      },
+      localZips: "972*",
+      moneyFormat: "${{amount}}",
+      t: {
+        bag: "Bag", pickup: "Pickup", change: "change",
+        ask: "Where to?", zipOk: "We deliver there.", zipOut: "We don't deliver there yet. Pickup at the shop works.",
+        zipBad: "Five numbers, like 97214.", pickDay: "Choose the day first.", today: "Today",
+        tomorrow: "Tomorrow", added: "In your bag", soldOut: "Sold out today", error: "That didn't work. Please try again."
+      }
+    };
+  </script>
+  <script src="/dear-stem/assets/liquid.browser.umd.js" defer></script><script src="/dear-stem/assets/static-kit.js" defer></script><script src="/dear-stem/assets/static-cart.js" defer></script><script src="/dear-stem/assets/theme.js" defer></script>
+  
+<style>#static-note{position:fixed;inset:0;background:rgba(251,248,243,.94);z-index:30;display:flex;align-items:center;justify-content:center;padding:20px}#static-note[hidden]{display:none}#static-note>div{background:var(--paper);border:1px solid var(--plum);max-width:420px;padding:24px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}#static-note p{margin:0}</style></head>
+<body class="t-index">
+  <a class="skip" href="#main">Skip to the page</a>
+  <div id="shopify-section-sections--1__header" class="shopify-section shopify-section--hdr"><header class="hdr" data-hdr>
+  <div class="rail"></div>
+  <div class="hd">
+    <a class="logo" href="/dear-stem/"><img src="/dear-stem/assets/logo-one-line_plum.svg" alt="dear stem" width="132" height="44"></a>
+    <nav id="hd-nav" aria-label="Menu">
+      <ul><li><a href="/dear-stem/collections/ready-bouquets">The cooler</a></li><li><a href="/dear-stem/pages/build-your-own">Build your own</a></li><li><a href="/dear-stem/collections/vases">Vases</a></li><li><a href="/dear-stem/pages/visit">Visit</a></li></ul>
+    </nav>
+    <div class="right">
+      <button class="chip menu-btn" type="button" aria-controls="hd-nav" aria-expanded="false" data-menu>Menu</button><button class="chip" type="button" data-open-panel="panel-where" aria-haspopup="dialog">
+          <span aria-hidden="true">⌖</span>
+          <span data-where-chip>Where to?</span>
+        </button><a class="chip" href="/dear-stem/cart" data-open-cart aria-haspopup="dialog"><span data-bag-n>Bag</span>
+      </a>
+    </div>
   </div>
- </div>
- <div class="rule"></div>
+  <div class="rule"></div>
 </header>
-<div id="stage" aria-label="Photos of the dear stem shop. Drag to look around and choose a spot, or switch to the simple view."></div>
-<div id="fade"></div>
-<div id="here"><button class="back" id="back" type="button">← Back to the door</button><span class="lab" id="hereT"></span></div>
-<div id="dragtip">Drag to look around</div>
-<div id="hint"><span class="q" style="font-size:18px">Tap anything in the shop.</span></div>
-<aside id="panel" aria-live="polite"><div class="tie"><div class="thr" style="height:44px"></div><div class="hook"></div></div><div class="in" id="panelIn"></div></aside>
-<section id="simple" aria-label="Simple view"><div class="grid" id="simpleGrid"></div></section>
-<div id="credits">A concept shop. Photos made with AI image tools.</div>
 
-<script type="module">
-import * as THREE from 'three';
-import { journey } from './app.js';
-if(matchMedia('(hover:none)').matches) document.body.classList.add('touch');
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ---------- standpoints: one photo + one depth map each ----------
-// u,v place a dot on the photo (0 to 1 from the top left). go = walk to another standpoint, zone = open a panel
-const STANDS = {
-  door:    {title:'Inside the door', img:'stand/stand_01_entrance.webp', depth:'stand/stand_01_depth.png', fov:112, ready:true,
-            hots:[{u:.2,v:.66,t:'The cooler',go:'cooler',zone:'cooler'},{u:.47,v:.5,t:'The counter',go:'counter',zone:'counter'},
-                  {u:.8,v:.42,t:'The wrap station',go:'wrap',zone:'wrap'},{u:.65,v:.5,t:'When and where',zone:'door'},{u:.76,v:.66,t:'The café',zone:'cafe'}]},
-  cooler:  {title:'The cooler', img:'stand/stand_02_cooler.webp', depth:'stand/stand_02_depth.png', fov:108, ready:true,
-            hots:[{u:.49,v:.62,t:'Ready bouquets',zone:'cooler'},{u:.5,v:.34,t:'Vases and extras',zone:'shelf'},{u:.82,v:.5,t:'The counter',go:'counter',zone:'counter'}]},
-  counter: {title:'The counter', img:'stand/stand_03_counter.webp', depth:'stand/stand_03_depth.png', fov:104, ready:true,
-            hots:[{u:.66,v:.56,t:'Ask the counter',zone:'counter'},{u:.31,v:.5,t:'Pastries and coffee',zone:'cafe'},{u:.82,v:.5,t:'When and where',zone:'door'},{u:.14,v:.46,t:'The cooler',go:'cooler',zone:'cooler'},{u:.95,v:.5,t:'The wrap station',go:'wrap',zone:'wrap'}]},
-  wrap:    {title:'The wrap station', img:'stand/stand_04_wrap.webp', depth:'stand/stand_04_depth.png', fov:104, ready:true,
-            hots:[{u:.78,v:.56,t:'Build your own',zone:'wrap'},{u:.72,v:.3,t:'The ribbon wall',zone:'wrap'},{u:.28,v:.6,t:'The café',zone:'cafe'},{u:.38,v:.46,t:'When and where',zone:'door'},{u:.05,v:.5,t:'The counter',go:'counter',zone:'counter'}]}
-};
+</div>
+  <main id="main">
+    <div id="shopify-section-template--1__walk" class="shopify-section shopify-section--walk"><section class="walk" data-walk data-ask-where-first aria-label="Photos of the shop. Drag to look around and tap a spot.">
+  <img class="walk-still" src="/dear-stem/assets/stand_01_entrance.webp" alt="Photos of the shop. Drag to look around and tap a spot." width="1536" height="1024" fetchpriority="high">
+  <div class="walk-stage" data-stage></div>
+  <div class="walk-fade" data-fade></div>
+  <div class="walk-here"><button class="chip" type="button" data-back hidden>← Back to the door</button><span class="lab" data-here>Inside the door</span></div>
+  <p class="walk-tip" data-tip>Drag to look around</p>
+  <nav class="walk-jump" data-jump aria-label="Places in this spot"></nav>
+  <script type="application/json" data-walk-json>
+    {
+      "stands": {"door": { "title": "Inside the door", "img": "/dear-stem/assets/stand_01_entrance.webp", "depth": "/dear-stem/assets/stand_01_depth.png", "fov": 112, "hots": [{ "u": 0.2, "v": 0.66, "t": "The cooler", "a": "stand", "go": "cooler", "url": "" },{ "u": 0.47, "v": 0.5, "t": "The counter", "a": "stand", "go": "counter", "url": "" },{ "u": 0.8, "v": 0.42, "t": "The wrap station", "a": "stand", "go": "wrap", "url": "" },{ "u": 0.65, "v": 0.5, "t": "Delivery or pickup", "a": "where", "go": "door", "url": "" },{ "u": 0.76, "v": 0.66, "t": "The café", "a": "link", "go": "door", "url": "/dear-stem/pages/visit" }] },"cooler": { "title": "The cooler", "img": "/dear-stem/assets/stand_02_cooler.webp", "depth": "/dear-stem/assets/stand_02_depth.png", "fov": 108, "hots": [{ "u": 0.49, "v": 0.62, "t": "Ready bouquets", "a": "link", "go": "door", "url": "/dear-stem/collections/ready-bouquets" },{ "u": 0.5, "v": 0.34, "t": "Vases", "a": "link", "go": "door", "url": "/dear-stem/collections/vases" },{ "u": 0.82, "v": 0.5, "t": "The counter", "a": "stand", "go": "counter", "url": "" }] },"counter": { "title": "The counter", "img": "/dear-stem/assets/stand_03_counter.webp", "depth": "/dear-stem/assets/stand_03_depth.png", "fov": 104, "hots": [{ "u": 0.66, "v": 0.56, "t": "Ask the counter", "a": "ask", "go": "door", "url": "" },{ "u": 0.31, "v": 0.5, "t": "Pastries and coffee", "a": "link", "go": "door", "url": "/dear-stem/pages/visit" },{ "u": 0.82, "v": 0.5, "t": "Delivery or pickup", "a": "where", "go": "door", "url": "" },{ "u": 0.14, "v": 0.46, "t": "The cooler", "a": "stand", "go": "cooler", "url": "" },{ "u": 0.95, "v": 0.5, "t": "The wrap station", "a": "stand", "go": "wrap", "url": "" }] },"wrap": { "title": "The wrap station", "img": "/dear-stem/assets/stand_04_wrap.webp", "depth": "/dear-stem/assets/stand_04_depth.png", "fov": 104, "hots": [{ "u": 0.78, "v": 0.56, "t": "Build your own", "a": "link", "go": "door", "url": "/dear-stem/pages/build-your-own" },{ "u": 0.72, "v": 0.3, "t": "The ribbon wall", "a": "link", "go": "door", "url": "/dear-stem/pages/build-your-own" },{ "u": 0.28, "v": 0.6, "t": "The café", "a": "link", "go": "door", "url": "/dear-stem/pages/visit" },{ "u": 0.38, "v": 0.46, "t": "Delivery or pickup", "a": "where", "go": "door", "url": "" },{ "u": 0.05, "v": 0.5, "t": "The counter", "a": "stand", "go": "counter", "url": "" }] }},
+      "owner": { "welcome": "/dear-stem/assets/full_welcome.webp", "thisway": "/dear-stem/assets/full_thisway.webp", "a": "ask" },
+      "go": "Go to"
+    }
+  </script>
+</section>
+<script type="module" src="/dear-stem/assets/shop-walk.js"></script>
 
-const renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.outputColorSpace = THREE.SRGBColorSpace;
-document.getElementById('stage').appendChild(renderer.domElement);
-const scene = new THREE.Scene(); scene.background = new THREE.Color(0xFBF8F3);
-const camera = new THREE.PerspectiveCamera(62,1,0.05,50);
-const loadImg = src => new Promise((res,rej)=>{const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=src});
-const cache = {};
-let owner=null; const ray=new THREE.Raycaster();
-function shadowTex(){ const c=document.createElement('canvas'); c.width=c.height=128; const g=c.getContext('2d'), r=g.createRadialGradient(64,64,0,64,64,64); r.addColorStop(0,'rgba(40,20,20,.55)'); r.addColorStop(1,'rgba(40,20,20,0)'); g.fillStyle=r; g.fillRect(0,0,128,128); const t=new THREE.CanvasTexture(c); return t }
-async function build(id){
-  if(cache[id]) return cache[id];
-  const s = STANDS[id], [photo,dimg] = await Promise.all([loadImg(s.img),loadImg(s.depth)]);
-  const c = document.createElement('canvas'); c.width=dimg.width; c.height=dimg.height; const g=c.getContext('2d'); g.drawImage(dimg,0,0);
-  const dd = g.getImageData(0,0,c.width,c.height).data;
-  const TH = Math.tan(s.fov*Math.PI/360), TV = TH/(photo.width/photo.height);
-  const depthAt = (u,v)=>{ const x=Math.min(c.width-1,Math.max(0,Math.round(u*(c.width-1)))), y=Math.min(c.height-1,Math.max(0,Math.round(v*(c.height-1)))); return dd[(y*c.width+x)*4]/255 };
-  // white = near (1.4 m), black = far (about 7 m)
-  const point = (u,v)=>{ const d=1.4+Math.pow(1-depthAt(u,v),1.15)*5.6; return new THREE.Vector3((u*2-1)*TH*d,(1-2*v)*TV*d,-d) };
-  const geo = new THREE.PlaneGeometry(1,1,240,160), p=geo.attributes.position, uv=geo.attributes.uv;
-  for(let i=0;i<p.count;i++){ const q=point(uv.getX(i),1-uv.getY(i)); p.setXYZ(i,q.x,q.y,q.z) }
-  geo.computeBoundingSphere();
-  const tex = new THREE.Texture(photo); tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=8; tex.needsUpdate=true;
-  const mesh = new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:tex}));
-  cache[id] = {mesh, hots:s.hots.map(h=>Object.assign({},h,{p3:point(h.u,h.v)}))};
-  // the owner stands in the empty middle of the entrance, a little in front of the floor behind her
-  if(id==='door'){ let v=.98; while(v>.55&&1.4+Math.pow(1-depthAt(.5,v),1.15)*5.6<2.9) v-=.01;
-    // she stands closer than that floor point, about two steps in front of you, on the same floor
-    // the photo's units aren't metres: the floor sits about one eye height below the camera, so measure everything in eye heights
-    const f0=point(.5,v), u=Math.min(3,Math.max(.6,-f0.y/1.6)), D=(innerWidth<innerHeight?1.5:1.75)*u, feet=new THREE.Vector3(f0.x*D/-f0.z, f0.y, -D), H=1.66*u;
-    const ow=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({transparent:true,alphaTest:.02,color:0xFFF4EE}));
-    const sh=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,map:shadowTex()}));
-    sh.rotation.x=-Math.PI/2; sh.scale.set(.8*u,.32*u,1); sh.position.set(feet.x+.04,feet.y+.01,feet.z+.02); mesh.add(sh,ow);
-    const L=new THREE.TextureLoader(), poses={};
-    const pose=k=>{ const go=t=>{ ow.material.map=t; ow.material.needsUpdate=true; const w=H*t.image.width/t.image.height; ow.scale.set(w,H,1); ow.position.set(feet.x,feet.y+H/2,feet.z+.05) };
-      if(poses[k]) go(poses[k]); else L.load(`img/owner/full_${k}.webp`,t=>{ t.colorSpace=THREE.SRGBColorSpace; poses[k]=t; go(t) }) };
-    pose(S.set?'thisway':'welcome'); window.ownerPose=pose; owner={mesh:ow,shadow:sh,a:1} }
-  return cache[id];
-  return cache[id];
-}
 
-// ---------- looking: drag leans and turns your head a little ----------
-let t={x:0,y:0}, cur={x:0,y:0}, hov={x:0,y:0}, drag=null, walking=false;
-const el = renderer.domElement;
-el.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,moved:0}; el.setPointerCapture(e.pointerId); document.getElementById('dragtip').style.display='none'});
-el.addEventListener('pointermove',e=>{ hov.x=e.clientX/innerWidth*2-1; hov.y=e.clientY/innerHeight*2-1; if(owner&&!drag) el.style.cursor=here==='door'&&onOwner(e)?'pointer':''; if(!drag) return; drag.moved+=Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y);
-  t.x=Math.max(-1,Math.min(1,t.x-(e.clientX-drag.x)/innerWidth*2.2)); t.y=Math.max(-1,Math.min(1,t.y-(e.clientY-drag.y)/innerHeight*2)); drag.x=e.clientX; drag.y=e.clientY });
-el.addEventListener('pointerup',e=>{ const tap=drag&&drag.moved<8; drag=null; if(tap&&here==='door'&&onOwner(e)) openZone('counter') });
-function onOwner(e){ if(!owner||owner.a<.5) return false; ray.setFromCamera({x:e.clientX/innerWidth*2-1,y:-(e.clientY/innerHeight*2-1)},camera);
-  const hit=ray.intersectObject(owner.mesh)[0]; if(!hit||!hit.uv||!owner.mesh.material.map) return false;
-  // only count a tap on her, not on the clear space around her
-  const img=owner.mesh.material.map.image; if(!onOwner.c){ onOwner.c=document.createElement('canvas') } const c=onOwner.c;
-  if(c.src!==img.src){ c.width=img.width; c.height=img.height; c.getContext('2d').drawImage(img,0,0); c.src=img.src }
-  return c.getContext('2d').getImageData(Math.floor(hit.uv.x*img.width),Math.floor((1-hit.uv.y)*img.height),1,1).data[3]>40 }
-addEventListener('keydown',e=>{ if(panel.classList.contains('open')) return; if(e.key==='ArrowLeft') t.x=Math.max(-1,t.x-0.15); if(e.key==='ArrowRight') t.x=Math.min(1,t.x+0.15) });
+</div><div id="shopify-section-template--1__flat" class="shopify-section"><section class="sec hc">
+  <div class="w"><h2 class="ct m">The same shop, flat</h2><div class="rail" style="margin-top:18px"></div>
+    <div class="hc-g"><div class="hang" data-block="card_1">
+          <div class="thr" style="height:26px"></div><div class="hook"></div>
+          <article>
+            <div class="ph"><img src="/dear-stem/assets/stand_03_counter_master.webp" alt="" width="1536" height="1024" loading="lazy" style="object-position:55% 55%">
+</div>
+            <div class="tx">
+              <h3>Ask the counter</h3>
+              <span class="muted small">Four questions, three bouquets</span><button class="btn ghost sm" type="button" data-open-panel="panel-ask">Ask</button></div>
+          </article>
+        </div><div class="hang" data-block="card_2">
+          <div class="thr" style="height:52px"></div><div class="hook"></div>
+          <article>
+            <div class="ph"><img src="/dear-stem/assets/stand_02_cooler_master.webp" alt="" width="1536" height="1024" loading="lazy" style="object-position:50% 70%">
+</div>
+            <div class="tx">
+              <h3>Shop the cooler</h3>
+              <span class="muted small">Ready bouquets at their real height</span><a class="btn ghost sm" href="/dear-stem/collections/ready-bouquets">Open</a></div>
+          </article>
+        </div><div class="hang" data-block="card_3">
+          <div class="thr" style="height:36px"></div><div class="hook"></div>
+          <article>
+            <div class="ph"><img src="/dear-stem/assets/stand_04_wrap_master.webp" alt="" width="1536" height="1024" loading="lazy" style="object-position:80% 50%">
+</div>
+            <div class="tx">
+              <h3>Build your own</h3>
+              <span class="muted small">Pick every stem and the paper</span><a class="btn ghost sm" href="/dear-stem/pages/build-your-own">Start</a></div>
+          </article>
+        </div><div class="hang" data-block="card_4">
+          <div class="thr" style="height:44px"></div><div class="hook"></div>
+          <article>
+            <div class="ph"><img src="/dear-stem/assets/stand_01_entrance.webp" alt="" width="1536" height="1024" loading="lazy" style="object-position:66% 50%">
+</div>
+            <div class="tx">
+              <h3>Delivery or pickup</h3>
+              <span class="muted small">Where it’s going, and the day</span><button class="btn ghost sm" type="button" data-open-panel="panel-where">Choose</button></div>
+          </article>
+        </div><div class="hang" data-block="card_5">
+          <div class="thr" style="height:30px"></div><div class="hook"></div>
+          <article>
+            <div class="ph"><img src="/dear-stem/assets/stand_02_cooler_master.webp" alt="" width="1536" height="1024" loading="lazy" style="object-position:50% 12%">
+</div>
+            <div class="tx">
+              <h3>Vases</h3>
+              <span class="muted small">Real sizes, next to your bouquet</span><a class="btn ghost sm" href="/dear-stem/collections/vases">Open</a></div>
+          </article>
+        </div><div class="hang" data-block="card_6">
+          <div class="thr" style="height:58px"></div><div class="hook"></div>
+          <article>
+            <div class="ph"><img src="/dear-stem/assets/stand_04_wrap_master.webp" alt="" width="1536" height="1024" loading="lazy" style="object-position:18% 70%">
+</div>
+            <div class="tx">
+              <h3>Visit and café</h3>
+              <span class="muted small">Open every day, 8 to 6</span><a class="btn ghost sm" href="/dear-stem/pages/visit">Visit</a></div>
+          </article>
+        </div></div>
+  </div>
+</section>
 
-// ---------- dots on the photo ----------
-let here=null, dots=[];
-const jump=document.createElement('nav'); jump.id='jump'; jump.setAttribute('aria-label','Places in this spot'); document.body.appendChild(jump);
-const fade=document.getElementById('fade'), back=document.getElementById('back'), hereT=document.getElementById('hereT');
-function placeDots(st){
-  dots.forEach(d=>d.el.remove());
-  jump.innerHTML=st.hots.map((h,i)=>`<button type="button" data-j="${i}">${h.go&&STANDS[h.go].ready?'Go to ':''}${h.go&&STANDS[h.go].ready?h.t.replace(/^The /,'the '):h.t}</button>`).join('');
-  jump.onclick=e=>{ const b=e.target.closest('[data-j]'); if(!b) return; const h=st.hots[+b.dataset.j]; h.go&&STANDS[h.go].ready?goTo(h.go):openZone(h.zone) };
-  dots = st.hots.map(h=>{ const canGo = h.go && STANDS[h.go].ready; const b=document.createElement('button'); b.type='button'; b.className='hot'+(canGo?' go':'');
-    b.innerHTML=`<i></i><b>${canGo?'Go to ':''}${h.t.replace(/^The /,canGo?'the ':'The ')}</b>`; b.setAttribute('aria-label',(canGo?'Go to '+h.t.replace(/^The /,'the '):'Open '+h.t));
-    b.onclick=()=> canGo ? goTo(h.go) : openZone(h.zone); document.body.appendChild(b); return {el:b,p3:h.p3} });
-}
-async function goTo(id){
-  if(here===id) return;
-  closePanel(true);
-  fade.style.opacity=1; walking=true;
-  await new Promise(r=>setTimeout(r,reduce?0:320));
-  const st = await build(id);
-  if(here) scene.remove(cache[here].mesh);
-  scene.add(st.mesh); here=id; t={x:0,y:0}; cur={x:0,y:0}; walking=false; camera.position.z=reduce?0:0.35;
-  placeDots(st); hereT.textContent=STANDS[id].title; back.style.display=id==='door'?'none':'inline-flex';
-  fade.style.opacity=0;
-  // warm the next photos
-  Object.keys(STANDS).forEach(k=>{ if(STANDS[k].ready) build(k) });
-}
-back.onclick=()=>goTo('door');
 
-function size(){ renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.fov=camera.aspect<1?78:62; camera.updateProjectionMatrix() }
-addEventListener('resize',size); size();
-let last=performance.now();
-renderer.setAnimationLoop(now=>{ const dt=Math.min(0.1,(now-last)/1000); last=now; const k=reduce?1:1-Math.exp(-dt*5);
-  const open = panel.classList.contains('open') && innerWidth>720;
-  const gx=t.x+(drag||reduce?0:hov.x*0.12)+(open?0.35:0), gy=t.y+(drag||reduce?0:hov.y*0.08);
-  cur.x+=(gx-cur.x)*k; cur.y+=(gy-cur.y)*k;
-  // a short step forward when you walk to the next spot
-  const z = camera.position.z + ((walking?-0.45:0)-camera.position.z)*k;
-  camera.position.set(cur.x*0.18*(camera.aspect<1?.5:1), 0.02-cur.y*0.06, z);
-  const half=STANDS[here||'door'].fov*Math.PI/360, camHalf=Math.atan(Math.tan(camera.fov*Math.PI/360)*camera.aspect), yawMax=Math.max(.16,half-camHalf-.06);
-  camera.rotation.set(-cur.y*0.08-0.04, -cur.x*yawMax, 0);
-  // she steps aside while you look around, and comes back when you face her
-  if(owner){ const want=here==='door'&&!(drag&&drag.moved>12)&&Math.abs(t.x)<.22?1:0; owner.a+=(want-owner.a)*(reduce?1:1-Math.exp(-dt*8)); owner.mesh.material.opacity=owner.a; owner.shadow.material.opacity=owner.a; owner.mesh.visible=owner.shadow.visible=owner.a>.02 }
-  renderer.render(scene,camera);
-  dots.forEach(d=>{ const p=d.p3.clone().project(camera), vis=p.z<1&&Math.abs(p.x)<0.96&&Math.abs(p.y)<0.9; d.el.style.display=vis&&simple.style.display!=='block'?'flex':'none'; if(vis){ d.el.style.left=(p.x+1)/2*innerWidth+'px'; d.el.style.top=(1-p.y)/2*innerHeight+'px' } }) });
+</div><div id="shopify-section-template--1__cooler" class="shopify-section"><section class="sec fc">
+  <div class="w g12">
+    <div class="fc-t">
+      <p class="lab">The cooler</p>
+      <h2 class="ct">Ready today</h2><div class="g">
+  <span class="face" aria-hidden="true" data-face style="background-image:url(/dear-stem/assets/face_thisway.webp)"></span>
+  <p class="q" data-say>Each one is photographed at its real size. Pick a size and you'll see it next to a hand.</p>
+</div>
+<a class="link" href="/dear-stem/collections/ready-bouquets">See everything in the cooler</a></div>
+    <div class="cards fc-g"><a class="pc" href="/dear-stem/products/red-classic" data-price="4000" data-available="true">
+  <span class="ph"><img src="/dear-stem/img/bq/b01-red-classic.webp" width="900" height="1125" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="Red roses with eucalyptus, wrapped in cream paper"></span>
+  <b>Red classic</b><span>from $40 · 8, 12 or 18 stems</span></a>
+<a class="pc" href="/dear-stem/products/blush-garden" data-price="4500" data-available="true">
+  <span class="ph"><img src="/dear-stem/img/bq/b02-blush-garden.webp" width="900" height="1125" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="Blush garden roses, ranunculus and lisianthus in a loose bunch"></span>
+  <b>Blush garden</b><span>from $45 · 8, 12 or 18 stems</span></a>
+<a class="pc" href="/dear-stem/products/white-and-calm" data-price="4000" data-available="true">
+  <span class="ph"><img src="/dear-stem/img/bq/b03-white-calm.webp" width="900" height="1125" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="White roses and greens in a round bouquet"></span>
+  <b>White and calm</b><span>from $40 · 8, 12 or 18 stems</span></a>
+<a class="pc" href="/dear-stem/products/peach-ranunculus" data-price="3000" data-available="true">
+  <span class="ph"><img src="/dear-stem/img/bq/b04-peach-ranunculus.webp" width="900" height="1125" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="Peach ranunculus with soft greens"></span>
+  <b>Peach ranunculus</b><span>from $30 · 8, 12 or 18 stems</span></a>
+<a class="pc" href="/dear-stem/products/sunny" data-price="3500" data-available="true">
+  <span class="ph"><img src="/dear-stem/img/bq/b05-sunny.webp" width="900" height="1125" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="Yellow and white flowers in a loose bouquet"></span>
+  <b>Sunny</b><span>from $35 · 8, 12 or 18 stems</span></a>
+<a class="pc" href="/dear-stem/products/bright-birthday" data-price="5000" data-available="true">
+  <span class="ph"><img src="/dear-stem/img/bq/b09-bright-birthday.webp" width="900" height="1125" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="A tall, colourful bouquet"></span>
+  <b>Bright birthday</b><span>from $50 · 8, 12 or 18 stems</span></a>
+</div>
+  </div>
+</section>
 
-// ---------- panels and flows ----------
-const panel=document.getElementById('panel'), panelIn=document.getElementById('panelIn'), hint=document.getElementById('hint'), simple=document.getElementById('simple');
-const S={mode:'delivery',zip:'97214',day:'Today'};
-try{ const w=JSON.parse(sessionStorage.getItem('ds-where')||'null'); if(w) Object.assign(S,w) }catch(e){}
-const J = journey({panelIn, show:(h)=>show(h), closePanel:()=>closePanel(), S});
-const Z = J.Z, whenWhere = J.whenWhere;
-function show(html){panelIn.innerHTML=html;panel.classList.add('open');panel.scrollTop=0;hint.style.display='none';const f=panelIn.querySelector('h2,.ct,.q');}
-function closePanel(quiet){panel.classList.remove('open');if(!quiet&&S.set&&simple.style.display!=='block')hint.style.display='flex'}
-function openZone(id){ if(Z[id]) show(Z[id]()) }
-panel.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
-  if(t.dataset.close!==undefined) return closePanel();
-  if(t.dataset.mode){S.mode=t.dataset.mode;panelIn.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-checked',b===t))}
-  if(t.dataset.day){S.day=t.dataset.day;panelIn.querySelectorAll('[data-day]').forEach(b=>b.setAttribute('aria-checked',b===t))}
-  if(t.dataset.go!==undefined){S.zip=(panelIn.querySelector('#zip').value||'97214').trim();S.set=true;window.ownerPose&&window.ownerPose('thisway');try{sessionStorage.setItem('ds-where',JSON.stringify(S))}catch(e){};document.getElementById('chipText').innerHTML=`${S.mode==='pickup'?'Pickup':S.zip} · ${S.day.toLowerCase()} <span class="full" style="color:#6B5463;text-decoration:underline">change</span>`;closePanel()}});
-document.getElementById('chip').addEventListener('click',()=>openZone('door'));
-document.getElementById('bagBtn').addEventListener('click',()=>openZone('bag'));
-addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.classList.contains('open'))closePanel()});
 
-// ---------- simple view: the same photos, flat ----------
-const simpleGrid=document.getElementById('simpleGrid');
-const SV=[['counter','Ask the counter','Four questions, three bouquets','stand/stand_03_counter_master.webp','55% 55%',1.3],['cooler','Shop the cooler','Ready bouquets at their real height','stand/stand_02_cooler_master.webp','50% 70%',1.5],['wrap','Build your own','Pick every stem and the paper','stand/stand_04_wrap_master.webp','80% 50%',1.4],['door','When and where','Delivery or pickup, and the day','stand/stand_01_entrance.webp','66% 50%',3],['shelf','Vases and extras','Real sizes, next to your bouquet','stand/stand_02_cooler_master.webp','50% 18%',1.8],['cafe','Visit and café','Open every day, 8 to 6','stand/stand_04_wrap_master.webp','18% 70%',2]];
-simpleGrid.innerHTML=`<div style="grid-column:1/-1;margin-bottom:18px"><p class="ct" style="font-size:32px">The same shop, flat.</p></div><div style="grid-column:1/-1" class="rail"></div>`+SV.map(([id,t,s,img,pos,z],i)=>`<div class="cell"><div class="thr" style="height:${[26,52,36,44,30,58][i]}px"></div><div class="hook"></div><article><div class="ph"><img src="${img}" alt="" style="transform:scale(${z});transform-origin:${pos}" loading="lazy"></div><div><h3>${t}</h3><span class="muted" style="font-size:14px">${s}</span><button class="btn ghost" data-open="${id}" style="margin-top:6px">Open</button></div></article></div>`).join('');
-simpleGrid.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openZone(b.dataset.open)});
-const tog=document.getElementById('viewToggle');
-function setSimple(on){document.body.classList.toggle('simple-on',on);tog.setAttribute('aria-checked',on);simple.style.display=on?'block':'none';document.getElementById('here').style.display=on?'none':'flex';hint.style.display=(!on&&S.set&&!panel.classList.contains('open'))?'flex':'none'}
-tog.addEventListener('click',()=>setSimple(tog.getAttribute('aria-checked')!=='true'));
+</div><div id="shopify-section-template--1__ask" class="shopify-section"><section class="sec ask-band" id="ask">
+  <div class="w g12">
+    <div class="ab-t">
+      <p class="lab">The counter</p>
+      <h2 class="ct">Not sure what to get?</h2>
+      <div class="rte"><p>Tell me who it's for, the occasion, how it should feel and what you'd like to spend. I'll pick three we can make today.</p></div>
+      <button class="btn" type="button" data-open-panel="panel-ask">Ask the counter</button>
+    </div>
+    <div class="ab-i">
+      <img src="/dear-stem/assets/half_counter.webp" alt="The owner at the counter with a notepad" width="422" height="640" loading="lazy">
+    </div>
+  </div>
+</section>
+<aside class="panel" id="panel-ask" role="dialog" aria-modal="true" aria-label="Ask the counter" data-ask>
+  <div class="in" data-ask-body></div>
+  <script type="application/json" data-ask-json>
+    {
+      "budget": 65, "min": 35, "max": 150,
+      "sizes": [{ "name": "Petite", "stems": 8, "h": 40 },{ "name": "Classic", "stems": 12, "h": 50 },{ "name": "Grand", "stems": 18, "h": 60 }],
+      "choices": {"who": [{ "tag": "mom", "label": "Mom", "sub": "" },{ "tag": "partner", "label": "My partner", "sub": "" },{ "tag": "friend", "label": "A friend", "sub": "" },{ "tag": "grieving", "label": "Someone grieving", "sub": "" },{ "tag": "colleague", "label": "A colleague", "sub": "" },{ "tag": "me", "label": "Me", "sub": "" }],"occ": [{ "tag": "birthday", "label": "Birthday", "sub": "" },{ "tag": "thanks", "label": "Thank you", "sub": "" },{ "tag": "sorry", "label": "Sorry", "sub": "" },{ "tag": "sympathy", "label": "Sympathy", "sub": "" },{ "tag": "just", "label": "Just because", "sub": "" },{ "tag": "congrats", "label": "Congrats", "sub": "" }],"feel": [{ "tag": "garden", "label": "Loose garden", "sub": "like it was just picked" },{ "tag": "round", "label": "Round classic", "sub": "full and even" },{ "tag": "tall", "label": "Tall dramatic", "sub": "long stems, big presence" },{ "tag": "sweet", "label": "Small sweet", "sub": "a little handful" }]},
+      "other": {
+        "field": "In your words",
+        "who": { "label": "Someone else", "sub": "tell me in your words", "hint": "My neighbour, my teacher, a new dad" },
+        "occ": { "label": "Something else", "sub": "tell me in your words", "hint": "An anniversary, a new home, a first show" },
+        "feel": { "label": "Something else", "sub": "tell me in your words", "hint": "All white, wild and bright, only greens" }
+      },
+      "q": [
+        { "title": "Who is it for?", "line": "Hi, I'm at the counter. Four quick questions and I'll pick three for you." },
+        { "title": "The occasion", "line": "Lovely. What's the occasion for [who]?" },
+        { "title": "The feeling", "line": "And how should it feel when they open the door?" },
+        { "title": "Your budget", "line": "Last one. What would you like to spend?" }
+      ],
+      "picked": "Here are three we'd make for [who]. Each one is real, and you'll see a photo before it leaves.",
+      "noteLine": "I'll pass your note to the florist too.",
+      "none": "Nothing in the cooler fits that budget today. The cooler has everything we're making.",
+      "budgetLine": "That buys a [size] one, about [stems] stems.",
+      "budgetLow": "That's below our smallest bouquet. A single stem with a card works, though.",
+      "back": "Back", "next": "Next", "upTo": "Up to", "show": "Show me three", "seeAll": "See everything in the cooler",
+      "cooler": "/dear-stem/collections/ready-bouquets",
+      "products": [{ "title": "Red classic", "url": "/dear-stem/products/red-classic", "img": "/dear-stem/img/bq/b01-red-classic.webp#900x1125", "tags": ["bouquet","feel:round","occ:birthday","occ:sorry","occ:just","occ:congrats","who:partner"],
+            "variants": [{ "id": 40000001, "size": "Petite", "price": 4000, "available": true },{ "id": 40000002, "size": "Classic", "price": 5500, "available": true },{ "id": 40000003, "size": "Grand", "price": 8000, "available": true }] },{ "title": "Blush garden", "url": "/dear-stem/products/blush-garden", "img": "/dear-stem/img/bq/b02-blush-garden.webp#900x1125", "tags": ["bouquet","feel:garden","occ:birthday","occ:thanks","occ:just","occ:congrats","who:mom","who:friend","who:partner"],
+            "variants": [{ "id": 40000004, "size": "Petite", "price": 4500, "available": true },{ "id": 40000005, "size": "Classic", "price": 6500, "available": true },{ "id": 40000006, "size": "Grand", "price": 9500, "available": true }] },{ "title": "White and calm", "url": "/dear-stem/products/white-and-calm", "img": "/dear-stem/img/bq/b03-white-calm.webp#900x1125", "tags": ["bouquet","feel:round","occ:sympathy","occ:sorry","occ:thanks","who:grieving","who:colleague","who:mom"],
+            "variants": [{ "id": 40000007, "size": "Petite", "price": 4000, "available": true },{ "id": 40000008, "size": "Classic", "price": 6000, "available": true },{ "id": 40000009, "size": "Grand", "price": 8500, "available": true }] },{ "title": "Peach ranunculus", "url": "/dear-stem/products/peach-ranunculus", "img": "/dear-stem/img/bq/b04-peach-ranunculus.webp#900x1125", "tags": ["bouquet","feel:sweet","occ:thanks","occ:just","occ:birthday","who:friend","who:colleague","who:me"],
+            "variants": [{ "id": 40000010, "size": "Petite", "price": 3000, "available": true },{ "id": 40000011, "size": "Classic", "price": 4500, "available": true },{ "id": 40000012, "size": "Grand", "price": 6500, "available": true }] },{ "title": "Sunny", "url": "/dear-stem/products/sunny", "img": "/dear-stem/img/bq/b05-sunny.webp#900x1125", "tags": ["bouquet","feel:garden","occ:congrats","occ:birthday","occ:thanks","who:friend","who:colleague","who:me"],
+            "variants": [{ "id": 40000013, "size": "Petite", "price": 3500, "available": true },{ "id": 40000014, "size": "Classic", "price": 5000, "available": true },{ "id": 40000015, "size": "Grand", "price": 7000, "available": true }] },{ "title": "Bright birthday", "url": "/dear-stem/products/bright-birthday", "img": "/dear-stem/img/bq/b09-bright-birthday.webp#900x1125", "tags": ["bouquet","feel:tall","occ:birthday","occ:congrats","who:friend","who:partner","who:me"],
+            "variants": [{ "id": 40000016, "size": "Petite", "price": 5000, "available": true },{ "id": 40000017, "size": "Classic", "price": 7000, "available": true },{ "id": 40000018, "size": "Grand", "price": 10000, "available": true }] },{ "title": "Petite sweet", "url": "/dear-stem/products/petite-sweet", "img": "/dear-stem/img/bq/b10-petite-sweet.webp#900x1125", "tags": ["bouquet","feel:sweet","occ:just","occ:thanks","occ:sorry","who:friend","who:mom","who:me","who:colleague"],
+            "variants": [{ "id": 40000019, "size": "Petite", "price": 2500, "available": true },{ "id": 40000020, "size": "Classic", "price": 3500, "available": true },{ "id": 40000021, "size": "Grand", "price": 5000, "available": true }] }]
+    }
+  </script>
+</aside>
 
-// first visit: when and where before stepping in; phones start in the simple view
-if(innerWidth<720) setSimple(true);
-await goTo('door');
-if(location.hash==='#bag') openZone('bag'); else show(whenWhere(true));
-addEventListener('hashchange',()=>{ if(location.hash==='#bag') openZone('bag') });
-window.DONE=true;
-</script>
+
+</div><div id="shopify-section-template--1__visit" class="shopify-section"><section class="sec iwt flip">
+  <div class="w g12">
+    <div class="iwt-i"><img src="/dear-stem/assets/stand_03_counter_master.webp" alt="The pastry counter with the coffee machine" width="1536" height="1024" loading="lazy" style="object-position:50% 60%">
+</div>
+    <div class="iwt-t"><p class="lab">The café</p><h2 class="ct">Visit</h2><div class="rte"><p>Coffee and pastries from the counter, in the shop only. Collect your order here, or come in and choose your flowers in person. Open every day, 8 to 6.</p></div><a class="btn ghost" href="/dear-stem/pages/visit">How to find us</a></div>
+  </div>
+</section>
+
+
+</div>
+  </main>
+  <div id="shopify-section-sections--1__footer" class="shopify-section"><footer class="ftr">
+  <div class="rule"></div>
+  <div class="w g12 in">
+    <div class="ft-a">
+      <img src="/dear-stem/assets/monogram_plum.svg" alt="" width="48" height="48" loading="lazy">
+    </div><div class="ft-b" data-block="visit"><h2 class="lab">Visit</h2>
+            <div class="rte small"><p>Portland, Oregon. Open every day, 8 to 6.</p><p>Coffee and pastries at the counter, in the shop only.</p></div></div><div class="ft-b" data-block="shop"><h2 class="lab">The shop</h2>
+            <ul><li><a href="/dear-stem/collections/ready-bouquets">The cooler</a></li><li><a href="/dear-stem/pages/build-your-own">Build your own</a></li><li><a href="/dear-stem/collections/vases">Vases</a></li><li><a href="/dear-stem/pages/visit">Visit</a></li></ul></div><div class="ft-b" data-block="help"><h2 class="lab">Help</h2>
+            <ul><li><a href="/dear-stem/search">Search</a></li><li><a href="/dear-stem/pages/contact">Contact</a></li></ul></div><div class="ft-n">
+      <p class="note">© 2026 dear stem. A concept shop. Photos made with AI image tools.</p>
+    </div>
+  </div>
+</footer>
+
+
+</div>
+  <aside class="panel" id="panel-where" role="dialog" aria-modal="true" aria-labelledby="where-t" data-where>
+  <div class="in">
+    <button class="x" type="button" data-close-panel aria-label="Close">×</button>
+    <p class="lab" data-where-first hidden>Before you step in</p>
+    <h2 class="q" id="where-t" style="font-size:24px">Where's it going, and when?</h2>
+    <p class="muted small" style="margin:-8px 0 0">We only show flowers we can get there in time.</p>
+    <div class="seg" role="radiogroup" aria-label="Delivery or pickup">
+      <button type="button" role="radio" aria-checked="true" data-mode="Delivery">Delivery</button>
+      <button type="button" role="radio" aria-checked="false" data-mode="Pickup">I'll pick it up</button>
+    </div>
+    <label class="f" data-zip-wrap>ZIP code
+      <input id="w-zip" inputmode="numeric" autocomplete="postal-code" maxlength="5" pattern="[0-9]{5}" placeholder="97214">
+    </label>
+    <p class="small" data-zip-msg aria-live="polite" hidden></p>
+    <div class="opts" role="radiogroup" aria-label="Day">
+      <button type="button" class="opt" role="radio" aria-checked="true" data-day="today"><b>Today</b><span>order by 1 pm</span></button>
+      <button type="button" class="opt" role="radio" aria-checked="false" data-day="tomorrow"><b>Tomorrow</b><span data-tomorrow></span></button>
+      <button type="button" class="opt" role="radio" aria-checked="false" data-day="pick"><b>Pick a day</b><span>up to 30 days</span></button>
+    </div>
+    <label class="f" data-date-wrap hidden>Which day?<input type="date" id="w-date"></label>
+    <button class="btn" type="button" data-where-save>Save</button><p class="muted small" style="margin:0">Delivery around Portland is $9. Pickup at the shop is free.</p></div>
+</aside>
+
+  <div id="shopify-section-cart-drawer" class="shopify-section"><aside class="panel" id="cart-drawer" role="dialog" aria-modal="true" aria-label="Your bag">
+  <div class="in" data-cart-body>
+    <button class="x" type="button" data-close-panel aria-label="Close">×</button>
+    <h2 class="ct m">Your bag</h2><div class="g">
+  <span class="face" aria-hidden="true" data-face style="background-image:url(/dear-stem/assets/face_counter.webp)"></span>
+  <p class="q" data-say>Nothing here yet. The cooler is a good place to start.</p>
+</div>
+
+  <a class="btn ghost" href="/dear-stem/collections/ready-bouquets">Go to the cooler</a>
+  </div>
+  <span hidden data-bag-count>0</span>
+</aside>
+
+
+</div>
+  <div class="scrim" data-close-panel hidden></div>
 </body>
 </html>

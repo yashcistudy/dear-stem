@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#FBF8F3">
+  <link rel="canonical" href="http://localhost:8771/collections/stems"><link rel="icon" type="image/svg+xml" href="/dear-stem/assets/monogram_plum.svg"><title>Stems · dear stem</title><meta name="description" content=""><meta property="og:site_name" content="dear stem">
+<meta property="og:url" content="http://localhost:8771/collections/stems">
+<meta property="og:title" content="Stems">
+<meta property="og:type" content="website">
+<meta property="og:description" content="A flower shop and café in Portland, Oregon."><meta name="twitter:card" content="summary_large_image">
+
+
+  <link href="/dear-stem/assets/jost-latin-400-normal.woff2" rel="preload" as="font" type="font/woff2" crossorigin="anonymous">
+  <style>
+    @font-face{font-family:Jost;font-weight:300;font-display:swap;src:url(/dear-stem/assets/jost-latin-300-normal.woff2) format('woff2')}
+    @font-face{font-family:Jost;font-weight:400;font-display:swap;src:url(/dear-stem/assets/jost-latin-400-normal.woff2) format('woff2')}
+    @font-face{font-family:Jost;font-weight:500;font-display:swap;src:url(/dear-stem/assets/jost-latin-500-normal.woff2) format('woff2')}
+    @font-face{font-family:'Caffe Latte';font-display:swap;src:url(/dear-stem/assets/caffe-latte.woff2) format('woff2')}
+    :root{
+      --rail:url(/dear-stem/assets/rail.svg);--rule:url(/dear-stem/assets/rule.svg);--thread:url(/dear-stem/assets/thread.svg);
+      --hook:url(/dear-stem/assets/hook.svg);--box:url(/dear-stem/assets/box.svg);--hand:url(/dear-stem/assets/scale_hand_front.webp);
+    }
+  </style>
+  <link href="/dear-stem/assets/base.css" rel="stylesheet" type="text/css" media="all">
+  <script type="importmap">{"imports":{"three":"/dear-stem/assets/three.module.min.js"}}</script>
+  <script>
+    window.DS = {
+      root: "/dear-stem/",
+      cartAdd: "/dear-stem/cart/add",
+      cartChange: "/dear-stem/cart/change",
+      cartUpdate: "/dear-stem/cart/update",
+      cartUrl: "/dear-stem/cart",
+      faces: {"welcome": "/dear-stem/assets/face_welcome.webp","counter": "/dear-stem/assets/face_counter.webp","thisway": "/dear-stem/assets/face_thisway.webp","forthem": "/dear-stem/assets/face_forthem.webp","sayit": "/dear-stem/assets/face_sayit.webp","building": "/dear-stem/assets/face_building.webp","crowded": "/dear-stem/assets/face_crowded.webp","wrapping": "/dear-stem/assets/face_wrapping.webp"},
+      where: {
+        mode: "",
+        zip: "",
+        day: ""
+      },
+      localZips: "972*",
+      moneyFormat: "${{amount}}",
+      t: {
+        bag: "Bag", pickup: "Pickup", change: "change",
+        ask: "Where to?", zipOk: "We deliver there.", zipOut: "We don't deliver there yet. Pickup at the shop works.",
+        zipBad: "Five numbers, like 97214.", pickDay: "Choose the day first.", today: "Today",
+        tomorrow: "Tomorrow", added: "In your bag", soldOut: "Sold out today", error: "That didn't work. Please try again."
+      }
+    };
+  </script>
+  <script src="/dear-stem/assets/liquid.browser.umd.js" defer></script><script src="/dear-stem/assets/static-kit.js" defer></script><script src="/dear-stem/assets/static-cart.js" defer></script><script src="/dear-stem/assets/theme.js" defer></script>
+  
+<style>#static-note{position:fixed;inset:0;background:rgba(251,248,243,.94);z-index:30;display:flex;align-items:center;justify-content:center;padding:20px}#static-note[hidden]{display:none}#static-note>div{background:var(--paper);border:1px solid var(--plum);max-width:420px;padding:24px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}#static-note p{margin:0}</style></head>
+<body class="t-collection">
+  <a class="skip" href="#main">Skip to the page</a>
+  <div id="shopify-section-sections--1__header" class="shopify-section shopify-section--hdr"><header class="hdr" data-hdr>
+  <div class="rail"></div>
+  <div class="hd">
+    <a class="logo" href="/dear-stem/"><img src="/dear-stem/assets/logo-one-line_plum.svg" alt="dear stem" width="132" height="44"></a>
+    <nav id="hd-nav" aria-label="Menu">
+      <ul><li><a href="/dear-stem/collections/ready-bouquets">The cooler</a></li><li><a href="/dear-stem/pages/build-your-own">Build your own</a></li><li><a href="/dear-stem/collections/vases">Vases</a></li><li><a href="/dear-stem/pages/visit">Visit</a></li></ul>
+    </nav>
+    <div class="right">
+      <button class="chip menu-btn" type="button" aria-controls="hd-nav" aria-expanded="false" data-menu>Menu</button><button class="chip" type="button" data-open-panel="panel-where" aria-haspopup="dialog">
+          <span aria-hidden="true">⌖</span>
+          <span data-where-chip>Where to?</span>
+        </button><a class="chip" href="/dear-stem/cart" data-open-cart aria-haspopup="dialog"><span data-bag-n>Bag</span>
+      </a>
+    </div>
+  </div>
+  <div class="rule"></div>
+</header>
+
+
+</div>
+  <main id="main">
+    <div id="shopify-section-template--1__main" class="shopify-section"><section class="sec fc col">
+    <div class="w g12">
+      <div class="fc-t">
+        <p class="lab">15 things</p>
+        <h1 class="ct">Stems</h1><div class="g">
+  <span class="face" aria-hidden="true" data-face style="background-image:url(/dear-stem/assets/face_thisway.webp)"></span>
+  <p class="q" data-say>Every bouquet is photographed at its real size. Open one to see it next to a hand.</p>
+</div>
+<form class="flt" action="/dear-stem/collections/stems" method="get" data-filters><fieldset>
+                    <legend class="lab">Availability</legend><label class="fv">
+                        <input type="checkbox" name="filter.v.availability" value="1">
+                        <span>In stock</span><span class="muted">14</span>
+                      </label><label class="fv">
+                        <input type="checkbox" name="filter.v.availability" value="0">
+                        <span>Out of stock</span><span class="muted">1</span>
+                      </label></fieldset><fieldset>
+                    <legend class="lab">Price</legend>
+                    <div class="fp">
+                      <label class="f">From<input class="inp" type="number" inputmode="decimal" min="0" name="filter.v.price.gte" value="" placeholder="0"></label>
+                      <label class="f">To<input class="inp" type="number" inputmode="decimal" min="0" name="filter.v.price.lte" value="" placeholder="9.00"></label>
+                    </div>
+                  </fieldset><label class="f">Sort
+              <select class="inp" name="sort_by"><option value="manual" selected>Featured</option><option value="best-selling">Best selling</option><option value="price-ascending">Price, low to high</option><option value="price-descending">Price, high to low</option><option value="created-descending">Newest</option></select>
+            </label>
+            <div class="fa">
+              <button class="btn ghost sm" type="submit" data-apply>Show them</button></div>
+          </form></div>
+
+      <div class="fc-g">
+        <div class="cards"><a class="pc" href="/dear-stem/products/stem-rose-garden-blush" data-price="700" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_rose-garden_blush.webp" width="197" height="660" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One blush garden rose stem"></span>
+  <b>Blush garden rose</b><span>$7</span></a>
+<a class="pc" href="/dear-stem/products/stem-rose-standard-red" data-price="400" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_rose-standard_red.webp" width="179" height="735" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One red rose stem"></span>
+  <b>Red rose</b><span>$4</span></a>
+<a class="pc" href="/dear-stem/products/stem-rose-standard-blush" data-price="400" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_rose-standard_blush.webp" width="205" height="735" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One blush rose stem"></span>
+  <b>Blush rose</b><span>$4</span></a>
+<a class="pc" href="/dear-stem/products/stem-rose-standard-white" data-price="400" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_rose-standard_white.webp" width="214" height="735" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One white rose stem"></span>
+  <b>White rose</b><span>$4</span></a>
+<a class="pc" href="/dear-stem/products/stem-peony-blush" data-price="900" data-available="false">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_peony_blush.webp" width="262" height="585" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One blush peony stem"></span>
+  <b>Blush peony</b><span>$9</span><span>Sold out today</span></a>
+<a class="pc" href="/dear-stem/products/stem-hydrangea-white" data-price="800" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_hydrangea_white.webp" width="262" height="585" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One white hydrangea stem"></span>
+  <b>White hydrangea</b><span>$8</span></a>
+<a class="pc" href="/dear-stem/products/stem-ranunculus-peach" data-price="400" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_ranunculus_peach.webp" width="138" height="510" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One peach ranunculus stem"></span>
+  <b>Peach ranunculus</b><span>$4</span></a>
+<a class="pc" href="/dear-stem/products/stem-ranunculus-white" data-price="400" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_ranunculus_white.webp" width="155" height="510" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One white ranunculus stem"></span>
+  <b>White ranunculus</b><span>$4</span></a>
+<a class="pc" href="/dear-stem/products/stem-rose-spray-blush" data-price="600" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_rose-spray_blush.webp" width="293" height="735" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One blush spray rose stem"></span>
+  <b>Blush spray rose</b><span>$6</span></a>
+<a class="pc" href="/dear-stem/products/stem-carnation-blush" data-price="300" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_carnation_blush.webp" width="177" height="735" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One blush carnation stem"></span>
+  <b>Blush carnation</b><span>$3</span></a>
+<a class="pc" href="/dear-stem/products/stem-lisianthus-white" data-price="500" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_lisianthus_white.webp" width="161" height="660" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One white lisianthus stem"></span>
+  <b>White lisianthus</b><span>$5</span></a>
+<a class="pc" href="/dear-stem/products/stem-snapdragon-white" data-price="400" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_snapdragon_white.webp" width="97" height="660" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One white snapdragon stem"></span>
+  <b>White snapdragon</b><span>$4</span></a>
+<a class="pc" href="/dear-stem/products/stem-gypsophila-white" data-price="300" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_gypsophila_white.webp" width="295" height="883" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One baby's breath stem"></span>
+  <b>Baby's breath</b><span>$3</span></a>
+<a class="pc" href="/dear-stem/products/stem-eucalyptus-silver-dollar-grey-green" data-price="300" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_eucalyptus-silver-dollar_grey-green.webp" width="251" height="660" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One silver dollar eucalyptus stem"></span>
+  <b>Silver dollar eucalyptus</b><span>$3</span></a>
+<a class="pc" href="/dear-stem/products/stem-ruscus-italian-green-glossy" data-price="300" data-available="true">
+  <span class="ph tall"><img src="/dear-stem/build/img/lay_ruscus-italian_green-glossy.webp" width="270" height="795" loading="lazy" sizes="(max-width: 720px) 50vw, 30vw" alt="One italian ruscus stem"></span>
+  <b>Italian ruscus</b><span>$3</span></a>
+</div></div>
+    </div>
+  </section>
+</div>
+  </main>
+  <div id="shopify-section-sections--1__footer" class="shopify-section"><footer class="ftr">
+  <div class="rule"></div>
+  <div class="w g12 in">
+    <div class="ft-a">
+      <img src="/dear-stem/assets/monogram_plum.svg" alt="" width="48" height="48" loading="lazy">
+    </div><div class="ft-b" data-block="visit"><h2 class="lab">Visit</h2>
+            <div class="rte small"><p>Portland, Oregon. Open every day, 8 to 6.</p><p>Coffee and pastries at the counter, in the shop only.</p></div></div><div class="ft-b" data-block="shop"><h2 class="lab">The shop</h2>
+            <ul><li><a href="/dear-stem/collections/ready-bouquets">The cooler</a></li><li><a href="/dear-stem/pages/build-your-own">Build your own</a></li><li><a href="/dear-stem/collections/vases">Vases</a></li><li><a href="/dear-stem/pages/visit">Visit</a></li></ul></div><div class="ft-b" data-block="help"><h2 class="lab">Help</h2>
+            <ul><li><a href="/dear-stem/search">Search</a></li><li><a href="/dear-stem/pages/contact">Contact</a></li></ul></div><div class="ft-n">
+      <p class="note">© 2026 dear stem. A concept shop. Photos made with AI image tools.</p>
+    </div>
+  </div>
+</footer>
+
+
+</div>
+  <aside class="panel" id="panel-where" role="dialog" aria-modal="true" aria-labelledby="where-t" data-where>
+  <div class="in">
+    <button class="x" type="button" data-close-panel aria-label="Close">×</button>
+    <p class="lab" data-where-first hidden>Before you step in</p>
+    <h2 class="q" id="where-t" style="font-size:24px">Where's it going, and when?</h2>
+    <p class="muted small" style="margin:-8px 0 0">We only show flowers we can get there in time.</p>
+    <div class="seg" role="radiogroup" aria-label="Delivery or pickup">
+      <button type="button" role="radio" aria-checked="true" data-mode="Delivery">Delivery</button>
+      <button type="button" role="radio" aria-checked="false" data-mode="Pickup">I'll pick it up</button>
+    </div>
+    <label class="f" data-zip-wrap>ZIP code
+      <input id="w-zip" inputmode="numeric" autocomplete="postal-code" maxlength="5" pattern="[0-9]{5}" placeholder="97214">
+    </label>
+    <p class="small" data-zip-msg aria-live="polite" hidden></p>
+    <div class="opts" role="radiogroup" aria-label="Day">
+      <button type="button" class="opt" role="radio" aria-checked="true" data-day="today"><b>Today</b><span>order by 1 pm</span></button>
+      <button type="button" class="opt" role="radio" aria-checked="false" data-day="tomorrow"><b>Tomorrow</b><span data-tomorrow></span></button>
+      <button type="button" class="opt" role="radio" aria-checked="false" data-day="pick"><b>Pick a day</b><span>up to 30 days</span></button>
+    </div>
+    <label class="f" data-date-wrap hidden>Which day?<input type="date" id="w-date"></label>
+    <button class="btn" type="button" data-where-save>Save</button><p class="muted small" style="margin:0">Delivery around Portland is $9. Pickup at the shop is free.</p></div>
+</aside>
+
+  <div id="shopify-section-cart-drawer" class="shopify-section"><aside class="panel" id="cart-drawer" role="dialog" aria-modal="true" aria-label="Your bag">
+  <div class="in" data-cart-body>
+    <button class="x" type="button" data-close-panel aria-label="Close">×</button>
+    <h2 class="ct m">Your bag</h2><div class="g">
+  <span class="face" aria-hidden="true" data-face style="background-image:url(/dear-stem/assets/face_counter.webp)"></span>
+  <p class="q" data-say>Nothing here yet. The cooler is a good place to start.</p>
+</div>
+
+  <a class="btn ghost" href="/dear-stem/collections/ready-bouquets">Go to the cooler</a>
+  </div>
+  <span hidden data-bag-count>0</span>
+</aside>
+
+
+</div>
+  <div class="scrim" data-close-panel hidden></div>
+</body>
+</html>

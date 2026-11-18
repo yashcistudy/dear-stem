@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#FBF8F3">
+  <link rel="canonical" href="http://localhost:8771/pages/build-your-own"><link rel="icon" type="image/svg+xml" href="/dear-stem/assets/monogram_plum.svg"><title>Build your own · dear stem</title><meta name="description" content=""><meta property="og:site_name" content="dear stem">
+<meta property="og:url" content="http://localhost:8771/pages/build-your-own">
+<meta property="og:title" content="Build your own">
+<meta property="og:type" content="website">
+<meta property="og:description" content="A flower shop and café in Portland, Oregon."><meta name="twitter:card" content="summary_large_image">
+
+
+  <link href="/dear-stem/assets/jost-latin-400-normal.woff2" rel="preload" as="font" type="font/woff2" crossorigin="anonymous">
+  <style>
+    @font-face{font-family:Jost;font-weight:300;font-display:swap;src:url(/dear-stem/assets/jost-latin-300-normal.woff2) format('woff2')}
+    @font-face{font-family:Jost;font-weight:400;font-display:swap;src:url(/dear-stem/assets/jost-latin-400-normal.woff2) format('woff2')}
+    @font-face{font-family:Jost;font-weight:500;font-display:swap;src:url(/dear-stem/assets/jost-latin-500-normal.woff2) format('woff2')}
+    @font-face{font-family:'Caffe Latte';font-display:swap;src:url(/dear-stem/assets/caffe-latte.woff2) format('woff2')}
+    :root{
+      --rail:url(/dear-stem/assets/rail.svg);--rule:url(/dear-stem/assets/rule.svg);--thread:url(/dear-stem/assets/thread.svg);
+      --hook:url(/dear-stem/assets/hook.svg);--box:url(/dear-stem/assets/box.svg);--hand:url(/dear-stem/assets/scale_hand_front.webp);
+    }
+  </style>
+  <link href="/dear-stem/assets/base.css" rel="stylesheet" type="text/css" media="all">
+  <script type="importmap">{"imports":{"three":"/dear-stem/assets/three.module.min.js"}}</script>
+  <script>
+    window.DS = {
+      root: "/dear-stem/",
+      cartAdd: "/dear-stem/cart/add",
+      cartChange: "/dear-stem/cart/change",
+      cartUpdate: "/dear-stem/cart/update",
+      cartUrl: "/dear-stem/cart",
+      faces: {"welcome": "/dear-stem/assets/face_welcome.webp","counter": "/dear-stem/assets/face_counter.webp","thisway": "/dear-stem/assets/face_thisway.webp","forthem": "/dear-stem/assets/face_forthem.webp","sayit": "/dear-stem/assets/face_sayit.webp","building": "/dear-stem/assets/face_building.webp","crowded": "/dear-stem/assets/face_crowded.webp","wrapping": "/dear-stem/assets/face_wrapping.webp"},
+      where: {
+        mode: "",
+        zip: "",
+        day: ""
+      },
+      localZips: "972*",
+      moneyFormat: "${{amount}}",
+      t: {
+        bag: "Bag", pickup: "Pickup", change: "change",
+        ask: "Where to?", zipOk: "We deliver there.", zipOut: "We don't deliver there yet. Pickup at the shop works.",
+        zipBad: "Five numbers, like 97214.", pickDay: "Choose the day first.", today: "Today",
+        tomorrow: "Tomorrow", added: "In your bag", soldOut: "Sold out today", error: "That didn't work. Please try again."
+      }
+    };
+  </script>
+  <script src="/dear-stem/assets/liquid.browser.umd.js" defer></script><script src="/dear-stem/assets/static-kit.js" defer></script><script src="/dear-stem/assets/static-cart.js" defer></script><script src="/dear-stem/assets/theme.js" defer></script>
+  
+<style>#static-note{position:fixed;inset:0;background:rgba(251,248,243,.94);z-index:30;display:flex;align-items:center;justify-content:center;padding:20px}#static-note[hidden]{display:none}#static-note>div{background:var(--paper);border:1px solid var(--plum);max-width:420px;padding:24px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}#static-note p{margin:0}</style></head>
+<body class="t-page t-builder">
+  <a class="skip" href="#main">Skip to the page</a>
+  <div id="shopify-section-sections--1__header" class="shopify-section shopify-section--hdr"><header class="hdr" data-hdr>
+  <div class="rail"></div>
+  <div class="hd">
+    <a class="logo" href="/dear-stem/"><img src="/dear-stem/assets/logo-one-line_plum.svg" alt="dear stem" width="132" height="44"></a>
+    <nav id="hd-nav" aria-label="Menu">
+      <ul><li><a href="/dear-stem/collections/ready-bouquets">The cooler</a></li><li><a href="/dear-stem/pages/build-your-own">Build your own</a></li><li><a href="/dear-stem/collections/vases">Vases</a></li><li><a href="/dear-stem/pages/visit">Visit</a></li></ul>
+    </nav>
+    <div class="right">
+      <button class="chip menu-btn" type="button" aria-controls="hd-nav" aria-expanded="false" data-menu>Menu</button><button class="chip" type="button" data-open-panel="panel-where" aria-haspopup="dialog">
+          <span aria-hidden="true">⌖</span>
+          <span data-where-chip>Where to?</span>
+        </button><a class="chip" href="/dear-stem/cart" data-open-cart aria-haspopup="dialog"><span data-bag-n>Bag</span>
+      </a>
+    </div>
+  </div>
+  <div class="rule"></div>
+</header>
+
+
+</div>
+  <main id="main">
+    <div id="shopify-section-template--1__builder" class="shopify-section"><link href="/dear-stem/assets/builder.css" rel="stylesheet" type="text/css" media="all">
+<section class="bb" data-builder>
+  <div class="bb-wrap">
+    <div id="b-stage" data-step="1" aria-label="Your bouquet" role="region">
+      <div id="b-room"></div>
+      <div id="b-table"><div id="b-sheet"></div><div id="b-lays"></div></div>
+      <div id="b-mini" aria-hidden="true"><p>From the front</p></div>
+      <div id="b-gl"></div>
+      <img id="b-wrapper" src="/dear-stem/assets/half_wrapping.webp" alt="" width="422" height="640">
+      <ol class="b-steps" aria-label="Steps">
+        <li data-s="1" class="on">1 Making it</li>
+        <li data-s="2">2 Wrap it</li>
+        <li data-s="3">3 Checking it</li>
+      </ol>
+      <p id="b-drag">Drag to turn it</p>
+    </div>
+
+    <div class="b-side">
+      <div class="b-panel">
+        <div data-p="1">
+          <p class="lab">Build your own</p>
+          <h1 class="ct">Making it</h1>
+          <p class="muted b-intro">Every stem you pick goes on the paper. Tap one on the paper to take it off.</p>
+        </div>
+        <div data-p="1"><p class="lab">Size</p><div class="b-row" id="b-sizes" role="radiogroup" aria-label="Size"></div></div>
+        <div data-p="1"><p class="lab">Paper</p><div class="b-row b-papers" role="radiogroup" aria-label="Paper"></div></div>
+        <div data-p="1"><div id="b-stems"></div></div>
+
+        <div data-p="3" hidden>
+          <button class="link" type="button" id="b-back">← Back to the table</button>
+          <p class="lab b-gap">Build your own</p>
+          <h1 class="ct">Checking it</h1>
+          <p class="muted b-intro">This is how it stands in the cone. Drag it round to see every side.</p>
+        </div>
+        <div data-p="3" hidden><p class="lab">Ribbon</p><div class="b-row" id="b-ribbons" role="radiogroup" aria-label="Ribbon"></div></div>
+        <div data-p="3" hidden><p class="lab">Paper</p><div class="b-row b-papers" role="radiogroup" aria-label="Paper"></div></div>
+        <div data-p="3" hidden>
+          <button class="b-pick" type="button" id="b-hand" role="switch" aria-checked="false"><i class="b-handi"></i><span>Show a hand next to it<small>18 cm, for scale</small></span></button>
+        </div>
+        <div data-p="3" hidden>
+          <label class="lab" for="b-card">The card</label>
+          <textarea id="b-card" maxlength="180" placeholder="We copy it out by hand."></textarea>
+          <div class="starts" id="b-starts"></div>
+        </div>
+        <div data-p="3" hidden>
+          <label class="lab" for="b-note">Missing something?</label>
+          <input class="inp" type="text" id="b-note" maxlength="140" placeholder="A flower that isn't here, a colour to avoid, an allergy">
+          <p class="muted small b-gap6">We read every note and text you if we need to change anything.</p>
+        </div>
+      </div>
+
+      <div class="b-sum">
+        <div class="b-talk"><span class="face" id="b-face" aria-hidden="true"></span><p id="b-say" class="q" aria-live="polite"></p></div>
+        <div id="b-full">
+          <div class="b-meter" aria-hidden="true"><i id="b-fill"></i><em style="left:37.5%"></em><em style="left:84%"></em></div>
+          <div class="b-mlab" id="b-fit"><span>thin</span><span>full</span><span>crowded</span></div>
+        </div>
+        <div class="b-sumrow">
+          <span><b id="b-total"></b> <span class="muted" id="b-count"></span></span>
+          <button class="btn" type="button" id="b-next" disabled>Wrap it</button>
+        </div>
+        <p class="muted small" id="b-where"></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="b-done" role="dialog" aria-modal="true" aria-labelledby="b-doneT" hidden>
+    <div class="b-box">
+      <div class="b-donepics"><img id="b-doneImg" alt="" width="240" height="300"><img src="/dear-stem/assets/full_onitsway.webp" alt="" width="158" height="240"></div>
+      <p class="ct m" id="b-doneT">It's in your bag</p>
+      <p id="b-doneS"></p><p class="muted small">Before it leaves, we send you a photo of the real bouquet to approve.</p><div class="b-row"><button class="btn" type="button" id="b-seebag">See your bag</button><button class="btn ghost" type="button" id="b-again">Keep building</button></div>
+    </div>
+  </div>
+
+  <script type="application/json" data-builder-json>
+    {
+      "base": "/dear-stem/assets/",
+      "room": "/dear-stem/assets/stand_04_wrap_master.webp",
+      "stems": {"stem-rose-garden-blush": { "v": 40000029, "price": 700, "available": true },"stem-rose-standard-red": { "v": 40000030, "price": 400, "available": true },"stem-rose-standard-blush": { "v": 40000031, "price": 400, "available": true },"stem-rose-standard-white": { "v": 40000032, "price": 400, "available": true },"stem-peony-blush": { "v": 40000033, "price": 900, "available": false },"stem-hydrangea-white": { "v": 40000034, "price": 800, "available": true },"stem-ranunculus-peach": { "v": 40000035, "price": 400, "available": true },"stem-ranunculus-white": { "v": 40000036, "price": 400, "available": true },"stem-rose-spray-blush": { "v": 40000037, "price": 600, "available": true },"stem-carnation-blush": { "v": 40000038, "price": 300, "available": true },"stem-lisianthus-white": { "v": 40000039, "price": 500, "available": true },"stem-snapdragon-white": { "v": 40000040, "price": 400, "available": true },"stem-gypsophila-white": { "v": 40000041, "price": 300, "available": true },"stem-eucalyptus-silver-dollar-grey-green": { "v": 40000042, "price": 300, "available": true },"stem-ruscus-italian-green-glossy": { "v": 40000043, "price": 300, "available": true }},
+      "papers": [{ "v": 40000044, "title": "Cream paper", "price": 600, "available": true },{ "v": 40000045, "title": "Petal paper", "price": 600, "available": true }],
+      "sizes": [{ "name": "Petite", "stems": 8, "h": 40 },{ "name": "Classic", "stems": 12, "h": 50 },{ "name": "Grand", "stems": 18, "h": 60 }],
+      "starts": "Thinking of you today.\nHappy birthday. Have the loveliest day.\nI am so proud of you.\nSorry, and I love you.\nWith you, always.",
+      "t": {
+        "focal": "The main flowers", "between": "In between", "green": "Greens",
+        "perStem": "[price] a stem", "soldOut": "Sold out today",
+        "less": "One less [name]", "more": "One more [name]",
+        "sizeSub": "about [stems] stems · [h] cm",
+        "wrapIt": "Wrap it", "add": "Add to bag", "adding": "Adding",
+        "stem1": "[n] stem", "stemN": "[n] stems", "holds": ", a [size] holds about [stems]",
+        "start": "Pick a stem you love and I'll lay it on the paper.", "tooMany": "That's more than a cone can hold.",
+        "lovely": "[name], lovely. Keep going.", "addMore": "Add a couple more.",
+        "thin": "Looks a little thin. Some hydrangea or eucalyptus fills it fast.", "crowded": "Hmm, getting crowded. Swap one instead of adding, or go up a size.",
+        "greens": "A little eucalyptus would loosen it up.", "good": "That's a good, full bunch. I'd send that.",
+        "wrapping": "Let me wrap it up for you.",
+        "phoneOn": "[name] on the paper. [n] stems so far.", "phoneN": "[n] stems on the paper.", "phoneWrap": "Wrap it when you're ready.",
+        "doneS": "[n] stems in [paper] with a [ribbon] ribbon", "doneCard": ", and your card",
+        "missing": "Some stems aren't in the shop yet, so this bouquet can't go in the bag. Import the products CSV first.", "error": "That didn't work. Please try again.",
+        "canvas": "Your bouquet. Drag or use the arrow keys to turn it.",
+        "papersFallback": "Cream paper|Petal paper",
+        "ribbons": "Petal|Butter|Plum"
+      }
+    }
+  </script>
+</section>
+<script type="module" src="/dear-stem/assets/builder.js"></script>
+
+
+</div>
+  </main>
+  <div id="shopify-section-sections--1__footer" class="shopify-section"><footer class="ftr">
+  <div class="rule"></div>
+  <div class="w g12 in">
+    <div class="ft-a">
+      <img src="/dear-stem/assets/monogram_plum.svg" alt="" width="48" height="48" loading="lazy">
+    </div><div class="ft-b" data-block="visit"><h2 class="lab">Visit</h2>
+            <div class="rte small"><p>Portland, Oregon. Open every day, 8 to 6.</p><p>Coffee and pastries at the counter, in the shop only.</p></div></div><div class="ft-b" data-block="shop"><h2 class="lab">The shop</h2>
+            <ul><li><a href="/dear-stem/collections/ready-bouquets">The cooler</a></li><li><a href="/dear-stem/pages/build-your-own">Build your own</a></li><li><a href="/dear-stem/collections/vases">Vases</a></li><li><a href="/dear-stem/pages/visit">Visit</a></li></ul></div><div class="ft-b" data-block="help"><h2 class="lab">Help</h2>
+            <ul><li><a href="/dear-stem/search">Search</a></li><li><a href="/dear-stem/pages/contact">Contact</a></li></ul></div><div class="ft-n">
+      <p class="note">© 2026 dear stem. A concept shop. Photos made with AI image tools.</p>
+    </div>
+  </div>
+</footer>
+
+
+</div>
+  <aside class="panel" id="panel-where" role="dialog" aria-modal="true" aria-labelledby="where-t" data-where>
+  <div class="in">
+    <button class="x" type="button" data-close-panel aria-label="Close">×</button>
+    <p class="lab" data-where-first hidden>Before you step in</p>
+    <h2 class="q" id="where-t" style="font-size:24px">Where's it going, and when?</h2>
+    <p class="muted small" style="margin:-8px 0 0">We only show flowers we can get there in time.</p>
+    <div class="seg" role="radiogroup" aria-label="Delivery or pickup">
+      <button type="button" role="radio" aria-checked="true" data-mode="Delivery">Delivery</button>
+      <button type="button" role="radio" aria-checked="false" data-mode="Pickup">I'll pick it up</button>
+    </div>
+    <label class="f" data-zip-wrap>ZIP code
+      <input id="w-zip" inputmode="numeric" autocomplete="postal-code" maxlength="5" pattern="[0-9]{5}" placeholder="97214">
+    </label>
+    <p class="small" data-zip-msg aria-live="polite" hidden></p>
+    <div class="opts" role="radiogroup" aria-label="Day">
+      <button type="button" class="opt" role="radio" aria-checked="true" data-day="today"><b>Today</b><span>order by 1 pm</span></button>
+      <button type="button" class="opt" role="radio" aria-checked="false" data-day="tomorrow"><b>Tomorrow</b><span data-tomorrow></span></button>
+      <button type="button" class="opt" role="radio" aria-checked="false" data-day="pick"><b>Pick a day</b><span>up to 30 days</span></button>
+    </div>
+    <label class="f" data-date-wrap hidden>Which day?<input type="date" id="w-date"></label>
+    <button class="btn" type="button" data-where-save>Save</button><p class="muted small" style="margin:0">Delivery around Portland is $9. Pickup at the shop is free.</p></div>
+</aside>
+
+  <div id="shopify-section-cart-drawer" class="shopify-section"><aside class="panel" id="cart-drawer" role="dialog" aria-modal="true" aria-label="Your bag">
+  <div class="in" data-cart-body>
+    <button class="x" type="button" data-close-panel aria-label="Close">×</button>
+    <h2 class="ct m">Your bag</h2><div class="g">
+  <span class="face" aria-hidden="true" data-face style="background-image:url(/dear-stem/assets/face_counter.webp)"></span>
+  <p class="q" data-say>Nothing here yet. The cooler is a good place to start.</p>
+</div>
+
+  <a class="btn ghost" href="/dear-stem/collections/ready-bouquets">Go to the cooler</a>
+  </div>
+  <span hidden data-bag-count>0</span>
+</aside>
+
+
+</div>
+  <div class="scrim" data-close-panel hidden></div>
+</body>
+</html>
